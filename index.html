@@ -1,0 +1,286 @@
+<!-- 以下为完整页面代码（只比上一个版本增加了一个 Tab 和 JS 函数） -->
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>开发者工具集</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --bg: #f5f5f5;
+      --fg: #333;
+      --card-bg: #fff;
+      --accent: #007bff;
+      --tab-bg: #e0e0e0;
+    }
+
+    body.dark {
+      --bg: #1e1e1e;
+      --fg: #ddd;
+      --card-bg: #2c2c2c;
+      --accent: #66d9ef;
+      --tab-bg: #3a3a3a;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: sans-serif;
+      transition: background 0.3s, color 0.3s;
+      padding-bottom: 70px; /* 新增，避免底部内容被footer遮挡 */
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem;
+      background: var(--card-bg);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    header h1 {
+      margin: 0;
+    }
+
+    button {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+
+    nav {
+      display: flex;
+      flex-wrap: wrap;
+      border-bottom: 2px solid var(--accent);
+      background: var(--tab-bg);
+    }
+
+    nav button {
+      flex: 1;
+      padding: 0.75rem;
+      background: none;
+      border: none;
+      font-weight: bold;
+      cursor: pointer;
+      color: var(--fg);
+    }
+
+    nav button.active {
+      background: var(--card-bg);
+      border-bottom: 3px solid var(--accent);
+    }
+
+    .section {
+      display: none;
+      padding: 1rem;
+    }
+
+    .section.active {
+      display: block;
+    }
+
+    textarea, input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      font-family: monospace;
+      margin-top: 4px;
+      background: var(--card-bg);
+      color: var(--fg);
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--card-bg);
+      padding: 10px;
+      border-radius: 4px;
+      white-space: pre-wrap;
+      border: 1px solid #ccc;
+    }
+
+    label {
+      display: block;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>开发者工具集</h1>
+    <button onclick="toggleTheme()">🌓 主题切换</button>
+  </header>
+
+  <nav>
+    <button class="active" onclick="switchTab('base64text')">Base64 字符串</button>
+    <button onclick="switchTab('base64file')">Base64 文件</button>
+    <button onclick="switchTab('textdiff')">文本对比</button>
+    <button onclick="switchTab('timestamp')">时间戳转换</button>
+    <button onclick="switchTab('ipgen')">IP 地址生成</button>
+    <button onclick="switchTab('password')">密码生成</button>
+  </nav>
+
+  <main>
+    <div class="section active" id="base64text">
+      <h2>Base64 字符串编解码</h2>
+      <textarea id="b64input" rows="3" placeholder="输入字符串"></textarea><br>
+      <button onclick="encodeBase64()">编码</button>
+      <button onclick="decodeBase64()">解码</button>
+      <pre id="b64result"></pre>
+    </div>
+
+    <div class="section" id="base64file">
+      <h2>Base64 文件编码</h2>
+      <input type="file" id="fileInput"><br>
+      <button onclick="encodeFileBase64()">编码为 Base64</button>
+      <pre id="fileResult"></pre>
+    </div>
+
+    <div class="section" id="textdiff">
+      <h2>文本对比</h2>
+      <textarea id="text1" rows="3" placeholder="文本 A"></textarea>
+      <textarea id="text2" rows="3" placeholder="文本 B"></textarea><br>
+      <button onclick="compareText()">对比</button>
+      <pre id="diffResult"></pre>
+    </div>
+
+    <div class="section" id="timestamp">
+      <h2>Unix 时间戳转换</h2>
+      <input type="text" id="timestampInput" placeholder="输入时间戳或日期字符串"><br>
+      <button onclick="convertTimestamp()">转换</button>
+      <pre id="timestampResult"></pre>
+    </div>
+
+    <div class="section" id="ipgen">
+      <h2>IP 地址生成</h2>
+      <button onclick="generateIPv4()">生成 IPv4</button>
+      <button onclick="generateIPv6()">生成 IPv6</button>
+      <pre id="ipResult"></pre>
+    </div>
+
+    <div class="section" id="password">
+      <h2>随机密码生成器</h2>
+      <label>密码长度：<input type="number" id="pwdLength" value="12" min="4" max="64"></label>
+      <label><input type="checkbox" id="includeUpper" checked> 包含大写字母</label>
+      <label><input type="checkbox" id="includeLower" checked> 包含小写字母</label>
+      <label><input type="checkbox" id="includeNumbers" checked> 包含数字</label>
+      <label><input type="checkbox" id="includeSymbols"> 包含特殊字符</label>
+      <button onclick="generatePassword()">生成密码</button>
+      <pre id="passwordResult"></pre>
+    </div>
+  </main>
+
+  <script>
+    function toggleTheme() {
+      document.body.classList.toggle("dark");
+    }
+
+    function switchTab(id) {
+      document.querySelectorAll("nav button").forEach(btn => btn.classList.remove("active"));
+      document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
+      document.querySelector(`nav button[onclick="switchTab('${id}')"]`).classList.add("active");
+      document.getElementById(id).classList.add("active");
+    }
+
+    function encodeBase64() {
+      const input = document.getElementById('b64input').value;
+      try {
+        document.getElementById('b64result').textContent = btoa(unescape(encodeURIComponent(input)));
+      } catch {
+        document.getElementById('b64result').textContent = '⚠️ 编码失败（可能含有中文）';
+      }
+    }
+
+    function decodeBase64() {
+      const input = document.getElementById('b64input').value;
+      try {
+        document.getElementById('b64result').textContent = decodeURIComponent(escape(atob(input)));
+      } catch {
+        document.getElementById('b64result').textContent = '⚠️ 解码失败，请检查内容';
+      }
+    }
+
+    function encodeFileBase64() {
+      const file = document.getElementById('fileInput').files[0];
+      if (!file) return alert("请选择文件！");
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        document.getElementById('fileResult').textContent = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function compareText() {
+      const a = document.getElementById('text1').value.split('\n');
+      const b = document.getElementById('text2').value.split('\n');
+      let result = '';
+      const max = Math.max(a.length, b.length);
+      for (let i = 0; i < max; i++) {
+        if (a[i] !== b[i]) {
+          result += `🔸 第 ${i + 1} 行不同\nA: ${a[i] || ''}\nB: ${b[i] || ''}\n\n`;
+        }
+      }
+      document.getElementById('diffResult').textContent = result || '✅ 两段文本相同';
+    }
+
+    function convertTimestamp() {
+      const input = document.getElementById('timestampInput').value.trim();
+      let result = '';
+      if (/^\d{10}$/.test(input)) {
+        result = new Date(Number(input) * 1000).toLocaleString();
+      } else {
+        const d = new Date(input);
+        if (!isNaN(d.getTime())) {
+          result = Math.floor(d.getTime() / 1000).toString();
+        } else {
+          result = '⚠️ 解析失败';
+        }
+      }
+      document.getElementById('timestampResult').textContent = result;
+    }
+
+    function generateIPv4() {
+      const ip = Array(4).fill(0).map(() => Math.floor(Math.random() * 256)).join('.');
+      document.getElementById('ipResult').textContent = ip;
+    }
+
+    function generateIPv6() {
+      const ip6 = Array(8).fill(0).map(() =>
+        Math.floor(Math.random() * 0x10000).toString(16).padStart(4, '0')
+      ).join(':');
+      document.getElementById('ipResult').textContent = ip6;
+    }
+
+    function generatePassword() {
+      const len = +document.getElementById('pwdLength').value;
+      const upper = document.getElementById('includeUpper').checked;
+      const lower = document.getElementById('includeLower').checked;
+      const num = document.getElementById('includeNumbers').checked;
+      const sym = document.getElementById('includeSymbols').checked;
+
+      let chars = '';
+      if (upper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (lower) chars += 'abcdefghijklmnopqrstuvwxyz';
+      if (num) chars += '0123456789';
+      if (sym) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+      if (!chars) {
+        document.getElementById('passwordResult').textContent = '⚠️ 请至少选择一种字符类型';
+        return;
+      }
+
+      let pwd = '';
+      for (let i = 0; i < len; i++) {
+        pwd += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+
+      document.getElementById('passwordResult').textContent = pwd;
+    }
+  </script>
+</body>
+</html>

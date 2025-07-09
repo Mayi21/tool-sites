@@ -1,0 +1,79 @@
+{% extends 'tools/base.html' %}
+{% block title %}IP 地址生成{% endblock %}
+{% block content %}
+<div class="card p-4 mb-4">
+  <h2 class="mb-3"><i class="bi bi-diagram-3"></i> IP 地址生成</h2>
+  <form id="ipForm" method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label class="form-label">类型</label>
+      <select class="form-select" name="ip_type">
+        <option value="ipv4" {% if ip_type == 'ipv4' %}selected{% endif %}>IPv4</option>
+        <option value="ipv6" {% if ip_type == 'ipv6' %}selected{% endif %}>IPv6</option>
+      </select>
+    </div>
+    <div class="mb-3">
+      <label class="form-label">数量</label>
+      <input class="form-control" type="number" name="count" value="{{ count|default:1 }}" min="1" max="200">
+    </div>
+    <button type="submit" class="btn btn-primary"><i class="bi bi-plus-circle"></i> 生成</button>
+  </form>
+  <div id="ipResultWrap">
+    {% if result %}
+    <hr>
+    <div class="alert alert-success">
+      <h6>生成结果：</h6>
+      <button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#ipResultCollapse" aria-expanded="false" aria-controls="ipResultCollapse">
+        显示/隐藏结果
+      </button>
+      <div class="collapse show" id="ipResultCollapse">
+        <pre id="ipResult" style="max-height: 300px; overflow:auto;">{{ result }}</pre>
+        <button class="btn btn-outline-secondary btn-sm mt-2" onclick="copyIp()"><i class="bi bi-clipboard"></i> 复制</button>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+<!-- Toast -->
+<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080">
+  <div id="ipToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <div class="toast-body">
+        <i class="bi bi-clipboard-check"></i> 复制成功！
+      </div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+  </div>
+</div>
+<script>
+function copyIp() {
+  var text = document.getElementById('ipResult').innerText;
+  navigator.clipboard.writeText(text).then(function(){
+    var toast = new bootstrap.Toast(document.getElementById('ipToast'));
+    toast.show();
+  });
+}
+
+const ipForm = document.getElementById('ipForm');
+ipForm.addEventListener('submit', function(e) {
+  e.preventDefault();
+  const formData = new FormData(ipForm);
+  fetch('', {
+    method: 'POST',
+    headers: { 'X-Requested-With': 'XMLHttpRequest' },
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    let html = '<hr><div class="alert alert-success">';
+    html += '<h6>生成结果：</h6>';
+    html += '<button class="btn btn-outline-secondary btn-sm mb-2" type="button" data-bs-toggle="collapse" data-bs-target="#ipResultCollapse" aria-expanded="false" aria-controls="ipResultCollapse">显示/隐藏结果</button>';
+    html += '<div class="collapse show" id="ipResultCollapse">';
+    html += '<pre id="ipResult" style="max-height: 300px; overflow:auto;">' + data.result + '</pre>';
+    html += '<button class="btn btn-outline-secondary btn-sm mt-2" onclick="copyIp()"><i class="bi bi-clipboard"></i> 复制</button>';
+    html += '</div></div>';
+    document.getElementById('ipResultWrap').innerHTML = html;
+  });
+});
+</script>
+{% endblock %} 

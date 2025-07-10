@@ -1,0 +1,10 @@
+.navbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+@media (max-width: 600px) {
+  .navbar-actions {
+    gap: 0.2em;
+  }
+} 

@@ -16,8 +16,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
+from django.utils.translation import gettext_lazy as _
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("", include("tools.urls")),  # 主站点路由交给tools应用
 ]
+
+# 添加语言前缀的URL模式
+urlpatterns += i18n_patterns(
+    path("", include("tools.urls")),  # 主站点路由交给tools应用
+    prefix_default_language=False,  # 默认语言不添加前缀
+)

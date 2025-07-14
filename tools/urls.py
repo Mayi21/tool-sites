@@ -10,4 +10,5 @@ urlpatterns = [
     path('password/', views.password_tool, name='password_tool'),
     path('uuid/', views.uuid_tool, name='uuid_tool'),
     path('unicode/', views.unicode_tool, name='unicode_tool'),
+    path('language/<str:language>/', views.switch_language, name='switch_language'),
 ] 

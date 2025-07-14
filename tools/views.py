@@ -4,10 +4,22 @@ import base64, difflib, datetime, ipaddress, secrets, string, uuid
 from django.http import HttpResponse
 from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.http import JsonResponse
+from django.utils.translation import gettext_lazy as _
+from django.utils.translation import activate
+from django.utils import translation
+from django.shortcuts import redirect
+from django.urls import reverse
 
 
 def index(request):
     return render(request, 'tools/index.html')
+
+def switch_language(request, language):
+    """语言切换视图"""
+    if language in ['zh-hans', 'en']:
+        activate(language)
+        request.session[translation.LANGUAGE_SESSION_KEY] = language
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 def base64_tool(request):
     result = None

@@ -99,7 +99,7 @@ def timestamp_tool(request):
                     dt = datetime.datetime.fromtimestamp(ts)
                     result = dt.strftime('%Y-%m-%d %H:%M:%S.{:03d}'.format(ms))
                 except Exception as e:
-                    result = f'转换失败: {e}'
+                    result = _('转换失败: ') + str(e)
             elif datetime_str:
                 try:
                     # 支持毫秒级日期时间
@@ -109,11 +109,11 @@ def timestamp_tool(request):
                         dt = datetime.datetime.strptime(datetime_str, '%Y-%m-%d %H:%M:%S')
                     sec_ts = int(dt.timestamp())
                     ms_ts = int(dt.timestamp() * 1000 + dt.microsecond // 1000)
-                    result = f'秒级时间戳：{sec_ts}\n毫秒时间戳：{ms_ts}'
+                    result = _('秒级时间戳：') + str(sec_ts) + '\n' + _('毫秒时间戳：') + str(ms_ts)
                 except Exception as e:
-                    result = f'转换失败: {e}'
+                    result = _('转换失败: ') + str(e)
         else:
-            result = '参数错误'
+            result = _('参数错误')
         if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return JsonResponse({'result': result, 'timestamp': timestamp, 'datetime_str': datetime_str})
     else:
@@ -123,7 +123,11 @@ def timestamp_tool(request):
         timestamp = str(int(now.timestamp()))
         ms_timestamp = str(int(now.timestamp() * 1000))
         datetime_str = now.strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-        result = f'当前时间：{datetime_str}\n秒级时间戳：{timestamp}\n毫秒时间戳：{ms_timestamp}'
+        result = (
+            _('当前时间：') + datetime_str + '\n' +
+            _('秒级时间戳：') + timestamp + '\n' +
+            _('毫秒时间戳：') + ms_timestamp
+        )
     return render(request, 'tools/timestamp.html', {'result': result, 'timestamp': timestamp, 'datetime_str': datetime_str})
 
 def ipgen_tool(request):

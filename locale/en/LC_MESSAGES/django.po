@@ -1,0 +1,334 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-07-14 23:54+0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: .\tools\templates\tools\base.html:27 .\tools\templates\tools\base.html:71
+msgid "工具箱"
+msgstr "Toolbox"
+
+#: .\tools\templates\tools\base.html:35 .\tools\templates\tools\diff.html:3
+#: .\tools\templates\tools\diff.html:6 .\tools\templates\tools\index.html:21
+msgid "文本对比"
+msgstr "Text Diff"
+
+#: .\tools\templates\tools\base.html:36 .\tools\templates\tools\index.html:29
+#: .\tools\templates\tools\timestamp.html:10
+msgid "时间戳"
+msgstr "Timestamp"
+
+#: .\tools\templates\tools\base.html:37 .\tools\templates\tools\index.html:53
+#: .\tools\templates\tools\ipgen.html:20
+#: .\tools\templates\tools\password.html:24 .\tools\templates\tools\uuid.html:3
+#: .\tools\templates\tools\uuid.html:6 .\tools\templates\tools\uuid.html:22
+msgid "生成"
+msgstr "Generate"
+
+#: .\tools\templates\tools\base.html:38
+msgid "密码"
+msgstr "Password"
+
+#: .\tools\templates\tools\base.html:40 .\tools\templates\tools\index.html:61
+msgid "互转"
+msgstr "Convert"
+
+#: .\tools\templates\tools\base.html:57
+msgid "暗黑模式"
+msgstr "Dark Mode"
+
+#: .\tools\templates\tools\base.html:67
+msgid "提供支持"
+msgstr "Powered by"
+
+#: .\tools\templates\tools\base64.html:3 .\tools\templates\tools\index.html:13
+msgid "编解码"
+msgstr "Encode/Decode"
+
+#: .\tools\templates\tools\base64.html:6
+msgid "字符串/文件编解码"
+msgstr "String/File Encode/Decode"
+
+#: .\tools\templates\tools\base64.html:10
+msgid "字符串"
+msgstr "String"
+
+#: .\tools\templates\tools\base64.html:14
+msgid "或选择文件"
+msgstr "Or select file"
+
+#: .\tools\templates\tools\base64.html:18
+msgid "操作"
+msgstr "Action"
+
+#: .\tools\templates\tools\base64.html:20
+msgid "编码"
+msgstr "Encode"
+
+#: .\tools\templates\tools\base64.html:21
+msgid "解码"
+msgstr "Decode"
+
+#: .\tools\templates\tools\base64.html:24
+msgid "提交"
+msgstr "Submit"
+
+#: .\tools\templates\tools\base64.html:30
+#: .\tools\templates\tools\base64.html:69
+msgid "结果："
+msgstr "Result:"
+
+#: .\tools\templates\tools\base64.html:32
+#: .\tools\templates\tools\base64.html:71 .\tools\templates\tools\diff.html:36
+#: .\tools\templates\tools\diff.html:156 .\tools\templates\tools\ipgen.html:32
+#: .\tools\templates\tools\ipgen.html:74
+#: .\tools\templates\tools\timestamp.html:30
+#: .\tools\templates\tools\timestamp.html:93
+#: .\tools\templates\tools\timestamp.html:112
+#: .\tools\templates\tools\unicode.html:24
+#: .\tools\templates\tools\unicode.html:62
+#: .\tools\templates\tools\unicode.html:80
+msgid "复制"
+msgstr "Copy"
+
+#: .\tools\templates\tools\base64.html:42 .\tools\templates\tools\diff.html:76
+#: .\tools\templates\tools\ipgen.html:43
+#: .\tools\templates\tools\password.html:47
+#: .\tools\templates\tools\timestamp.html:40
+#: .\tools\templates\tools\unicode.html:34 .\tools\templates\tools\uuid.html:45
+msgid "复制成功！"
+msgstr "Copied!"
+
+#: .\tools\templates\tools\diff.html:11
+msgid "文本1"
+msgstr "Text 1"
+
+#: .\tools\templates\tools\diff.html:18
+msgid "文本2"
+msgstr "Text 2"
+
+#: .\tools\templates\tools\diff.html:25
+msgid "对比"
+msgstr "Compare"
+
+#: .\tools\templates\tools\diff.html:31 .\tools\templates\tools\diff.html:151
+msgid "对比结果："
+msgstr "Comparison Result:"
+
+#: .\tools\templates\tools\index.html:3
+msgid "工具箱首页"
+msgstr "Toolbox Home"
+
+#: .\tools\templates\tools\index.html:6
+msgid "欢迎使用工具箱"
+msgstr "Welcome to Toolbox"
+
+#: .\tools\templates\tools\index.html:7
+msgid "常用开发与运维工具集合，全部本地运行，数据不出浏览器。"
+msgstr ""
+"A collection of common development and operations tools, all run locally, no "
+"data leaves your browser."
+
+#: .\tools\templates\tools\index.html:14
+msgid "支持字符串和文件的 Base64 编码与解码。"
+msgstr "Supports Base64 encoding and decoding for strings and files."
+
+#: .\tools\templates\tools\index.html:22
+msgid "对比两段文本内容，显示差异。"
+msgstr "Compare two pieces of text and show the differences."
+
+#: .\tools\templates\tools\index.html:30
+msgid "时间戳与日期时间互转。"
+msgstr "Convert between timestamp and date/time."
+
+#: .\tools\templates\tools\index.html:37 .\tools\templates\tools\ipgen.html:3
+#: .\tools\templates\tools\ipgen.html:6
+msgid "地址生成"
+msgstr "Address Generator"
+
+#: .\tools\templates\tools\index.html:38
+msgid "批量生成 IPv4 或 IPv6 地址。"
+msgstr "Batch generate IPv4 or IPv6 addresses."
+
+#: .\tools\templates\tools\index.html:45
+msgid "随机密码"
+msgstr "Random Password"
+
+#: .\tools\templates\tools\index.html:46
+msgid "自定义规则生成高强度密码。"
+msgstr "Generate strong passwords with custom rules."
+
+#: .\tools\templates\tools\index.html:54
+msgid "支持多版本批量生成唯一标识符。"
+msgstr "Support batch generation of unique identifiers for multiple versions."
+
+#: .\tools\templates\tools\index.html:62
+msgid "中文与Unicode编码互相转换。"
+msgstr "Convert between Chinese and Unicode encoding."
+
+#: .\tools\templates\tools\ipgen.html:10
+msgid "类型"
+msgstr "Type"
+
+#: .\tools\templates\tools\ipgen.html:17
+msgid "数量"
+msgstr "Count"
+
+#: .\tools\templates\tools\ipgen.html:26 .\tools\templates\tools\ipgen.html:70
+#: .\tools\templates\tools\password.html:30
+#: .\tools\templates\tools\password.html:75
+#: .\tools\templates\tools\uuid.html:28 .\tools\templates\tools\uuid.html:71
+msgid "生成结果："
+msgstr "Result:"
+
+#: .\tools\templates\tools\ipgen.html:28 .\tools\templates\tools\ipgen.html:71
+#: .\tools\templates\tools\password.html:32
+#: .\tools\templates\tools\password.html:76
+#: .\tools\templates\tools\uuid.html:30 .\tools\templates\tools\uuid.html:72
+msgid "显示/隐藏结果"
+msgstr "Show/Hide Result"
+
+#: .\tools\templates\tools\password.html:3
+#: .\tools\templates\tools\password.html:6
+msgid "随机密码生成"
+msgstr "Random Password Generator"
+
+#: .\tools\templates\tools\password.html:10
+msgid "密码长度"
+msgstr "Password Length"
+
+#: .\tools\templates\tools\password.html:14
+msgid "包含字符类型"
+msgstr "Character Types Included"
+
+#: .\tools\templates\tools\password.html:15
+msgid "大写字母"
+msgstr "Uppercase Letters"
+
+#: .\tools\templates\tools\password.html:16
+msgid "小写字母"
+msgstr "Lowercase Letters"
+
+#: .\tools\templates\tools\password.html:17
+msgid "数字"
+msgstr "Numbers"
+
+#: .\tools\templates\tools\password.html:18
+msgid "特殊符号"
+msgstr "Special Symbols"
+
+#: .\tools\templates\tools\password.html:21
+#: .\tools\templates\tools\uuid.html:19
+msgid "生成数量"
+msgstr "Quantity"
+
+#: .\tools\templates\tools\password.html:36
+#: .\tools\templates\tools\password.html:79
+#: .\tools\templates\tools\uuid.html:34 .\tools\templates\tools\uuid.html:75
+msgid "复制全部"
+msgstr "Copy All"
+
+#: .\tools\templates\tools\timestamp.html:3
+#: .\tools\templates\tools\timestamp.html:6
+msgid "时间戳转换"
+msgstr "Timestamp Conversion"
+
+#: .\tools\templates\tools\timestamp.html:14
+msgid "或日期时间（YYYY-MM-DD HH:MM:SS）"
+msgstr "Or date/time (YYYY-MM-DD HH:MM:SS)"
+
+#: .\tools\templates\tools\timestamp.html:18
+msgid "时间戳转时间"
+msgstr "Timestamp to Date"
+
+#: .\tools\templates\tools\timestamp.html:19
+msgid "时间转时间戳"
+msgstr "Date to Timestamp"
+
+#: .\tools\templates\tools\timestamp.html:26
+#: .\tools\templates\tools\timestamp.html:91
+#: .\tools\templates\tools\timestamp.html:110
+#: .\tools\templates\tools\unicode.html:22
+#: .\tools\templates\tools\unicode.html:60
+#: .\tools\templates\tools\unicode.html:78
+msgid "转换结果："
+msgstr "Conversion Result:"
+
+#: .\tools\templates\tools\timestamp.html:27
+#: .\tools\templates\tools\timestamp.html:91
+#: .\tools\templates\tools\timestamp.html:110
+msgid "刷新当前时间"
+msgstr "Refresh Current Time"
+
+#: .\tools\templates\tools\unicode.html:3
+#: .\tools\templates\tools\unicode.html:6
+msgid "与中文互转"
+msgstr "Convert with Chinese"
+
+#: .\tools\templates\tools\unicode.html:10
+msgid "输入内容"
+msgstr "Input Content"
+
+#: .\tools\templates\tools\unicode.html:14
+msgid "中文转Unicode"
+msgstr "Chinese to Unicode"
+
+#: .\tools\templates\tools\unicode.html:15
+msgid "Unicode转中文"
+msgstr "Unicode to Chinese"
+
+#: .\tools\templates\tools\uuid.html:10
+msgid "版本"
+msgstr "Version"
+
+#: .\tools\templates\tools\uuid.html:12
+msgid "基于时间"
+msgstr "Based on Time"
+
+#: .\tools\templates\tools\uuid.html:13
+msgid "基于名字+MD5"
+msgstr "Based on Name + MD5"
+
+#: .\tools\templates\tools\uuid.html:14
+msgid "随机"
+msgstr "Random"
+
+#: .\tools\templates\tools\uuid.html:15
+msgid "基于名字+SHA1"
+msgstr "Based on Name + SHA1"
+
+#: .\tools\views.py:102 .\tools\views.py:114
+msgid "转换失败: "
+msgstr "Conversion failed: "
+
+#: .\tools\views.py:112 .\tools\views.py:128
+msgid "秒级时间戳："
+msgstr "Timestamp (seconds): "
+
+#: .\tools\views.py:112 .\tools\views.py:129
+msgid "毫秒时间戳："
+msgstr "Timestamp (milliseconds): "
+
+#: .\tools\views.py:116
+msgid "参数错误"
+msgstr "Invalid parameters"
+
+#: .\tools\views.py:127
+#, fuzzy
+#| msgid "刷新当前时间"
+msgid "当前时间："
+msgstr "Current time: "

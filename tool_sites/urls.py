@@ -18,6 +18,8 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.i18n import i18n_patterns
 from django.utils.translation import gettext_lazy as _
+from django.urls import re_path
+from django.views.i18n import set_language
 
 urlpatterns = [
     path("admin/", admin.site.urls),
@@ -28,3 +30,7 @@ urlpatterns += i18n_patterns(
     path("", include("tools.urls")),  # 主站点路由交给tools应用
     prefix_default_language=False,  # 默认语言不添加前缀
 )
+
+urlpatterns += [
+    re_path(r'^i18n/setlang/$', set_language, name='set_language'),
+]

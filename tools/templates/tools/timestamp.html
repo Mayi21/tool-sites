@@ -1,32 +1,33 @@
 {% extends 'tools/base.html' %}
-{% block title %}Unix 时间戳转换{% endblock %}
+{% load i18n %}
+{% block title %}Unix {% trans "时间戳转换" %}{% endblock %}
 {% block content %}
 <div class="card p-4 mb-4">
-  <h2 class="mb-3"><i class="bi bi-clock-history"></i> Unix 时间戳转换</h2>
+  <h2 class="mb-3"><i class="bi bi-clock-history"></i> Unix {% trans "时间戳转换" %}</h2>
   <form id="tsForm" method="post">
     {% csrf_token %}
     <div class="mb-3">
-      <label class="form-label">Unix 时间戳</label>
+      <label class="form-label">Unix {% trans "时间戳" %}</label>
       <input class="form-control" type="text" name="timestamp" value="{{ timestamp|default:'' }}">
     </div>
     <div class="mb-3">
-      <label class="form-label">或日期时间（YYYY-MM-DD HH:MM:SS）</label>
+      <label class="form-label">{% trans "或日期时间（YYYY-MM-DD HH:MM:SS）" %}</label>
       <input class="form-control" type="text" name="datetime_str" value="{{ datetime_str|default:'' }}">
     </div>
     <div class="d-flex gap-2">
-      <button type="button" class="btn btn-primary" id="btnTs2Date"><i class="bi bi-clock"></i> 时间戳转时间</button>
-      <button type="button" class="btn btn-success" id="btnDate2Ts"><i class="bi bi-hourglass-split"></i> 时间转时间戳</button>
+      <button type="button" class="btn btn-primary" id="btnTs2Date"><i class="bi bi-clock"></i> {% trans "时间戳转时间" %}</button>
+      <button type="button" class="btn btn-success" id="btnDate2Ts"><i class="bi bi-hourglass-split"></i> {% trans "时间转时间戳" %}</button>
     </div>
   </form>
   <div id="tsResultWrap">
     {% if result %}
     <hr>
     <div class="alert alert-success">
-      <h6>转换结果：
-        <button class="btn btn-outline-secondary btn-sm ms-2" id="refreshNowBtn" title="刷新当前时间"><i class="bi bi-arrow-clockwise"></i></button>
+      <h6>{% trans "转换结果：" %}
+        <button class="btn btn-outline-secondary btn-sm ms-2" id="refreshNowBtn" title="{% trans '刷新当前时间' %}"><i class="bi bi-arrow-clockwise"></i></button>
       </h6>
       <pre id="tsResult">{{ result }}</pre>
-      <button class="btn btn-outline-secondary btn-sm" onclick="copyTs()"><i class="bi bi-clipboard"></i> 复制</button>
+      <button class="btn btn-outline-secondary btn-sm" onclick="copyTs()"><i class="bi bi-clipboard"></i> {% trans "复制" %}</button>
     </div>
     {% endif %}
   </div>
@@ -36,7 +37,7 @@
   <div id="tsToast" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
     <div class="d-flex">
       <div class="toast-body">
-        <i class="bi bi-clipboard-check"></i> 复制成功！
+        <i class="bi bi-clipboard-check"></i> {% trans "复制成功！" %}
       </div>
       <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
     </div>
@@ -87,9 +88,9 @@ document.getElementById('btnTs2Date').onclick = function() {
   .then(res => res.json())
   .then(data => {
     let html = '<hr><div class="alert alert-success">';
-    html += '<h6>转换结果：<button class="btn btn-outline-secondary btn-sm ms-2" id="refreshNowBtn" title="刷新当前时间"><i class="bi bi-arrow-clockwise"></i></button></h6>';
+    html += '<h6>{% trans "转换结果：" %}<button class="btn btn-outline-secondary btn-sm ms-2" id="refreshNowBtn" title="{% trans "刷新当前时间" %}"><i class="bi bi-arrow-clockwise"></i></button></h6>';
     html += '<pre id="tsResult">' + data.result + '</pre>';
-    html += '<button class="btn btn-outline-secondary btn-sm" onclick="copyTs()"><i class="bi bi-clipboard"></i> 复制</button>';
+    html += '<button class="btn btn-outline-secondary btn-sm" onclick="copyTs()"><i class="bi bi-clipboard"></i> {% trans "复制" %}</button>';
     html += '</div>';
     document.getElementById('tsResultWrap').innerHTML = html;
     bindRefreshBtn();
@@ -106,9 +107,9 @@ document.getElementById('btnDate2Ts').onclick = function() {
   .then(res => res.json())
   .then(data => {
     let html = '<hr><div class="alert alert-success">';
-    html += '<h6>转换结果：<button class="btn btn-outline-secondary btn-sm ms-2" id="refreshNowBtn" title="刷新当前时间"><i class="bi bi-arrow-clockwise"></i></button></h6>';
+    html += '<h6>{% trans "转换结果：" %}<button class="btn btn-outline-secondary btn-sm ms-2" id="refreshNowBtn" title="{% trans "刷新当前时间" %}"><i class="bi bi-arrow-clockwise"></i></button></h6>';
     html += '<pre id="tsResult">' + data.result + '</pre>';
-    html += '<button class="btn btn-outline-secondary btn-sm" onclick="copyTs()"><i class="bi bi-clipboard"></i> 复制</button>';
+    html += '<button class="btn btn-outline-secondary btn-sm" onclick="copyTs()"><i class="bi bi-clipboard"></i> {% trans "复制" %}</button>';
     html += '</div>';
     document.getElementById('tsResultWrap').innerHTML = html;
     bindRefreshBtn();

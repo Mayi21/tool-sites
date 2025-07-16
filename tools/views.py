@@ -185,8 +185,17 @@ def unicode_tool(request):
         action = data.get('action', 'encode')
         
         if action == 'encode':
-            # 所有字符转Unicode
-            result = ''.join(['\\u{:04x}'.format(ord(c)) for c in text])
+            # 所有字符转Unicode，保持换行符的可读性
+            result = ''
+            for char in text:
+                if char == '\n':
+                    result += '\\u000a\n'  # 换行符后添加实际换行
+                elif char == '\r':
+                    result += '\\u000d'
+                elif char == '\t':
+                    result += '\\u0009'
+                else:
+                    result += '\\u{:04x}'.format(ord(char))
         else:
             # Unicode转中文
             def decode_unicode(match):

@@ -2,36 +2,92 @@
 {% load i18n %}
 {% block title %}Base64 {% trans "编解码" %}{% endblock %}
 {% block content %}
-<div class="card p-4 mb-4">
-  <h2 class="mb-3"><i class="bi bi-clipboard-data"></i> Base64 {% trans "字符串/文件编解码" %}</h2>
-  <form id="b64Form" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label class="form-label">{% trans "字符串" %}</label>
-      <textarea class="form-control" name="text" rows="3">{{ text|default:'' }}</textarea>
+<div class="row g-4">
+  <!-- 左侧：输入区域 -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="bi bi-upload"></i> {% trans "输入" %}</h5>
+      </div>
+      <div class="card-body">
+        <form id="b64Form" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">{% trans "文本内容" %}</label>
+            <textarea class="form-control" name="text" rows="8" placeholder="{% trans '请输入要处理的文本...' %}">{{ text|default:'' }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">{% trans "或选择文件" %}</label>
+            <input class="form-control" type="file" name="file">
+          </div>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">{% trans "操作类型" %}</label>
+              <select class="form-select" name="action">
+                <option value="encode" {% if action == 'encode' %}selected{% endif %}>{% trans "编码" %}</option>
+                <option value="decode" {% if action == 'decode' %}selected{% endif %}>{% trans "解码" %}</option>
+              </select>
+            </div>
+            <div class="col-md-6 mb-3 d-flex align-items-end">
+              <button type="submit" class="btn btn-primary w-100">
+                <i class="bi bi-arrow-repeat"></i> {% trans "转换" %}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
     </div>
-    <div class="mb-3">
-      <label class="form-label">{% trans "或选择文件" %}</label>
-      <input class="form-control" type="file" name="file">
+  </div>
+
+  <!-- 右侧：输出区域 -->
+  <div class="col-lg-6">
+    <div class="card h-100">
+      <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="bi bi-download"></i> {% trans "结果" %}</h5>
+        <button class="btn btn-outline-light btn-sm" onclick="copyB64()" style="display: none;" id="copyBtn">
+          <i class="bi bi-clipboard"></i> {% trans "复制" %}
+        </button>
+      </div>
+      <div class="card-body">
+        <div id="b64ResultWrap">
+          <div class="text-center text-muted py-5">
+            <i class="bi bi-arrow-left-right display-4 mb-3"></i>
+            <p>{% trans "转换结果将在这里显示" %}</p>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="mb-3">
-      <label class="form-label">{% trans "操作" %}</label>
-      <select class="form-select" name="action">
-        <option value="encode" {% if action == 'encode' %}selected{% endif %}>{% trans "编码" %}</option>
-        <option value="decode" {% if action == 'decode' %}selected{% endif %}>{% trans "解码" %}</option>
-      </select>
+  </div>
+</div>
+
+<!-- 底部：使用说明 -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-info-circle"></i> {% trans "使用说明" %}</h6>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <h6>{% trans "Base64编码" %}</h6>
+            <ul class="small text-muted">
+              <li>{% trans "将文本或文件转换为Base64格式" %}</li>
+              <li>{% trans "常用于数据传输和存储" %}</li>
+              <li>{% trans "支持中文和特殊字符" %}</li>
+            </ul>
+          </div>
+          <div class="col-md-6">
+            <h6>{% trans "Base64解码" %}</h6>
+            <ul class="small text-muted">
+              <li>{% trans "将Base64格式还原为原始内容" %}</li>
+              <li>{% trans "自动检测并处理格式" %}</li>
+              <li>{% trans "支持文件和文本解码" %}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
-    <button type="submit" class="btn btn-primary"><i class="bi bi-arrow-repeat"></i> {% trans "提交" %}</button>
-  </form>
-  <div id="b64ResultWrap">
-    {% if result %}
-    <hr>
-    <div class="alert alert-success">
-      <h6>{% trans "结果：" %}</h6>
-      <pre id="b64Result">{{ result }}</pre>
-      <button class="btn btn-outline-secondary btn-sm" onclick="copyB64()"><i class="bi bi-clipboard"></i> {% trans "复制" %}</button>
-    </div>
-    {% endif %}
   </div>
 </div>
 <!-- Toast -->
@@ -58,6 +114,18 @@ const b64Form = document.getElementById('b64Form');
 b64Form.addEventListener('submit', function(e) {
   e.preventDefault();
   const formData = new FormData(b64Form);
+  
+  // 显示加载状态
+  const resultWrap = document.getElementById('b64ResultWrap');
+  resultWrap.innerHTML = `
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">{% trans "处理中..." %}</span>
+      </div>
+      <p class="mt-2 text-muted">{% trans "正在处理..." %}</p>
+    </div>
+  `;
+  
   fetch('', {
     method: 'POST',
     headers: { 'X-Requested-With': 'XMLHttpRequest' },
@@ -65,13 +133,48 @@ b64Form.addEventListener('submit', function(e) {
   })
   .then(res => res.json())
   .then(data => {
-    let html = '<hr><div class="alert alert-success">';
-    html += '<h6>{% trans "结果：" %}</h6>';
-    html += '<pre id="b64Result">' + data.result + '</pre>';
-    html += '<button class="btn btn-outline-secondary btn-sm" onclick="copyB64()"><i class="bi bi-clipboard"></i> {% trans "复制" %}</button>';
-    html += '</div>';
-    document.getElementById('b64ResultWrap').innerHTML = html;
+    if (data.error) {
+      resultWrap.innerHTML = `
+        <div class="alert alert-danger">
+          <i class="bi bi-exclamation-triangle"></i> ${data.error}
+        </div>
+      `;
+    } else {
+      resultWrap.innerHTML = `
+        <div class="mb-3">
+          <label class="form-label">{% trans "转换结果" %}</label>
+          <textarea class="form-control" id="b64Result" rows="8" readonly>${data.result}</textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-success btn-sm" onclick="copyB64()">
+            <i class="bi bi-clipboard"></i> {% trans "复制结果" %}
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" onclick="clearResult()">
+            <i class="bi bi-trash"></i> {% trans "清空" %}
+          </button>
+        </div>
+      `;
+      // 显示复制按钮
+      document.getElementById('copyBtn').style.display = 'block';
+    }
+  })
+  .catch(error => {
+    resultWrap.innerHTML = `
+      <div class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle"></i> {% trans "处理失败，请重试" %}
+      </div>
+    `;
   });
 });
+
+function clearResult() {
+  document.getElementById('b64ResultWrap').innerHTML = `
+    <div class="text-center text-muted py-5">
+      <i class="bi bi-arrow-left-right display-4 mb-3"></i>
+      <p>{% trans "转换结果将在这里显示" %}</p>
+    </div>
+  `;
+  document.getElementById('copyBtn').style.display = 'none';
+}
 </script>
 {% endblock %} 

@@ -139,3 +139,75 @@ STATIC_URL = "static/"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# 缓存配置
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 5分钟
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+        }
+    }
+}
+
+# 会话配置优化
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 86400 * 7  # 7天
+
+# 性能优化
+USE_ETAGS = True
+PREPEND_WWW = False
+
+# 数据库优化
+DATABASES['default']['OPTIONS'] = {
+    'timeout': 20,
+    'check_same_thread': False,
+}
+
+# 日志配置
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'logs' / 'django.log',
+            'formatter': 'verbose',
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'tools': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    },
+}

@@ -1,0 +1,17 @@
+{
+  "Base64 Encode/Decode": "Base64 编解码",
+  "Encode": "编码",
+  "Decode": "解码",
+  "Convert": "转换",
+  "Invalid input": "输入无效",
+  "Enter text to encode or decode": "请输入要编码或解码的文本",
+  "Result will appear here": "结果将显示在这里",
+  "Error": "错误",
+  "Text Comparison": "文本对比",
+  "Text 1": "文本1",
+  "Text 2": "文本2",
+  "Compare": "对比",
+  "Multi-function Toolbox": "多功能工具箱",
+  "Switch to Light Mode": "切换到亮色模式",
+  "Switch to Dark Mode": "切换到暗色模式"
+} 

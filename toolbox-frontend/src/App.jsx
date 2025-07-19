@@ -8,6 +8,7 @@ import ThemeSwitcher from './components/ThemeSwitcher';
 import BackToHome from './components/BackToHome';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider } from 'antd';
 import { AppstoreOutlined } from '@ant-design/icons';
+import ThemeTransition from './components/ThemeTransition';
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -80,15 +81,17 @@ export default function App() {
       }}
     >
       <BrowserRouter>
-        <Layout style={{ minHeight: '100vh', width: '100%' }}>
+        <ThemeTransition theme={theme}>
+          <Layout style={{ minHeight: '100vh', width: '100%' }}>
           <Header 
             style={{ 
-              background: theme === 'dark' ? '#1f1f1f' : '#fff', 
-              boxShadow: '0 2px 8px rgba(0,0,0,0.04)', 
+              background: 'var(--header-bg)', 
+              boxShadow: '0 2px 8px var(--shadow-color)', 
               display: 'flex', 
               alignItems: 'center', 
               padding: '0 2rem',
-              width: '100%'
+              width: '100%',
+              borderBottom: '1px solid var(--border-color)'
             }}
           >
             <div style={{ fontSize: 24, fontWeight: 700, display: 'flex', alignItems: 'center' }}>
@@ -102,9 +105,10 @@ export default function App() {
           </Header>
           <Content 
             style={{ 
-              background: theme === 'dark' ? '#141414' : '#f7f8fa', 
+              background: 'var(--bg-secondary)', 
               padding: '2rem 1rem',
-              width: '100%'
+              width: '100%',
+              minHeight: 'calc(100vh - 64px - 70px)'
             }}
           >
             <Routes>
@@ -119,7 +123,7 @@ export default function App() {
                     <Title level={2} style={{ marginBottom: '0.5rem' }}>
                       {t('Multi-function Toolbox')}
                     </Title>
-                    <p style={{ fontSize: 16, color: theme === 'dark' ? '#a6a6a6' : '#666', margin: 0 }}>
+                    <p style={{ fontSize: 16, color: 'var(--text-secondary)', margin: 0 }}>
                       {t('One-stop online tool collection to improve development efficiency')}
                     </p>
                   </div>
@@ -128,7 +132,7 @@ export default function App() {
                     <div key={category.key} style={{ marginBottom: '3rem' }}>
                       <Title level={3} style={{ 
                         marginBottom: '1.5rem', 
-                        color: theme === 'dark' ? '#fff' : '#262626',
+                        color: 'var(--text-primary)',
                         borderLeft: '4px solid #1677ff',
                         paddingLeft: '1rem'
                       }}>
@@ -174,10 +178,17 @@ export default function App() {
               ))}
             </Routes>
           </Content>
-          <Footer style={{ textAlign: 'center', background: theme === 'dark' ? '#1f1f1f' : '#f0f2f5', width: '100%' }}>
+          <Footer style={{ 
+            textAlign: 'center', 
+            background: 'var(--footer-bg)', 
+            width: '100%',
+            borderTop: '1px solid var(--border-color)',
+            color: 'var(--text-secondary)'
+          }}>
             {t('Multi-function Toolbox')} ©{new Date().getFullYear()}
           </Footer>
         </Layout>
+        </ThemeTransition>
       </BrowserRouter>
     </ConfigProvider>
   );

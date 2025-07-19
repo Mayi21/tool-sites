@@ -40,8 +40,9 @@ export default function ToolCard({ path, name, desc }) {
           alignItems: 'center', 
           justifyContent: 'center',
           transition: 'all 0.3s ease',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-          border: '1px solid #f0f0f0'
+          boxShadow: '0 2px 8px var(--shadow-color)',
+          border: '1px solid var(--border-color)',
+          backgroundColor: 'var(--card-bg)'
         }}
         bodyStyle={{
           display: 'flex',
@@ -60,7 +61,7 @@ export default function ToolCard({ path, name, desc }) {
             <span style={{ 
               fontSize: 18, 
               fontWeight: 600, 
-              color: '#262626',
+              color: 'var(--text-primary)',
               marginBottom: 8,
               display: 'block'
             }}>
@@ -70,7 +71,7 @@ export default function ToolCard({ path, name, desc }) {
           description={
             <span style={{ 
               fontSize: 14, 
-              color: '#666',
+              color: 'var(--text-secondary)',
               lineHeight: 1.5
             }}>
               {desc}

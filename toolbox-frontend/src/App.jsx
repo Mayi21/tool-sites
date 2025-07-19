@@ -5,6 +5,7 @@ import tools from './tools';
 import ToolCard from './components/ToolCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
+import BackToHome from './components/BackToHome';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme } from 'antd';
 import { AppstoreOutlined } from '@ant-design/icons';
 
@@ -96,6 +97,7 @@ export default function App() {
                   path={tool.path} 
                   element={
                     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', width: '100%' }}>
+                      <BackToHome />
                       <tool.Component />
                     </div>
                   } 

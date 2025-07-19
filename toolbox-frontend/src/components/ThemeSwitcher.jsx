@@ -1,21 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Button, Tooltip, Dropdown, Space } from 'antd';
-import { BulbOutlined, MoonOutlined, DesktopOutlined, SettingOutlined } from '@ant-design/icons';
+import { BulbOutlined, MoonOutlined, DesktopOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
-export default function ThemeSwitcher() {
+export default function ThemeSwitcher({ theme, setTheme }) {
   const { t } = useTranslation();
-  const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
-    // Apply theme to document body for custom CSS
     document.body.setAttribute('data-theme', theme);
-    
-    // Store user preference
     localStorage.setItem('theme', theme);
-    
-    // Apply theme to Ant Design components
     const htmlElement = document.documentElement;
     if (theme === 'dark') {
       htmlElement.style.colorScheme = 'dark';
@@ -26,7 +20,6 @@ export default function ThemeSwitcher() {
       htmlElement.classList.add('light');
       htmlElement.classList.remove('dark');
     } else if (theme === 'system') {
-      // Follow system preference
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       htmlElement.style.colorScheme = systemTheme;
       htmlElement.classList.add(systemTheme);
@@ -34,7 +27,6 @@ export default function ThemeSwitcher() {
     }
   }, [theme]);
 
-  // Listen for system theme changes
   useEffect(() => {
     if (theme === 'system') {
       const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
@@ -45,7 +37,6 @@ export default function ThemeSwitcher() {
         htmlElement.classList.remove('dark', 'light');
         htmlElement.classList.add(newTheme);
       };
-      
       mediaQuery.addEventListener('change', handleChange);
       return () => mediaQuery.removeEventListener('change', handleChange);
     }
@@ -54,8 +45,6 @@ export default function ThemeSwitcher() {
   const handleThemeChange = (newTheme) => {
     setIsLoading(true);
     setTheme(newTheme);
-    
-    // Add a small delay for smooth transition
     setTimeout(() => {
       setIsLoading(false);
     }, 300);
@@ -65,12 +54,6 @@ export default function ThemeSwitcher() {
     if (theme === 'dark') return <MoonOutlined />;
     if (theme === 'light') return <BulbOutlined />;
     return <DesktopOutlined />;
-  };
-
-  const getCurrentThemeText = () => {
-    if (theme === 'dark') return t('Dark Mode');
-    if (theme === 'light') return t('Light Mode');
-    return t('System');
   };
 
   const themeOptions = [

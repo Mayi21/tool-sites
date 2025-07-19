@@ -103,7 +103,6 @@ export default function ImageCompressor() {
         {originalImage && (
           <>
                           <Button 
-                type="primary" 
                 onClick={compressImage} 
                 icon={<FileZipOutlined />}
                 style={{ width: '100%' }}
@@ -140,7 +139,6 @@ export default function ImageCompressor() {
                         {t('Reduction')}: {Math.round((1 - compressedSize / originalSize) * 100)}%
                       </div>
                       <Button 
-                        type="primary" 
                         onClick={downloadCompressed} 
                         icon={<DownloadOutlined />}
                         style={{ width: '100%', marginTop: 8 }}

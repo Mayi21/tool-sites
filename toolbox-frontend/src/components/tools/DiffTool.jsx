@@ -78,11 +78,12 @@ export default function DiffTool() {
         {diff && (
           <Card>
             <pre style={{ 
-              backgroundColor: '#f5f5f5', 
-              padding: '10px', 
+              backgroundColor: 'var(--bg-tertiary)',
+              padding: '10px',
               borderRadius: '4px',
               maxHeight: '400px',
-              overflow: 'auto'
+              overflow: 'auto',
+              border: '1px solid var(--border-color)'
             }}>
               {diff}
             </pre>

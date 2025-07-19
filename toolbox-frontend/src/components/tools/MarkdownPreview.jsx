@@ -51,11 +51,11 @@ export default function MarkdownPreview() {
             
             <div 
               style={{ 
-                border: '1px solid #d9d9d9', 
-                borderRadius: 6, 
-                padding: 16, 
+                border: '1px solid var(--border-color)',
+                borderRadius: 6,
+                padding: 16,
                 minHeight: 400,
-                backgroundColor: '#fff',
+                backgroundColor: 'var(--card-bg)',
                 overflow: 'auto'
               }}
               dangerouslySetInnerHTML={{ __html: renderMarkdown(markdown) }}

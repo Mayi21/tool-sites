@@ -76,6 +76,7 @@ export default function App() {
   
   return (
     <ConfigProvider
+      key={theme}
       theme={{
         algorithm: theme === 'dark' ? darkAlgorithm : defaultAlgorithm,
       }}
@@ -100,7 +101,7 @@ export default function App() {
             </div>
             <div style={{ marginLeft: 'auto', display: 'flex', gap: 16 }}>
               <LanguageSwitcher />
-              <ThemeSwitcher />
+              <ThemeSwitcher theme={theme} setTheme={setTheme} />
             </div>
           </Header>
           <Content 

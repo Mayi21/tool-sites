@@ -129,7 +129,7 @@ export default function App() {
                   </div>
                   
                   {toolCategories.map((category, index) => (
-                    <div key={category.key} style={{ marginBottom: '3rem' }}>
+                    <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '3rem' }}>
                       <Title level={3} style={{ 
                         marginBottom: '1.5rem', 
                         color: 'var(--text-primary)',

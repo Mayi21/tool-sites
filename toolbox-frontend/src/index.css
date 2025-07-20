@@ -578,3 +578,559 @@ kbd:hover {
 .ant-breadcrumb-separator {
   color: var(--text-tertiary) !important;
 }
+
+/* ===== 移动端和平板端响应式优化 ===== */
+
+/* 手机端 (小于768px) */
+@media (max-width: 767px) {
+  /* 基础字体和间距调整 */
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: 2em;
+  }
+  
+  /* 导航栏移动端优化 */
+  .ant-layout-header {
+    padding: 0 1rem !important;
+    height: 56px !important;
+  }
+  
+  /* Logo和标题移动端调整 */
+  .ant-layout-header > div:first-child {
+    gap: 8px !important;
+  }
+  
+  .ant-layout-header > div:first-child > div:first-child {
+    font-size: 18px !important;
+  }
+  
+  .ant-layout-header .anticon {
+    font-size: 20px !important;
+  }
+  
+  /* 导航按钮移动端优化 */
+  .ant-layout-header .ant-space {
+    gap: 4px !important;
+  }
+  
+  .ant-layout-header .ant-btn {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  
+  /* 内容区域移动端优化 */
+  .ant-layout-content {
+    padding: 1rem 0.5rem !important;
+  }
+  
+  /* 主页标题移动端优化 */
+  .ant-layout-content .ant-typography {
+    font-size: 1.5em !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  .ant-layout-content p {
+    font-size: 14px !important;
+  }
+  
+  /* 工具分类标题移动端优化 */
+  .ant-layout-content .ant-typography h3 {
+    font-size: 1.2em !important;
+    padding-left: 0.5rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* 工具卡片移动端优化 */
+  .ant-card {
+    margin-bottom: 1rem !important;
+  }
+  
+  .ant-card-head {
+    padding: 0 12px !important;
+    min-height: 40px !important;
+  }
+  
+  .ant-card-head-title {
+    font-size: 16px !important;
+    line-height: 40px !important;
+  }
+  
+  .ant-card-body {
+    padding: 12px !important;
+  }
+  
+  /* 输入框移动端优化 */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-textarea {
+    font-size: 16px !important; /* 防止iOS缩放 */
+  }
+  
+  .ant-input {
+    padding: 8px 12px !important;
+  }
+  
+  .ant-textarea {
+    padding: 8px 12px !important;
+  }
+  
+  /* 按钮移动端优化 */
+  .ant-btn {
+    height: 36px !important;
+    padding: 0 12px !important;
+    font-size: 14px !important;
+  }
+  
+  .ant-btn-sm {
+    height: 28px !important;
+    padding: 0 8px !important;
+    font-size: 12px !important;
+  }
+  
+  /* 下拉菜单移动端优化 */
+  .ant-dropdown-menu {
+    min-width: 120px !important;
+  }
+  
+  .ant-dropdown-menu-item {
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+  }
+  
+  /* 统计数字移动端优化 */
+  .ant-statistic-title {
+    font-size: 12px !important;
+  }
+  
+  .ant-statistic-content {
+    font-size: 16px !important;
+  }
+  
+  /* 分割线移动端优化 */
+  .ant-divider {
+    margin: 1rem 0 !important;
+  }
+  
+  /* 间距移动端优化 */
+  .ant-space {
+    gap: 8px !important;
+  }
+  
+  .ant-space-vertical {
+    gap: 8px !important;
+  }
+  
+  /* 行和列移动端优化 */
+  .ant-row {
+    margin: 0 -4px !important;
+  }
+  
+  .ant-col {
+    padding: 0 4px !important;
+  }
+  
+  /* 工具页面容器移动端优化 */
+  .ant-layout-content > div {
+    padding: 0 8px !important;
+  }
+  
+  /* 面包屑移动端优化 */
+  .ant-breadcrumb {
+    font-size: 12px !important;
+  }
+  
+  /* 提示框移动端优化 */
+  .ant-tooltip {
+    max-width: 200px !important;
+  }
+  
+  .ant-tooltip-inner {
+    font-size: 12px !important;
+    padding: 6px 8px !important;
+  }
+  
+  /* 消息提示移动端优化 */
+  .ant-message {
+    top: 8px !important;
+  }
+  
+  .ant-message-notice {
+    padding: 0 8px !important;
+  }
+  
+  /* 模态框移动端优化 */
+  .ant-modal {
+    margin: 8px !important;
+  }
+  
+  .ant-modal-content {
+    border-radius: 8px !important;
+  }
+  
+  .ant-modal-header {
+    padding: 12px 16px !important;
+  }
+  
+  .ant-modal-body {
+    padding: 12px 16px !important;
+  }
+  
+  .ant-modal-footer {
+    padding: 8px 16px 12px !important;
+  }
+  
+  /* 上传组件移动端优化 */
+  .ant-upload-drag {
+    padding: 16px !important;
+  }
+  
+  /* 滑块移动端优化 */
+  .ant-slider {
+    margin: 8px 0 !important;
+  }
+  
+  .ant-slider-handle {
+    width: 16px !important;
+    height: 16px !important;
+    margin-top: -6px !important;
+  }
+  
+  /* 进度条移动端优化 */
+  .ant-progress {
+    margin: 8px 0 !important;
+  }
+  
+  /* 选择器移动端优化 */
+  .ant-select {
+    width: 100% !important;
+  }
+  
+  .ant-select-selector {
+    height: 36px !important;
+    padding: 0 12px !important;
+  }
+  
+  /* 数字输入框移动端优化 */
+  .ant-input-number {
+    width: 100% !important;
+  }
+  
+  /* 单选框组移动端优化 */
+  .ant-radio-group {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    gap: 8px !important;
+  }
+  
+  .ant-radio-button-wrapper {
+    flex: 1 !important;
+    min-width: 80px !important;
+    text-align: center !important;
+  }
+}
+
+/* 平板端 (768px - 1024px) */
+@media (min-width: 768px) and (max-width: 1024px) {
+  /* 导航栏平板端优化 */
+  .ant-layout-header {
+    padding: 0 1.5rem !important;
+  }
+  
+  /* Logo和标题平板端调整 */
+  .ant-layout-header > div:first-child > div:first-child {
+    font-size: 20px !important;
+  }
+  
+  /* 内容区域平板端优化 */
+  .ant-layout-content {
+    padding: 1.5rem 1rem !important;
+  }
+  
+  /* 主页标题平板端优化 */
+  .ant-layout-content .ant-typography {
+    font-size: 1.8em !important;
+  }
+  
+  /* 工具分类标题平板端优化 */
+  .ant-layout-content .ant-typography h3 {
+    font-size: 1.3em !important;
+  }
+  
+  /* 工具卡片平板端优化 */
+  .ant-card {
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .ant-card-body {
+    padding: 16px !important;
+  }
+  
+  /* 按钮平板端优化 */
+  .ant-btn {
+    height: 40px !important;
+    padding: 0 16px !important;
+  }
+  
+  /* 输入框平板端优化 */
+  .ant-input,
+  .ant-textarea {
+    padding: 10px 14px !important;
+  }
+  
+  /* 间距平板端优化 */
+  .ant-space {
+    gap: 12px !important;
+  }
+  
+  .ant-space-vertical {
+    gap: 12px !important;
+  }
+  
+  /* 行和列平板端优化 */
+  .ant-row {
+    margin: 0 -8px !important;
+  }
+  
+  .ant-col {
+    padding: 0 8px !important;
+  }
+  
+  /* 工具页面容器平板端优化 */
+  .ant-layout-content > div {
+    padding: 0 12px !important;
+  }
+}
+
+/* 大屏幕平板端 (1024px - 1200px) */
+@media (min-width: 1024px) and (max-width: 1200px) {
+  /* 内容区域大平板端优化 */
+  .ant-layout-content {
+    padding: 2rem 1.5rem !important;
+  }
+  
+  /* 工具页面容器大平板端优化 */
+  .ant-layout-content > div {
+    padding: 0 16px !important;
+  }
+}
+
+/* 横屏模式优化 */
+@media (max-width: 1024px) and (orientation: landscape) {
+  /* 导航栏横屏优化 */
+  .ant-layout-header {
+    height: 48px !important;
+    padding: 0 1rem !important;
+  }
+  
+  /* Logo和标题横屏优化 */
+  .ant-layout-header > div:first-child > div:first-child {
+    font-size: 18px !important;
+  }
+  
+  /* 内容区域横屏优化 */
+  .ant-layout-content {
+    padding: 1rem 0.5rem !important;
+  }
+  
+  /* 主页标题横屏优化 */
+  .ant-layout-content .ant-typography {
+    font-size: 1.5em !important;
+    margin-bottom: 0.5rem !important;
+  }
+  
+  /* 工具分类标题横屏优化 */
+  .ant-layout-content .ant-typography h3 {
+    font-size: 1.2em !important;
+    margin-bottom: 0.8rem !important;
+  }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+  /* 增加触摸目标大小 */
+  .ant-btn {
+    min-height: 44px !important;
+    min-width: 44px !important;
+  }
+  
+  .ant-btn-sm {
+    min-height: 36px !important;
+    min-width: 36px !important;
+  }
+  
+  /* 增加输入框触摸区域 */
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-textarea {
+    min-height: 44px !important;
+  }
+  
+  /* 增加选择器触摸区域 */
+  .ant-select-selector {
+    min-height: 44px !important;
+  }
+  
+  /* 增加滑块触摸区域 */
+  .ant-slider-handle {
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: -8px !important;
+  }
+  
+  /* 增加单选框触摸区域 */
+  .ant-radio-wrapper {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  /* 增加复选框触摸区域 */
+  .ant-checkbox-wrapper {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+  
+  /* 增加下拉菜单项触摸区域 */
+  .ant-dropdown-menu-item {
+    min-height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+}
+
+/* 高分辨率屏幕优化 */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* 优化高分辨率屏幕的边框和阴影 */
+  .ant-card {
+    border-width: 0.5px !important;
+  }
+  
+  .ant-input,
+  .ant-input-affix-wrapper,
+  .ant-textarea {
+    border-width: 0.5px !important;
+  }
+  
+  .ant-btn {
+    border-width: 0.5px !important;
+  }
+}
+
+/* 减少动画的设备优化 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .theme-transition {
+    transition: none !important;
+  }
+  
+  .theme-switcher-btn {
+    transition: none !important;
+  }
+  
+  .ant-card {
+    transition: none !important;
+  }
+  
+  .ant-btn {
+    transition: none !important;
+  }
+}
+
+/* 深色模式下的移动端特殊优化 */
+@media (max-width: 767px) {
+  .dark .ant-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .dark .ant-btn {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2) !important;
+  }
+  
+  .dark .ant-input,
+  .dark .ant-input-affix-wrapper,
+  .dark .ant-textarea {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+  }
+}
+
+/* 浅色模式下的移动端特殊优化 */
+@media (max-width: 767px) {
+  .light .ant-card {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  .light .ant-btn {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  .light .ant-input,
+  .light .ant-input-affix-wrapper,
+  .light .ant-textarea {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  }
+}
+
+/* ToolCard 移动端优化 */
+@media (max-width: 767px) {
+  .ant-card {
+    min-height: 120px !important;
+    border-radius: 8px !important;
+  }
+  
+  .ant-card-body {
+    padding: 16px 12px !important;
+  }
+  
+  .ant-card .anticon {
+    font-size: 28px !important;
+  }
+  
+  .ant-card .ant-card-meta-title {
+    font-size: 14px !important;
+    margin-bottom: 4px !important;
+  }
+  
+  .ant-card .ant-card-meta-description {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+  }
+}
+
+/* ToolCard 平板端优化 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .ant-card {
+    min-height: 130px !important;
+    border-radius: 10px !important;
+  }
+  
+  .ant-card-body {
+    padding: 18px 14px !important;
+  }
+  
+  .ant-card .anticon {
+    font-size: 30px !important;
+  }
+  
+  .ant-card .ant-card-meta-title {
+    font-size: 15px !important;
+    margin-bottom: 6px !important;
+  }
+  
+  .ant-card .ant-card-meta-description {
+    font-size: 13px !important;
+    line-height: 1.4 !important;
+  }
+}

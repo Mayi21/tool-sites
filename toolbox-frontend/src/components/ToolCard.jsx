@@ -32,9 +32,10 @@ export default function ToolCard({ path, name, desc }) {
       <Card 
         hoverable 
         style={{ 
-          borderRadius: 16, 
-          minHeight: 160, 
-          width: 280, 
+          borderRadius: 12, 
+          minHeight: 140, 
+          width: '100%',
+          maxWidth: 320,
           display: 'flex', 
           flexDirection: 'column', 
           alignItems: 'center', 
@@ -42,37 +43,41 @@ export default function ToolCard({ path, name, desc }) {
           transition: 'all 0.3s ease',
           boxShadow: '0 2px 8px var(--shadow-color)',
           border: '1px solid var(--border-color)',
-          backgroundColor: 'var(--card-bg)'
+          backgroundColor: 'var(--card-bg)',
+          cursor: 'pointer'
         }}
         bodyStyle={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '24px 16px',
-          textAlign: 'center'
+          padding: '20px 16px',
+          textAlign: 'center',
+          width: '100%'
         }}
       >
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 12 }}>
           {getToolIcon(path)}
         </div>
         <Card.Meta 
           title={
             <span style={{ 
-              fontSize: 18, 
+              fontSize: 16, 
               fontWeight: 600, 
               color: 'var(--text-primary)',
-              marginBottom: 8,
-              display: 'block'
+              marginBottom: 6,
+              display: 'block',
+              lineHeight: 1.4
             }}>
               {name}
             </span>
           } 
           description={
             <span style={{ 
-              fontSize: 14, 
+              fontSize: 13, 
               color: 'var(--text-secondary)',
-              lineHeight: 1.5
+              lineHeight: 1.4,
+              display: 'block'
             }}>
               {desc}
             </span>

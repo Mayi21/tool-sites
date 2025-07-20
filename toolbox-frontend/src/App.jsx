@@ -338,7 +338,7 @@ export default function App() {
             <Content 
               style={{ 
                 background: 'var(--bg-secondary)', 
-                padding: '2rem 1rem',
+                padding: '1.5rem 0.5rem',
                 width: '100%',
                 minHeight: 'calc(100vh - 64px - 70px)'
               }}
@@ -349,29 +349,30 @@ export default function App() {
                     width: '100%', 
                     maxWidth: '1400px', 
                     margin: '0 auto', 
-                    padding: '0 16px'
+                    padding: '0 8px'
                   }}>
-                    <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                      <Title level={2} style={{ marginBottom: '0.5rem' }}>
+                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                      <Title level={2} style={{ marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
                         {t('Multi-function Toolbox')}
                       </Title>
-                      <p style={{ fontSize: 16, color: 'var(--text-secondary)', margin: 0 }}>
+                      <p style={{ fontSize: 'clamp(14px, 3vw, 16px)', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
                         {t('One-stop online tool collection to improve development efficiency')}
                       </p>
                     </div>
                     
                     {toolCategories.map((category, index) => (
-                      <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '3rem' }}>
+                      <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '2rem' }}>
                         <Title level={3} style={{ 
-                          marginBottom: '1.5rem', 
+                          marginBottom: '1rem', 
                           color: 'var(--text-primary)',
                           borderLeft: '4px solid #1677ff',
-                          paddingLeft: '1rem'
+                          paddingLeft: '0.75rem',
+                          fontSize: 'clamp(1.1rem, 3vw, 1.5rem)'
                         }}>
                           {t(category.nameKey)}
                         </Title>
                         <Row
-                          gutter={[24, 24]}
+                          gutter={[16, 16]}
                           justify="start"
                           style={{ width: '100%' }}
                         >
@@ -382,7 +383,8 @@ export default function App() {
                               sm={12} 
                               md={8} 
                               lg={6} 
-                              xl={6}
+                              xl={4}
+                              xxl={3}
                               style={{ display: 'flex', justifyContent: 'center' }}
                             >
                               <ToolCard {...tool} />
@@ -390,7 +392,7 @@ export default function App() {
                           ))}
                         </Row>
                         {index < toolCategories.length - 1 && (
-                          <Divider style={{ margin: '2rem 0' }} />
+                          <Divider style={{ margin: '1.5rem 0' }} />
                         )}
                       </div>
                     ))}
@@ -401,7 +403,7 @@ export default function App() {
                     key={tool.path} 
                     path={tool.path} 
                     element={
-                      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 16px', width: '100%' }}>
+                      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 8px', width: '100%' }}>
                         <tool.Component />
                       </div>
                     } 

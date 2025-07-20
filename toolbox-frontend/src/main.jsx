@@ -4,6 +4,11 @@ import App from './App';
 import './index.css';
 import './i18n';
 
+// 在开发环境中导入测试数据生成器
+if (import.meta.env.DEV) {
+  import('./utils/testDataGenerator.js');
+}
+
 
 
 ReactDOM.createRoot(document.getElementById('root')).render(

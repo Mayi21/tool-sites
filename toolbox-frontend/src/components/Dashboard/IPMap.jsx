@@ -7,11 +7,13 @@ export default function IPMap({ data }) {
   const [hoveredCountry, setHoveredCountry] = useState(null);
 
   useEffect(() => {
+    console.log('IPMap received data:', data);
+    
     if (data && data.length > 0) {
       // 统计每个国家的访问量
       const countryStats = {};
       data.forEach(record => {
-        const country = record.country;
+        const country = record.country || 'Unknown';
         if (!countryStats[country]) {
           countryStats[country] = {
             count: 0,
@@ -21,7 +23,9 @@ export default function IPMap({ data }) {
         }
         countryStats[country].count++;
         countryStats[country].ips.add(record.ip);
-        countryStats[country].tools.add(record.tool);
+        if (record.tool) {
+          countryStats[country].tools.add(record.tool);
+        }
       });
 
       // 转换为数组格式
@@ -32,8 +36,10 @@ export default function IPMap({ data }) {
         tools: Array.from(stats.tools)
       }));
 
+      console.log('Processed country stats:', statsArray);
+
       // 找到最大值用于计算颜色深浅
-      const maxCount = Math.max(...statsArray.map(item => item.count));
+      const maxCount = Math.max(...statsArray.map(item => item.count), 1);
 
       const processedData = {};
       statsArray.forEach(item => {
@@ -44,6 +50,9 @@ export default function IPMap({ data }) {
       });
 
       setMapData(processedData);
+    } else {
+      console.log('No data provided to IPMap');
+      setMapData({});
     }
   }, [data]);
 
@@ -63,7 +72,8 @@ export default function IPMap({ data }) {
     '巴西': { x: 30, y: 55, width: 6, height: 5 },
     '俄罗斯': { x: 60, y: 15, width: 15, height: 8 },
     '意大利': { x: 48, y: 28, width: 3, height: 3 },
-    '西班牙': { x: 44, y: 28, width: 3, height: 3 }
+    '西班牙': { x: 44, y: 28, width: 3, height: 3 },
+    'Unknown': { x: 50, y: 50, width: 2, height: 2 } // 未知国家
   };
 
   const getCountryColor = (country) => {

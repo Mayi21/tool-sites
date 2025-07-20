@@ -1,15 +1,10 @@
 // 仪表板模拟数据服务
 class DashboardMockService {
   constructor() {
-    // 导入访问追踪服务
+    // 直接导入访问追踪服务
     this.analytics = null;
-    try {
-      import('./analytics.js').then(module => {
-        this.analytics = module.default;
-      });
-    } catch (error) {
-      console.log('Analytics service not available, using mock data only');
-    }
+    this.initAnalytics();
+    
     this.tools = [
       'Base64工具',
       '文本对比',
@@ -55,6 +50,17 @@ class DashboardMockService {
       'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Mobile/15E148 Safari/604.1',
       'Mozilla/5.0 (Linux; Android 11; SM-G991B) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.120 Mobile Safari/537.36'
     ];
+  }
+
+  // 初始化分析服务
+  async initAnalytics() {
+    try {
+      const analyticsModule = await import('./analytics.js');
+      this.analytics = analyticsModule.default;
+      console.log('Analytics service initialized successfully');
+    } catch (error) {
+      console.warn('Analytics service not available, using mock data only:', error);
+    }
   }
 
   // 生成随机IP地址
@@ -170,36 +176,50 @@ class DashboardMockService {
     // 模拟API延迟
     await new Promise(resolve => setTimeout(resolve, 500));
     
+    // 确保分析服务已初始化
+    if (!this.analytics) {
+      await this.initAnalytics();
+    }
+    
     // 尝试使用真实数据，如果没有则使用模拟数据
     let overview, toolStats, ipRecords;
     
     if (this.analytics) {
       try {
-        const stats = this.analytics.getStats();
-        const visits = this.analytics.visits;
+        // 获取真实统计数据
+        const stats = await this.analytics.getStats();
+        const visits = this.analytics.visits || [];
         
-        // 使用真实数据
-        overview = {
+        console.log('Using real analytics data:', {
           totalVisits: stats.totalVisits,
           todayVisits: stats.todayVisits,
           uniqueVisitors: stats.uniqueIPs,
-          countries: stats.countries
+          countries: stats.countries,
+          visitsCount: visits.length
+        });
+        
+        // 使用真实数据
+        overview = {
+          totalVisits: stats.totalVisits || 0,
+          todayVisits: stats.todayVisits || 0,
+          uniqueVisitors: stats.uniqueIPs || 0,
+          countries: stats.countries || 0
         };
         
         // 转换访问记录为IP记录格式
         ipRecords = visits
           .filter(visit => visit.tool || visit.pagePath)
-          .map(visit => ({
-            id: visit.id,
-            ip: visit.ip,
-            country: visit.country,
-            city: visit.city,
+          .map((visit, index) => ({
+            id: visit.id || `visit_${index}`,
+            ip: visit.ip || 'Unknown',
+            country: visit.country || 'Unknown',
+            city: visit.city || 'Unknown',
             tool: visit.tool || visit.pageName || '页面访问',
-            browser: visit.browser,
-            userAgent: visit.userAgent,
-            timestamp: visit.timestamp,
-            duration: visit.duration,
-            status: visit.status
+            browser: visit.browser || 'Unknown',
+            userAgent: visit.userAgent || 'Unknown',
+            timestamp: visit.timestamp || new Date().toISOString(),
+            duration: visit.duration || 0,
+            status: visit.status || 'success'
           }));
         
         // 生成趋势数据
@@ -211,6 +231,7 @@ class DashboardMockService {
         ipRecords = this.generateIPRecords(200);
       }
     } else {
+      console.log('No analytics service available, using mock data');
       overview = this.generateOverviewData();
       toolStats = this.generateTrendData();
       ipRecords = this.generateIPRecords(200);

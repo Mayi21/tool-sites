@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card, Row, Col, Select, message } from 'antd';
-import { CopyOutlined, EditOutlined } from '@ant-design/icons';
+import { Typography, Input, Button, Space, Card, Row, Col, Select } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
+import CopySuccessAnimation from '../CopySuccessAnimation';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -11,12 +13,12 @@ export default function TextProcessor() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [operation, setOperation] = useState('uppercase');
+  const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   function processText() {
     if (!input) return;
 
-    let result = '';
-    
+    let result;
     switch (operation) {
       case 'uppercase':
         result = input.toUpperCase();
@@ -27,7 +29,7 @@ export default function TextProcessor() {
       case 'capitalize':
         result = input.replace(/\b\w/g, l => l.toUpperCase());
         break;
-      case 'titlecase':
+      case 'titleCase':
         result = input.replace(/\b\w+/g, word => 
           word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
         );
@@ -35,7 +37,7 @@ export default function TextProcessor() {
       case 'removeDuplicates':
         result = [...new Set(input.split('\n'))].join('\n');
         break;
-      case 'removeSpaces':
+      case 'removeExtraSpaces':
         result = input.replace(/\s+/g, ' ').trim();
         break;
       case 'removeEmptyLines':
@@ -44,15 +46,14 @@ export default function TextProcessor() {
       case 'reverse':
         result = input.split('').reverse().join('');
         break;
-      case 'sort':
+      case 'sortLines':
         result = input.split('\n').sort().join('\n');
         break;
-      case 'sortReverse':
+      case 'sortLinesReverse':
         result = input.split('\n').sort().reverse().join('\n');
         break;
       case 'countWords':
-        const words = input.trim().split(/\s+/).filter(word => word.length > 0);
-        result = `${t('Word count')}: ${words.length}`;
+        result = `${t('Word count')}: ${input.trim() ? input.trim().split(/\s+/).length : 0}`;
         break;
       case 'countCharacters':
         result = `${t('Character count')}: ${input.length}`;
@@ -67,10 +68,9 @@ export default function TextProcessor() {
     setOutput(result);
   }
 
-  function copyOutput() {
+  async function copyOutput() {
     if (output) {
-      navigator.clipboard.writeText(output);
-      message.success(t('Copied to clipboard'));
+      await copyToClipboard(output);
     }
   }
 
@@ -80,77 +80,78 @@ export default function TextProcessor() {
   }
 
   return (
-    <Card style={{ maxWidth: 1200, margin: '0 auto' }}>
-      <Title level={2}>{t('Text Processor')}</Title>
-      
-      <Row gutter={[24, 24]}>
-        <Col span={12}>
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <TextArea 
-              value={input} 
-              onChange={e => setInput(e.target.value)} 
-              rows={12} 
-              placeholder={t('Enter text to process')}
-            />
-            
-            <Row gutter={16}>
-              <Col span={16}>
+    <>
+      <Card style={{ maxWidth: 1200, margin: '0 auto' }}>
+        <Title level={2}>{t('Text Processor')}</Title>
+        
+        <Row gutter={[24, 24]}>
+          <Col span={12}>
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              <TextArea 
+                value={input} 
+                onChange={e => setInput(e.target.value)} 
+                rows={12} 
+                placeholder={t('Enter text to process')}
+              />
+              
+              <Space>
                 <Select
                   value={operation}
                   onChange={setOperation}
-                  style={{ width: '100%' }}
+                  style={{ width: 200 }}
                   options={[
                     { value: 'uppercase', label: t('Uppercase') },
                     { value: 'lowercase', label: t('Lowercase') },
                     { value: 'capitalize', label: t('Capitalize') },
-                    { value: 'titlecase', label: t('Title Case') },
+                    { value: 'titleCase', label: t('Title Case') },
                     { value: 'removeDuplicates', label: t('Remove Duplicate Lines') },
-                    { value: 'removeSpaces', label: t('Remove Extra Spaces') },
+                    { value: 'removeExtraSpaces', label: t('Remove Extra Spaces') },
                     { value: 'removeEmptyLines', label: t('Remove Empty Lines') },
                     { value: 'reverse', label: t('Reverse Text') },
-                    { value: 'sort', label: t('Sort Lines') },
-                    { value: 'sortReverse', label: t('Sort Lines (Reverse)') },
+                    { value: 'sortLines', label: t('Sort Lines') },
+                    { value: 'sortLinesReverse', label: t('Sort Lines (Reverse)') },
                     { value: 'countWords', label: t('Count Words') },
                     { value: 'countCharacters', label: t('Count Characters') },
                     { value: 'countLines', label: t('Count Lines') }
                   ]}
                 />
-              </Col>
-              <Col span={8}>
-                <Space>
-                  <Button type="primary" onClick={processText} icon={<EditOutlined />}>
-                    {t('Process')}
-                  </Button>
-                  <Button onClick={clearAll}>
-                    {t('Clear')}
-                  </Button>
-                </Space>
-              </Col>
-            </Row>
-          </Space>
-        </Col>
-        
-        <Col span={12}>
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span>{t('Result')}</span>
-              {output && (
-                <Button size="small" onClick={copyOutput} icon={<CopyOutlined />}>
-                  {t('Copy')}
+                <Button type="primary" onClick={processText}>
+                  {t('Process')}
                 </Button>
-              )}
-            </div>
-            
-            <TextArea 
-              value={output} 
-              readOnly 
-              rows={12} 
-              placeholder={t('Processed text will appear here')}
-              style={{ fontFamily: 'monospace' }}
-            />
-          </Space>
-        </Col>
-      </Row>
-    </Card>
+                <Button onClick={clearAll}>
+                  {t('Clear')}
+                </Button>
+              </Space>
+            </Space>
+          </Col>
+          
+          <Col span={12}>
+            <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{t('Result')}</span>
+                {output && (
+                  <Button size="small" onClick={copyOutput} icon={<CopyOutlined />}>
+                    {t('Copy')}
+                  </Button>
+                )}
+              </div>
+              
+              <TextArea 
+                value={output} 
+                readOnly 
+                rows={12} 
+                placeholder={t('Processed text will appear here')}
+                style={{ fontFamily: 'monospace' }}
+              />
+            </Space>
+          </Col>
+        </Row>
+      </Card>
+      
+      <CopySuccessAnimation 
+        visible={showAnimation} 
+        onAnimationEnd={handleAnimationEnd} 
+      />
+    </>
   );
 } 

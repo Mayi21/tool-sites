@@ -29,6 +29,13 @@
   --card-bg: #ffffff;
   --header-bg: #ffffff;
   --footer-bg: #f0f2f5;
+  --success-bg: #f6ffed;
+  --success-color: #52c41a;
+  --success-border: #b7eb8f;
+  --success-text: #52c41a;
+  --error-bg: #fff2f0;
+  --error-color: #ff4d4f;
+  --error-border: #ffccc7;
 }
 
 /* Dark theme variables */
@@ -44,6 +51,13 @@
   --card-bg: #1f1f1f;
   --header-bg: #1f1f1f;
   --footer-bg: #1f1f1f;
+  --success-bg: #162312;
+  --success-color: #73d13d;
+  --success-border: #49aa19;
+  --success-text: #73d13d;
+  --error-bg: #2a1215;
+  --error-color: #ff7875;
+  --error-border: #a61d24;
 }
 
 /* Theme switcher button styles */

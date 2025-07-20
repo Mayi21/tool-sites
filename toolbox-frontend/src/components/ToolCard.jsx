@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Card } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { 
   CodeOutlined, 
   FileTextOutlined, 
@@ -26,14 +27,16 @@ const getToolIcon = (path) => {
   }
 };
 
-export default function ToolCard({ path, name, desc }) {
+export default function ToolCard({ path, nameKey, descKey }) {
+  const { t } = useTranslation();
+  
   return (
     <Link to={path} style={{ textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }}>
       <Card 
         hoverable 
         style={{ 
           borderRadius: 12, 
-          minHeight: 140, 
+          minHeight: 160, 
           width: '100%',
           maxWidth: 320,
           display: 'flex', 
@@ -44,19 +47,22 @@ export default function ToolCard({ path, name, desc }) {
           boxShadow: '0 2px 8px var(--shadow-color)',
           border: '1px solid var(--border-color)',
           backgroundColor: 'var(--card-bg)',
-          cursor: 'pointer'
+          cursor: 'pointer',
+          overflow: 'hidden'
         }}
         bodyStyle={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          padding: '20px 16px',
+          padding: '16px 12px',
           textAlign: 'center',
-          width: '100%'
+          width: '100%',
+          height: '100%',
+          overflow: 'hidden'
         }}
       >
-        <div style={{ marginBottom: 12 }}>
+        <div style={{ marginBottom: 8, flexShrink: 0 }}>
           {getToolIcon(path)}
         </div>
         <Card.Meta 
@@ -67,9 +73,12 @@ export default function ToolCard({ path, name, desc }) {
               color: 'var(--text-primary)',
               marginBottom: 6,
               display: 'block',
-              lineHeight: 1.4
+              lineHeight: 1.4,
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              hyphens: 'auto'
             }}>
-              {name}
+              {t(nameKey)}
             </span>
           } 
           description={
@@ -77,9 +86,12 @@ export default function ToolCard({ path, name, desc }) {
               fontSize: 13, 
               color: 'var(--text-secondary)',
               lineHeight: 1.4,
-              display: 'block'
+              display: 'block',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              hyphens: 'auto'
             }}>
-              {desc}
+              {t(descKey)}
             </span>
           } 
         />

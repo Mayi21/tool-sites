@@ -51,9 +51,9 @@ export default function ThemeSwitcher({ theme, setTheme }) {
   };
 
   const getCurrentThemeIcon = () => {
-    if (theme === 'dark') return <MoonOutlined />;
-    if (theme === 'light') return <BulbOutlined />;
-    return <DesktopOutlined />;
+    if (theme === 'dark') return <MoonOutlined style={{ fontSize: 16 }} />;
+    if (theme === 'light') return <BulbOutlined style={{ fontSize: 16 }} />;
+    return <DesktopOutlined style={{ fontSize: 16 }} />;
   };
 
   const themeOptions = [
@@ -61,31 +61,28 @@ export default function ThemeSwitcher({ theme, setTheme }) {
       key: 'light',
       label: (
         <Space>
-          <BulbOutlined />
+          <BulbOutlined style={{ fontSize: 14 }} />
           {t('Light Mode')}
         </Space>
-      ),
-      icon: <BulbOutlined />
+      )
     },
     {
       key: 'dark',
       label: (
         <Space>
-          <MoonOutlined />
+          <MoonOutlined style={{ fontSize: 14 }} />
           {t('Dark Mode')}
         </Space>
-      ),
-      icon: <MoonOutlined />
+      )
     },
     {
       key: 'system',
       label: (
         <Space>
-          <DesktopOutlined />
+          <DesktopOutlined style={{ fontSize: 14 }} />
           {t('System')}
         </Space>
-      ),
-      icon: <DesktopOutlined />
+      )
     }
   ];
   
@@ -117,7 +114,8 @@ export default function ThemeSwitcher({ theme, setTheme }) {
             transition: 'all 0.3s ease',
             color: 'var(--text-primary)',
             backgroundColor: 'var(--bg-tertiary)',
-            border: '1px solid var(--border-color)'
+            border: '1px solid var(--border-color)',
+            boxShadow: '0 1px 3px var(--shadow-color)'
           }}
           className="theme-switcher-btn"
         />

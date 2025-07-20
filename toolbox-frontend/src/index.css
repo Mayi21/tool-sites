@@ -1134,3 +1134,192 @@ kbd:hover {
     line-height: 1.4 !important;
   }
 }
+
+/* 主题切换下拉菜单优化 */
+.ant-dropdown-menu .ant-dropdown-menu-item {
+  padding: 8px 16px !important;
+  border-radius: 6px !important;
+  margin: 2px 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-dropdown-menu .ant-dropdown-menu-item:hover {
+  background-color: var(--bg-tertiary) !important;
+  transform: translateX(2px) !important;
+}
+
+.ant-dropdown-menu .ant-dropdown-menu-item-selected {
+  background-color: #1677ff !important;
+  color: #fff !important;
+}
+
+.ant-dropdown-menu .ant-dropdown-menu-item-selected:hover {
+  background-color: #4096ff !important;
+  color: #fff !important;
+}
+
+/* 主题切换按钮特殊效果 */
+.theme-switcher-btn {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.theme-switcher-btn::after {
+  content: '' !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: radial-gradient(circle, rgba(22, 119, 255, 0.2) 0%, transparent 70%) !important;
+  border-radius: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  transition: all 0.3s ease !important;
+}
+
+.theme-switcher-btn:hover::after {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.theme-switcher-btn:active::after {
+  transform: translate(-50%, -50%) scale(0.9) !important;
+}
+
+/* ToolCard 文本换行处理 */
+.ant-card .ant-card-meta-title {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  display: block !important;
+  width: 100% !important;
+  line-height: 1.3 !important;
+}
+
+.ant-card .ant-card-meta-description {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: normal !important;
+  max-width: 100% !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
+  hyphens: auto !important;
+  display: block !important;
+  width: 100% !important;
+  line-height: 1.3 !important;
+}
+
+/* 确保卡片内容不会溢出 */
+.ant-card-body {
+  overflow: hidden !important;
+  width: 100% !important;
+}
+
+.ant-card-meta {
+  width: 100% !important;
+  overflow: hidden !important;
+}
+
+/* 多行文本显示优化 */
+.ant-card .ant-card-meta-title {
+  margin-bottom: 8px !important;
+}
+
+.ant-card .ant-card-meta-description {
+  margin-top: 4px !important;
+}
+
+/* 确保文本在卡片中居中显示 */
+.ant-card .ant-card-meta {
+  text-align: center !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex: 1 !important;
+}
+
+/* 针对不同语言的文本长度优化 */
+.ant-card .ant-card-meta-title {
+  /* 英文文本通常较长，允许更多行数 */
+  max-height: 3.9em !important; /* 约3行 */
+  overflow: hidden !important;
+}
+
+.ant-card .ant-card-meta-description {
+  /* 描述文本允许2-3行 */
+  max-height: 3.9em !important; /* 约3行 */
+  overflow: hidden !important;
+}
+
+/* 在较小屏幕上减少最大行数 */
+@media (max-width: 767px) {
+  .ant-card .ant-card-meta-title {
+    max-height: 3.6em !important; /* 约3行 */
+  }
+  
+  .ant-card .ant-card-meta-description {
+    max-height: 3.6em !important; /* 约3行 */
+  }
+}
+
+/* 桌面端 ToolCard 优化 */
+@media (min-width: 1025px) {
+  .ant-card {
+    min-height: 160px !important;
+  }
+  
+  .ant-card .ant-card-meta-title {
+    font-size: 16px !important;
+    line-height: 1.3 !important;
+    max-height: none !important;
+  }
+  
+  .ant-card .ant-card-meta-description {
+    font-size: 13px !important;
+    line-height: 1.3 !important;
+    max-height: none !important;
+  }
+}
+
+/* 平板端 ToolCard 文本优化 */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .ant-card {
+    min-height: 150px !important;
+  }
+  
+  .ant-card .ant-card-meta-title {
+    font-size: 15px !important;
+    line-height: 1.3 !important;
+    max-height: none !important;
+  }
+  
+  .ant-card .ant-card-meta-description {
+    font-size: 12px !important;
+    line-height: 1.3 !important;
+    max-height: none !important;
+  }
+}
+
+/* 移动端 ToolCard 文本优化 */
+@media (max-width: 767px) {
+  .ant-card {
+    min-height: 140px !important;
+  }
+  
+  .ant-card .ant-card-meta-title {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+    max-height: none !important;
+  }
+  
+  .ant-card .ant-card-meta-description {
+    font-size: 11px !important;
+    line-height: 1.2 !important;
+    max-height: none !important;
+  }
+}

@@ -387,7 +387,11 @@ export default function App() {
                               xxl={3}
                               style={{ display: 'flex', justifyContent: 'center' }}
                             >
-                              <ToolCard {...tool} />
+                              <ToolCard 
+                              path={tool.path}
+                              nameKey={tool.nameKey}
+                              descKey={tool.descKey}
+                            />
                             </Col>
                           ))}
                         </Row>

@@ -69,14 +69,14 @@ export class AnalyticsService {
 
     await stmt.bind(
       record.id, record.sessionId, record.pagePath, record.pageName, record.ip, record.userAgent,
-      record.country, record.region, record.city, record.latitude, record.longitude,
-      record.browser, record.browserVersion, record.os, record.osVersion,
+      record.country || null, record.region || null, record.city || null, record.latitude || null, record.longitude || null,
+      record.browser, record.browserVersion || null, record.os || null, record.osVersion || null,
       record.isMobile, record.isTablet, record.isDesktop,
-      record.tool, record.toolAction,
-      record.timestamp, record.startTime, record.endTime, record.duration,
-      record.status, record.errorMessage,
-      record.loadTime, record.responseTime,
-      record.referrer, record.utmSource, record.utmMedium, record.utmCampaign,
+      record.tool || null, record.toolAction || null,
+      record.timestamp, record.startTime, record.endTime || null, record.duration || null,
+      record.status, record.errorMessage || null,
+      record.loadTime || null, record.responseTime || null,
+      record.referrer || null, record.utmSource || null, record.utmMedium || null, record.utmCampaign || null,
       record.metadata ? JSON.stringify(record.metadata) : null,
       record.createdAt, record.updatedAt
     ).run();
@@ -113,8 +113,8 @@ export class AnalyticsService {
 
     await stmt.bind(
       record.id, record.sessionId, record.tool, record.action,
-      record.inputData, record.outputData, record.processingTime,
-      record.success, record.errorMessage, record.timestamp,
+      record.inputData || null, record.outputData || null, record.processingTime || null,
+      record.success, record.errorMessage || null, record.timestamp,
       record.ip, record.userAgent, now
     ).run();
 

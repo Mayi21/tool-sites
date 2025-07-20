@@ -9,6 +9,7 @@ import AdminDashboard from './components/Dashboard/AdminDashboard';
 import NotFound from './components/NotFound';
 import RouteTracker from './components/RouteTracker';
 import AnalyticsTest from './components/AnalyticsTest';
+import EnvInfo from './components/EnvInfo';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space } from 'antd';
 import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 import ThemeTransition from './components/ThemeTransition';
@@ -142,6 +143,26 @@ function NavigationBar({ theme, setTheme }) {
         </Space>
       ),
       onClick: () => navigate('/admin/dashboard')
+    },
+    {
+      key: 'analytics',
+      label: (
+        <Space>
+          <DashboardOutlined />
+          分析功能测试
+        </Space>
+      ),
+      onClick: () => navigate('/analytics-test')
+    },
+    {
+      key: 'env-info',
+      label: (
+        <Space>
+          <DashboardOutlined />
+          环境信息
+        </Space>
+      ),
+      onClick: () => navigate('/env-info')
     },
     {
       type: 'divider'
@@ -438,6 +459,10 @@ export default function App() {
                 <Route 
                   path="/analytics-test" 
                   element={<AnalyticsTest />} 
+                />
+                <Route 
+                  path="/env-info" 
+                  element={<EnvInfo />} 
                 />
                 <Route 
                   path="*" 

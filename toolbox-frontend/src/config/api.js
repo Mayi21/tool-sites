@@ -1,3 +1,5 @@
+import { getEnvConfig, log } from '../utils/env.js';
+
 // API配置
 const API_CONFIG = {
   // 后端API基础URL
@@ -5,16 +7,14 @@ const API_CONFIG = {
   BASE_URL: (() => {
     // 如果设置了环境变量，使用环境变量
     if (import.meta.env.VITE_API_BASE_URL) {
+      log.info('Using VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
       return import.meta.env.VITE_API_BASE_URL;
     }
     
-    // 如果是生产环境（Cloudflare Pages），使用生产API
-    if (import.meta.env.PROD) {
-      return 'https://throbbing-forest-04a1.xaoohii.workers.dev';
-    }
-    
-    // 开发环境使用本地API
-    return 'http://localhost:8787';
+    // 根据环境获取配置
+    const envConfig = getEnvConfig();
+    log.info('Using environment config:', envConfig);
+    return envConfig.apiBaseUrl;
   })(),
   
   // API端点

@@ -23,7 +23,7 @@ const toolCategories = [
   {
     nameKey: 'Text Processing',
     key: 'text',
-    tools: ['diff', 'text-analyzer', 'text-processor', 'markdown-preview']
+    tools: ['diff', 'text-analyzer', 'text-processor', 'markdown-preview', 'unicode-converter']
   },
   {
     nameKey: 'Data Conversion',

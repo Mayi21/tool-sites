@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Radio, Button, Space, Alert, Card } from 'antd';
+import { Typography, Input, Radio, Button, Space, Alert, Card, message } from 'antd';
+import { CopyOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -23,6 +24,13 @@ export default function Base64Tool() {
     } catch (e) {
       setError(e.message || t('Invalid input'));
       setOutput('');
+    }
+  }
+
+  function copyOutput() {
+    if (output) {
+      navigator.clipboard.writeText(output);
+      message.success(t('Copied to clipboard'));
     }
   }
 
@@ -58,12 +66,23 @@ export default function Base64Tool() {
           />
         )}
         
-        <TextArea 
-          value={output} 
-          readOnly 
-          rows={6} 
-          placeholder={t('Result will appear here')}
-        />
+        {output && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <span>{t('Result')}</span>
+              <Button size="small" onClick={copyOutput} icon={<CopyOutlined />}>
+                {t('Copy')}
+              </Button>
+            </div>
+            
+            <TextArea 
+              value={output} 
+              readOnly 
+              rows={6} 
+              placeholder={t('Result will appear here')}
+            />
+          </>
+        )}
       </Space>
     </Card>
   );

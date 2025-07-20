@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Card, Row, Col, Statistic, Progress, Space } from 'antd';
-import { FileTextOutlined, BarChartOutlined } from '@ant-design/icons';
+import { Typography, Input, Card, Row, Col, Statistic, Progress, Space, Button, message } from 'antd';
+import { FileTextOutlined, BarChartOutlined, CopyOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -86,6 +86,25 @@ export default function TextAnalyzer() {
       .map(([word, count]) => ({ word, count }));
   }
 
+  function copyAnalysis() {
+    const analysisText = `Text Analysis Report:
+Characters: ${stats.characters}
+Characters (no spaces): ${stats.charactersNoSpaces}
+Words: ${stats.words}
+Lines: ${stats.lines}
+Sentences: ${stats.sentences}
+Paragraphs: ${stats.paragraphs}
+Unique Words: ${stats.uniqueWords}
+Average Word Length: ${stats.averageWordLength}
+Reading Time: ${stats.readingTime} minutes
+
+Top 10 Most Frequent Words:
+${getWordFrequency().map(({ word, count }) => `${word}: ${count}`).join('\n')}`;
+    
+    navigator.clipboard.writeText(analysisText);
+    message.success(t('Copied to clipboard'));
+  }
+
   const wordFrequency = getWordFrequency();
 
   return (
@@ -94,6 +113,12 @@ export default function TextAnalyzer() {
       
       <Row gutter={[24, 24]}>
         <Col span={12}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <span>{t('Input Text')}</span>
+            <Button size="small" onClick={copyAnalysis} icon={<CopyOutlined />}>
+              {t('Copy Analysis')}
+            </Button>
+          </div>
           <TextArea 
             value={text} 
             onChange={e => setText(e.target.value)} 
@@ -114,23 +139,9 @@ export default function TextAnalyzer() {
               </Col>
               <Col span={12}>
                 <Statistic 
-                  title={t('Characters (no spaces)')} 
-                  value={stats.charactersNoSpaces} 
-                />
-              </Col>
-            </Row>
-            
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic 
                   title={t('Words')} 
                   value={stats.words} 
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Unique Words')} 
-                  value={stats.uniqueWords} 
+                  prefix={<BarChartOutlined />}
                 />
               </Col>
             </Row>
@@ -144,8 +155,8 @@ export default function TextAnalyzer() {
               </Col>
               <Col span={12}>
                 <Statistic 
-                  title={t('Paragraphs')} 
-                  value={stats.paragraphs} 
+                  title={t('Sentences')} 
+                  value={stats.sentences} 
                 />
               </Col>
             </Row>
@@ -153,8 +164,24 @@ export default function TextAnalyzer() {
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic 
-                  title={t('Sentences')} 
-                  value={stats.sentences} 
+                  title={t('Paragraphs')} 
+                  value={stats.paragraphs} 
+                />
+              </Col>
+              <Col span={12}>
+                <Statistic 
+                  title={t('Unique Words')} 
+                  value={stats.uniqueWords} 
+                />
+              </Col>
+            </Row>
+            
+            <Row gutter={16}>
+              <Col span={12}>
+                <Statistic 
+                  title={t('Avg Word Length')} 
+                  value={stats.averageWordLength} 
+                  precision={1}
                 />
               </Col>
               <Col span={12}>
@@ -166,44 +193,27 @@ export default function TextAnalyzer() {
               </Col>
             </Row>
             
-            <Row gutter={16}>
-              <Col span={24}>
-                <Statistic 
-                  title={t('Average Word Length')} 
-                  value={stats.averageWordLength} 
-                  suffix={t('characters')}
-                />
-              </Col>
-            </Row>
+            {wordFrequency.length > 0 && (
+              <Card title={t('Word Frequency')} size="small">
+                <Space direction="vertical" style={{ width: '100%' }}>
+                  {wordFrequency.map(({ word, count }, index) => (
+                    <div key={word} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <span>{word}</span>
+                      <Progress 
+                        percent={Math.round((count / wordFrequency[0].count) * 100)} 
+                        size="small" 
+                        style={{ width: 100 }}
+                        showInfo={false}
+                      />
+                      <span>{count}</span>
+                    </div>
+                  ))}
+                </Space>
+              </Card>
+            )}
           </Space>
         </Col>
       </Row>
-      
-      {wordFrequency.length > 0 && (
-        <Card title={t('Most Common Words')} style={{ marginTop: 24 }}>
-          <Row gutter={16}>
-            {wordFrequency.map((item, index) => (
-              <Col span={6} key={index}>
-                <div style={{ 
-                  padding: 8, 
-                  backgroundColor: '#f5f5f5', 
-                  borderRadius: 4,
-                  textAlign: 'center',
-                  marginBottom: 8
-                }}>
-                  <div style={{ fontWeight: 'bold' }}>{item.word}</div>
-                  <div>{item.count} {t('times')}</div>
-                  <Progress 
-                    percent={Math.round((item.count / wordFrequency[0].count) * 100)} 
-                    size="small" 
-                    showInfo={false}
-                  />
-                </div>
-              </Col>
-            ))}
-          </Row>
-        </Card>
-      )}
     </Card>
   );
 } 

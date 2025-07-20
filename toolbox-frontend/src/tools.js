@@ -14,6 +14,7 @@ import CsvConverter from './components/tools/CsvConverter';
 import JwtDecoder from './components/tools/JwtDecoder';
 import QrGenerator from './components/tools/QrGenerator';
 import ImageCompressor from './components/tools/ImageCompressor';
+import UnicodeConverter from './components/tools/UnicodeConverter';
 
 export default [
   {
@@ -111,5 +112,11 @@ export default [
     name: '图片压缩',
     desc: '在线图片压缩',
     Component: ImageCompressor,
+  },
+  {
+    path: '/unicode-converter',
+    name: '中文Unicode转换',
+    desc: '中文与Unicode编码互转',
+    Component: UnicodeConverter,
   },
 ]; 

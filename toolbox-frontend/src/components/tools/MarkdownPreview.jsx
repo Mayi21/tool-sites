@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Card, Row, Col, Space } from 'antd';
+import { Typography, Input, Card, Row, Col, Space, Button, message } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
@@ -24,6 +24,13 @@ export default function MarkdownPreview() {
       .replace(/^(.+)$/gim, '<p>$1</p>');
   }
 
+  function copyMarkdown() {
+    if (markdown) {
+      navigator.clipboard.writeText(markdown);
+      message.success(t('Copied to clipboard'));
+    }
+  }
+
   return (
     <Card style={{ maxWidth: 1200, margin: '0 auto' }}>
       <Title level={2}>{t('Markdown Preview')}</Title>
@@ -33,6 +40,9 @@ export default function MarkdownPreview() {
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <span>{t('Markdown')}</span>
+              <Button size="small" onClick={copyMarkdown} icon={<CopyOutlined />}>
+                {t('Copy')}
+              </Button>
             </div>
             
             <TextArea 

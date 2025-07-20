@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Card, Space, Row, Col } from 'antd';
-import { DiffOutlined } from '@ant-design/icons';
+import { Typography, Input, Button, Space, Card, Row, Col, message } from 'antd';
+import { DiffOutlined, CopyOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 const { TextArea } = Input;
@@ -13,24 +13,23 @@ const { TextArea } = Input;
  * @returns {string} - Formatted diff result
  */
 function simpleDiff(a, b) {
-  const aLines = a.split('\n');
-  const bLines = b.split('\n');
-  let result = '';
-  const max = Math.max(aLines.length, bLines.length);
+  const linesA = a.split('\n');
+  const linesB = b.split('\n');
+  const result = [];
   
-  for (let i = 0; i < max; i++) {
-    if (i < aLines.length && i < bLines.length && aLines[i] === bLines[i]) {
-      result += `  ${aLines[i]}\n`;
+  for (let i = 0; i < Math.max(linesA.length, linesB.length); i++) {
+    const lineA = linesA[i] || '';
+    const lineB = linesB[i] || '';
+    
+    if (lineA === lineB) {
+      result.push(`  ${lineA}`);
     } else {
-      if (i < aLines.length) {
-        result += `- ${aLines[i] || ''}\n`;
-      }
-      if (i < bLines.length) {
-        result += `+ ${bLines[i] || ''}\n`;
-      }
+      result.push(`- ${lineA}`);
+      result.push(`+ ${lineB}`);
     }
   }
-  return result;
+  
+  return result.join('\n');
 }
 
 export default function DiffTool() {
@@ -42,6 +41,13 @@ export default function DiffTool() {
   const handleCompare = () => {
     setDiff(simpleDiff(a, b));
   };
+
+  function copyDiff() {
+    if (diff) {
+      navigator.clipboard.writeText(diff);
+      message.success(t('Copied to clipboard'));
+    }
+  }
   
   return (
     <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
@@ -77,6 +83,12 @@ export default function DiffTool() {
         
         {diff && (
           <Card>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <span>{t('Diff Result')}</span>
+              <Button size="small" onClick={copyDiff} icon={<CopyOutlined />}>
+                {t('Copy')}
+              </Button>
+            </div>
             <pre style={{ 
               backgroundColor: 'var(--bg-tertiary)',
               padding: '10px',

@@ -1,3 +1,5 @@
+import { buildApiUrl, apiRequest } from '../config/api.js';
+
 // 访问追踪服务
 class AnalyticsService {
   constructor() {
@@ -6,6 +8,7 @@ class AnalyticsService {
     this.visits = this.loadVisits();
     this.currentPage = null;
     this.pageStartTime = null;
+    this.currentVisitId = null;
   }
 
   // 生成会话ID
@@ -187,11 +190,11 @@ class AnalyticsService {
   }
 
   // 结束页面访问
-  endPageView() {
+  async endPageView() {
     if (this.currentPage && this.pageStartTime) {
       const duration = Date.now() - this.pageStartTime;
       
-      // 更新最后一条记录
+      // 更新本地记录
       if (this.visits.length > 0) {
         const lastVisit = this.visits[this.visits.length - 1];
         if (lastVisit.pagePath === this.currentPage) {
@@ -201,13 +204,19 @@ class AnalyticsService {
         }
       }
 
+      // 更新后端记录
+      if (this.currentVisitId) {
+        await this.updateVisitEnd(this.currentVisitId, duration);
+        this.currentVisitId = null;
+      }
+
       this.currentPage = null;
       this.pageStartTime = null;
     }
   }
 
   // 记录工具使用
-  async trackToolUsage(toolName, action = 'view') {
+  async trackToolUsage(toolName, action = 'view', options = {}) {
     try {
       const ip = await this.getClientIP();
       const location = await this.getLocationInfo(ip);
@@ -226,15 +235,16 @@ class AnalyticsService {
         userAgent: browser.userAgent,
         isMobile: browser.isMobile,
         timestamp: new Date().toISOString(),
-        status: 'success'
+        status: 'success',
+        ...options
       };
 
-      // 保存工具使用记录
+      // 保存工具使用记录到本地
       this.visits.push(toolRecord);
       this.saveVisits();
 
-      // 发送到服务器
-      this.sendToServer(toolRecord);
+      // 发送到后端API
+      await this.sendToolUsageToServer(toolRecord);
 
       console.log('Tool usage tracked:', toolRecord);
     } catch (error) {
@@ -242,27 +252,124 @@ class AnalyticsService {
     }
   }
 
-  // 发送数据到服务器（模拟）
+  // 发送工具使用记录到后端API
+  async sendToolUsageToServer(data) {
+    try {
+      const response = await apiRequest(buildApiUrl('/api/analytics/tool-usage'), {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId: data.sessionId,
+          tool: data.tool,
+          action: data.action,
+          inputData: data.inputData,
+          outputData: data.outputData,
+          processingTime: data.processingTime,
+          success: data.success !== false,
+          errorMessage: data.errorMessage,
+          ip: data.ip,
+          userAgent: data.userAgent
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          console.log('Tool usage recorded successfully:', result.result);
+        }
+      } else {
+        console.error('Failed to record tool usage:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Failed to send tool usage to server:', error);
+    }
+  }
+
+  // 发送访问记录到后端API
   async sendToServer(data) {
     try {
-      // 在实际应用中，这里应该发送到后端API
-      // const response = await fetch('/api/analytics', {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   body: JSON.stringify(data)
-      // });
-      
-      // 模拟发送
-      console.log('Data sent to server:', data);
+      const response = await apiRequest(buildApiUrl('/api/analytics/visit'), {
+        method: 'POST',
+        body: JSON.stringify({
+          sessionId: data.sessionId,
+          pagePath: data.pagePath,
+          pageName: data.pageName,
+          ip: data.ip,
+          userAgent: data.userAgent,
+          country: data.country,
+          region: data.region,
+          city: data.city,
+          latitude: data.latitude,
+          longitude: data.longitude,
+          browser: data.browser,
+          browserVersion: data.browserVersion,
+          os: data.os,
+          osVersion: data.osVersion,
+          isMobile: data.isMobile,
+          isTablet: data.isTablet,
+          isDesktop: data.isDesktop,
+          tool: data.tool,
+          toolAction: data.toolAction,
+          referrer: data.referrer,
+          utmSource: data.utmSource,
+          utmMedium: data.utmMedium,
+          utmCampaign: data.utmCampaign,
+          metadata: data.metadata
+        })
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.result) {
+          // 保存后端返回的visitId，用于后续更新
+          this.currentVisitId = result.result.visitId;
+          console.log('Visit recorded successfully:', result.result);
+        }
+      } else {
+        console.error('Failed to send data to server:', response.status, response.statusText);
+      }
     } catch (error) {
       console.error('Failed to send data to server:', error);
     }
   }
 
+  // 更新访问记录（结束访问）
+  async updateVisitEnd(visitId, duration) {
+    try {
+      const response = await apiRequest(buildApiUrl(`/api/analytics/visit/${visitId}/end`), {
+        method: 'PUT',
+        body: JSON.stringify({
+          endTime: Date.now(),
+          duration: duration
+        })
+      });
+
+      if (response.ok) {
+        console.log('Visit end updated successfully');
+      } else {
+        console.error('Failed to update visit end:', response.status, response.statusText);
+      }
+    } catch (error) {
+      console.error('Failed to update visit end:', error);
+    }
+  }
+
   // 获取访问统计
-  getStats() {
+  async getStats() {
+    try {
+      // 优先从后端获取统计数据
+      const response = await apiRequest(buildApiUrl('/api/analytics/stats'));
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          return result.result;
+        }
+      }
+    } catch (error) {
+      console.error('Failed to get stats from server, falling back to local data:', error);
+    }
+
+    // 如果后端不可用，使用本地数据
     const now = Date.now();
     const oneDay = 24 * 60 * 60 * 1000;
     const oneWeek = 7 * oneDay;
@@ -276,12 +383,14 @@ class AnalyticsService {
       todayVisits: allVisits.filter(v => now - new Date(v.timestamp).getTime() < oneDay).length,
       weekVisits: allVisits.filter(v => now - new Date(v.timestamp).getTime() < oneWeek).length,
       monthVisits: allVisits.filter(v => now - new Date(v.timestamp).getTime() < oneMonth).length,
-      totalToolUsage: toolVisits.length,
+      uniqueVisitors: new Set(allVisits.map(v => v.ip)).size,
       uniqueIPs: new Set(allVisits.map(v => v.ip)).size,
       countries: new Set(allVisits.map(v => v.country)).size,
       averageSessionDuration: this.calculateAverageSessionDuration(),
+      bounceRate: 0,
       topTools: this.getTopTools(),
-      topCountries: this.getTopCountries()
+      topCountries: this.getTopCountries(),
+      topBrowsers: this.getTopBrowsers()
     };
   }
 
@@ -345,6 +454,22 @@ class AnalyticsService {
       .map(([country, count]) => ({ country, count }));
   }
 
+  // 获取热门浏览器
+  getTopBrowsers() {
+    const browserCounts = {};
+    
+    this.visits.forEach(visit => {
+      if (visit.browser) {
+        browserCounts[visit.browser] = (browserCounts[visit.browser] || 0) + 1;
+      }
+    });
+
+    return Object.entries(browserCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 10)
+      .map(([browser, count]) => ({ browser, count }));
+  }
+
   // 清理旧数据
   cleanupOldData(daysToKeep = 30) {
     const cutoffTime = Date.now() - (daysToKeep * 24 * 60 * 60 * 1000);
@@ -360,7 +485,9 @@ const analytics = new AnalyticsService();
 
 // 页面卸载时结束当前页面访问
 window.addEventListener('beforeunload', () => {
-  analytics.endPageView();
+  analytics.endPageView().catch(error => {
+    console.error('Failed to end page view on unload:', error);
+  });
 });
 
 export default analytics; 

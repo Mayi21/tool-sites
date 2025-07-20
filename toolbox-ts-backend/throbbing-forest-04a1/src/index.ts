@@ -1,5 +1,6 @@
 import { fromHono } from "chanfana";
 import { Hono } from "hono";
+import { cors } from "hono/cors";
 import { TaskCreate } from "./endpoints/taskCreate";
 import { TaskDelete } from "./endpoints/taskDelete";
 import { TaskFetch } from "./endpoints/taskFetch";
@@ -10,6 +11,20 @@ import { AnalyticsToolUsage } from "./endpoints/analyticsToolUsage";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
+
+// 配置CORS中间件
+app.use('*', cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:5174', 
+    'http://localhost:5175',
+    'https://tool-sites.pages.dev',
+    'https://*.pages.dev'
+  ],
+  allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {

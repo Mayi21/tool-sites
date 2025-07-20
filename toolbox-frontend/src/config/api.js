@@ -5,16 +5,23 @@ const API_CONFIG = {
   // 后端API基础URL
   // 根据环境自动选择API地址
   BASE_URL: (() => {
-    // 如果设置了环境变量，使用环境变量
+    // 生产环境强制使用生产API地址
+    if (import.meta.env.PROD) {
+      const prodApiUrl = 'https://throbbing-forest-04a1.xaoohii.workers.dev';
+      log.info('Production environment detected, using:', prodApiUrl);
+      return prodApiUrl;
+    }
+    
+    // 开发环境：如果设置了环境变量，使用环境变量
     if (import.meta.env.VITE_API_BASE_URL) {
       log.info('Using VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
       return import.meta.env.VITE_API_BASE_URL;
     }
     
-    // 根据环境获取配置
-    const envConfig = getEnvConfig();
-    log.info('Using environment config:', envConfig);
-    return envConfig.apiBaseUrl;
+    // 开发环境：使用默认本地地址
+    const devApiUrl = 'http://localhost:8787';
+    log.info('Development environment, using default:', devApiUrl);
+    return devApiUrl;
   })(),
   
   // API端点

@@ -77,6 +77,22 @@ export const getEnvConfig = () => {
   return configs[env] || configs[ENV_TYPES.DEVELOPMENT];
 };
 
+// 获取当前API地址（与API配置保持一致）
+export const getCurrentApiUrl = () => {
+  // 生产环境强制使用生产API地址
+  if (import.meta.env.PROD) {
+    return 'https://throbbing-forest-04a1.xaoohii.workers.dev';
+  }
+  
+  // 开发环境：如果设置了环境变量，使用环境变量
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  
+  // 开发环境：使用默认本地地址
+  return 'http://localhost:8787';
+};
+
 // 日志函数（根据环境调整日志级别）
 export const log = {
   debug: (...args) => {

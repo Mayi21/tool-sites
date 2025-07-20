@@ -6,13 +6,15 @@ import {
   isDevelopment, 
   isProduction, 
   isPreview,
-  getEnvConfig 
+  getEnvConfig,
+  getCurrentApiUrl
 } from '../utils/env.js';
 
 const EnvInfo = () => {
   const envInfo = getEnvInfo();
   const envConfig = getEnvConfig();
   const currentEnv = getCurrentEnv();
+  const currentApiUrl = getCurrentApiUrl();
 
   const getEnvColor = (env) => {
     switch (env) {
@@ -89,7 +91,7 @@ const EnvInfo = () => {
             {envInfo.apiBaseUrl || '未设置'}
           </Descriptions.Item>
           <Descriptions.Item label="实际API地址">
-            {envConfig.apiBaseUrl}
+            {currentApiUrl}
           </Descriptions.Item>
           <Descriptions.Item label="调试模式">
             <Tag color={envConfig.debug ? 'green' : 'red'}>
@@ -140,13 +142,20 @@ const EnvInfo = () => {
             <li><strong>预览环境 (preview)</strong>：预览部署时使用，API指向生产服务器但开启调试</li>
           </ul>
           
-          <h4>环境检测逻辑：</h4>
+          <h4>API地址选择逻辑：</h4>
           <ol>
-            <li>优先使用 <code>VITE_API_BASE_URL</code> 环境变量</li>
-            <li>根据 <code>import.meta.env.PROD</code> 判断是否为生产环境</li>
-            <li>根据 <code>import.meta.env.DEV</code> 判断是否为开发环境</li>
-            <li>根据 <code>import.meta.env.MODE</code> 判断是否为预览环境</li>
+            <li><strong>生产环境</strong>：强制使用 <code>https://throbbing-forest-04a1.xaoohii.workers.dev</code></li>
+            <li><strong>开发环境</strong>：优先使用 <code>VITE_API_BASE_URL</code> 环境变量</li>
+            <li><strong>开发环境</strong>：如果未设置环境变量，使用 <code>http://localhost:8787</code></li>
           </ol>
+          
+          <h4>调试信息：</h4>
+          <ul>
+            <li><strong>当前环境变量:</strong> <code>VITE_API_BASE_URL = {import.meta.env.VITE_API_BASE_URL || '未设置'}</code></li>
+            <li><strong>生产环境检测:</strong> <code>import.meta.env.PROD = {import.meta.env.PROD ? 'true' : 'false'}</code></li>
+            <li><strong>开发环境检测:</strong> <code>import.meta.env.DEV = {import.meta.env.DEV ? 'true' : 'false'}</code></li>
+            <li><strong>最终API地址:</strong> <code>{currentApiUrl}</code></li>
+          </ul>
         </div>
       </Card>
     </div>

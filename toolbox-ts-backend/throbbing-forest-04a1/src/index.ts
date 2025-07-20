@@ -8,6 +8,7 @@ import { TaskList } from "./endpoints/taskList";
 import { AnalyticsRecordVisit } from "./endpoints/analyticsRecordVisit";
 import { AnalyticsGetStats } from "./endpoints/analyticsGetStats";
 import { AnalyticsToolUsage } from "./endpoints/analyticsToolUsage";
+import { AnalyticsEndVisit } from "./endpoints/analyticsEndVisit";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -41,6 +42,7 @@ openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 openapi.post("/api/analytics/visit", AnalyticsRecordVisit);
 openapi.get("/api/analytics/stats", AnalyticsGetStats);
 openapi.post("/api/analytics/tool-usage", AnalyticsToolUsage);
+openapi.put("/api/analytics/visit/:visitId/end", AnalyticsEndVisit);
 
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))

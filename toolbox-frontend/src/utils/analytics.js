@@ -16,6 +16,29 @@ class AnalyticsService {
     return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
   }
 
+  // 根据页面路径生成页面名称
+  generatePageName(pagePath) {
+    if (!pagePath) return 'Unknown Page';
+    
+    // 移除开头的斜杠
+    const cleanPath = pagePath.replace(/^\//, '');
+    
+    if (!cleanPath) return 'Home Page';
+    
+    // 将路径转换为标题格式
+    const pageName = cleanPath
+      .split('/')
+      .map(segment => {
+        // 将连字符和下划线转换为空格
+        const words = segment.replace(/[-_]/g, ' ');
+        // 首字母大写
+        return words.charAt(0).toUpperCase() + words.slice(1);
+      })
+      .join(' - ');
+    
+    return pageName || 'Unknown Page';
+  }
+
   // 从本地存储加载访问记录
   loadVisits() {
     try {
@@ -140,7 +163,7 @@ class AnalyticsService {
   }
 
   // 记录页面访问
-  async trackPageView(pagePath, pageName) {
+  async trackPageView(pagePath, pageName = null) {
     try {
       // 结束上一个页面的访问
       if (this.currentPage && this.pageStartTime) {
@@ -156,11 +179,14 @@ class AnalyticsService {
       const location = await this.getLocationInfo(ip);
       const browser = this.getBrowserInfo();
 
+      // 如果没有提供pageName，从pagePath生成一个
+      const finalPageName = pageName || this.generatePageName(pagePath);
+      
       const visitRecord = {
         id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
         sessionId: this.sessionId,
         pagePath,
-        pageName,
+        pageName: finalPageName,
         ip,
         country: location.country,
         city: location.city,

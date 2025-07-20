@@ -58,13 +58,13 @@ export const initCredentials = () => {
     return;
   }
   
-  // 如果没有环境变量，使用开发环境的默认值（仅用于开发）
+  // 如果没有环境变量，使用默认值（生产环境也提供默认值）
+  ADMIN_CONFIG.credentials.admin_username = 'admin';
+  
   if (import.meta.env.DEV) {
-    ADMIN_CONFIG.credentials.admin_username = 'admin';
     console.warn('⚠️ 使用开发环境默认用户名，生产环境请设置环境变量');
   } else {
-    console.error('❌ 生产环境缺少管理员用户名环境变量');
-    throw new Error('Missing admin username in production environment');
+    console.warn('⚠️ 生产环境使用默认管理员用户名，建议设置 VITE_ADMIN_USERNAME 环境变量');
   }
 };
 

@@ -9,6 +9,7 @@ class AnalyticsService {
     this.currentPage = null;
     this.pageStartTime = null;
     this.currentVisitId = null;
+    this.locationCache = new Map(); // 缓存地理位置信息
   }
 
   // 生成会话ID
@@ -24,6 +25,21 @@ class AnalyticsService {
     const cleanPath = pagePath.replace(/^\//, '');
     
     if (!cleanPath) return 'Home Page';
+    
+    // 特殊页面名称映射
+    const pageNameMap = {
+      '': 'Home Page',
+      'base64': 'Base64 Tool',
+      'diff': 'Diff Tool',
+      'admin': 'Admin Panel',
+      'analytics-test': 'Analytics Test',
+      'env-info': 'Environment Info'
+    };
+    
+    // 检查是否有预定义的名称
+    if (pageNameMap[cleanPath]) {
+      return pageNameMap[cleanPath];
+    }
     
     // 将路径转换为标题格式
     const pageName = cleanPath
@@ -59,18 +75,52 @@ class AnalyticsService {
     }
   }
 
-  // 获取用户IP（模拟）
+  // 获取用户IP
   async getClientIP() {
     try {
-      // 在实际应用中，这里应该调用IP查询服务
-      // 例如：https://api.ipify.org?format=json
-      const response = await fetch('https://api.ipify.org?format=json');
-      const data = await response.json();
-      return data.ip;
+      // 尝试多个IP查询服务，提高成功率
+      const services = [
+        'https://api.ipify.org?format=json',
+        'https://api64.ipify.org?format=json',
+        'https://httpbin.org/ip'
+      ];
+
+      for (const service of services) {
+        try {
+          const response = await fetch(service, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+            },
+            signal: AbortSignal.timeout(3000)
+          });
+
+          if (!response.ok) continue;
+
+          const data = await response.json();
+          const ip = data.ip || data.origin;
+          
+          if (ip && this.isValidIP(ip)) {
+            return ip;
+          }
+        } catch (error) {
+          console.warn(`Failed to get IP from ${service}:`, error.message);
+          continue;
+        }
+      }
+
+      // 如果所有服务都失败，使用模拟IP
+      return this.generateMockIP();
     } catch (error) {
-      // 如果无法获取真实IP，使用模拟IP
+      console.warn('All IP services failed, using mock IP:', error.message);
       return this.generateMockIP();
     }
+  }
+
+  // 验证IP地址格式
+  isValidIP(ip) {
+    const ipRegex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+    return ipRegex.test(ip);
   }
 
   // 生成模拟IP地址
@@ -82,21 +132,59 @@ class AnalyticsService {
     return segments.join('.');
   }
 
-  // 获取地理位置信息（模拟）
+  // 获取地理位置信息
   async getLocationInfo(ip) {
+    // 检查缓存
+    if (this.locationCache.has(ip)) {
+      const cached = this.locationCache.get(ip);
+      // 缓存有效期1小时
+      if (Date.now() - cached.timestamp < 60 * 60 * 1000) {
+        return cached.data;
+      }
+    }
+
     try {
-      // 在实际应用中，这里应该调用地理位置API
-      // 例如：https://ipapi.co/{ip}/json/
-      const response = await fetch(`https://ipapi.co/${ip}/json/`);
-      const data = await response.json();
-      return {
-        country: data.country_name || 'Unknown',
-        city: data.city || 'Unknown',
-        region: data.region || 'Unknown'
-      };
+      // 优先使用后端代理服务获取地理位置
+      const response = await apiRequest(buildApiUrl(`/api/analytics/location?ip=${ip}`), {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        }
+      });
+      
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success && result.result) {
+          const locationData = {
+            country: result.result.country || 'Unknown',
+            city: result.result.city || 'Unknown',
+            region: result.result.region || 'Unknown'
+          };
+
+          // 缓存结果
+          this.locationCache.set(ip, {
+            data: locationData,
+            timestamp: Date.now()
+          });
+
+          return locationData;
+        }
+      }
+      
+      // 如果后端服务失败，使用模拟数据
+      throw new Error('Backend location service failed');
     } catch (error) {
+      console.warn('Failed to get location info from backend, using fallback:', error.message);
       // 如果无法获取真实位置，使用模拟数据
-      return this.generateMockLocation();
+      const mockData = this.generateMockLocation();
+      
+      // 缓存模拟数据（避免重复请求）
+      this.locationCache.set(ip, {
+        data: mockData,
+        timestamp: Date.now()
+      });
+
+      return mockData;
     }
   }
 

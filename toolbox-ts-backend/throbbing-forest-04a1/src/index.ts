@@ -9,6 +9,7 @@ import { AnalyticsRecordVisit } from "./endpoints/analyticsRecordVisit";
 import { AnalyticsGetStats } from "./endpoints/analyticsGetStats";
 import { AnalyticsToolUsage } from "./endpoints/analyticsToolUsage";
 import { AnalyticsEndVisit } from "./endpoints/analyticsEndVisit";
+import { AnalyticsGetLocation } from "./endpoints/analyticsGetLocation";
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -43,6 +44,7 @@ openapi.post("/api/analytics/visit", AnalyticsRecordVisit);
 openapi.get("/api/analytics/stats", AnalyticsGetStats);
 openapi.post("/api/analytics/tool-usage", AnalyticsToolUsage);
 openapi.put("/api/analytics/visit/:visitId/end", AnalyticsEndVisit);
+openapi.get("/api/analytics/location", AnalyticsGetLocation);
 
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))

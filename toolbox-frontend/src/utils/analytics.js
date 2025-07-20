@@ -1,0 +1,366 @@
+// 访问追踪服务
+class AnalyticsService {
+  constructor() {
+    this.sessionId = this.generateSessionId();
+    this.startTime = Date.now();
+    this.visits = this.loadVisits();
+    this.currentPage = null;
+    this.pageStartTime = null;
+  }
+
+  // 生成会话ID
+  generateSessionId() {
+    return 'session_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+  }
+
+  // 从本地存储加载访问记录
+  loadVisits() {
+    try {
+      const stored = localStorage.getItem('toolbox_visits');
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error('Failed to load visits:', error);
+      return [];
+    }
+  }
+
+  // 保存访问记录到本地存储
+  saveVisits() {
+    try {
+      localStorage.setItem('toolbox_visits', JSON.stringify(this.visits));
+    } catch (error) {
+      console.error('Failed to save visits:', error);
+    }
+  }
+
+  // 获取用户IP（模拟）
+  async getClientIP() {
+    try {
+      // 在实际应用中，这里应该调用IP查询服务
+      // 例如：https://api.ipify.org?format=json
+      const response = await fetch('https://api.ipify.org?format=json');
+      const data = await response.json();
+      return data.ip;
+    } catch (error) {
+      // 如果无法获取真实IP，使用模拟IP
+      return this.generateMockIP();
+    }
+  }
+
+  // 生成模拟IP地址
+  generateMockIP() {
+    const segments = [];
+    for (let i = 0; i < 4; i++) {
+      segments.push(Math.floor(Math.random() * 256));
+    }
+    return segments.join('.');
+  }
+
+  // 获取地理位置信息（模拟）
+  async getLocationInfo(ip) {
+    try {
+      // 在实际应用中，这里应该调用地理位置API
+      // 例如：https://ipapi.co/{ip}/json/
+      const response = await fetch(`https://ipapi.co/${ip}/json/`);
+      const data = await response.json();
+      return {
+        country: data.country_name || 'Unknown',
+        city: data.city || 'Unknown',
+        region: data.region || 'Unknown'
+      };
+    } catch (error) {
+      // 如果无法获取真实位置，使用模拟数据
+      return this.generateMockLocation();
+    }
+  }
+
+  // 生成模拟地理位置
+  generateMockLocation() {
+    const countries = [
+      { name: '中国', cities: ['北京', '上海', '广州', '深圳', '杭州', '成都'] },
+      { name: '美国', cities: ['纽约', '洛杉矶', '芝加哥', '休斯顿', '凤凰城', '费城'] },
+      { name: '日本', cities: ['东京', '大阪', '名古屋', '横滨', '神户', '京都'] },
+      { name: '韩国', cities: ['首尔', '釜山', '仁川', '大邱', '大田', '光州'] },
+      { name: '德国', cities: ['柏林', '汉堡', '慕尼黑', '科隆', '法兰克福', '斯图加特'] },
+      { name: '法国', cities: ['巴黎', '马赛', '里昂', '图卢兹', '尼斯', '南特'] },
+      { name: '英国', cities: ['伦敦', '伯明翰', '利兹', '格拉斯哥', '谢菲尔德', '布拉德福德'] },
+      { name: '加拿大', cities: ['多伦多', '蒙特利尔', '温哥华', '卡尔加里', '埃德蒙顿', '渥太华'] },
+      { name: '澳大利亚', cities: ['悉尼', '墨尔本', '布里斯班', '珀斯', '阿德莱德', '堪培拉'] },
+      { name: '新加坡', cities: ['新加坡'] }
+    ];
+
+    const country = countries[Math.floor(Math.random() * countries.length)];
+    const city = country.cities[Math.floor(Math.random() * country.cities.length)];
+
+    return {
+      country: country.name,
+      city: city,
+      region: 'Unknown'
+    };
+  }
+
+  // 获取浏览器信息
+  getBrowserInfo() {
+    const userAgent = navigator.userAgent;
+    let browser = 'Unknown';
+    let version = '';
+
+    if (userAgent.includes('Chrome')) {
+      browser = 'Chrome';
+      const match = userAgent.match(/Chrome\/(\d+)/);
+      if (match) version = match[1];
+    } else if (userAgent.includes('Firefox')) {
+      browser = 'Firefox';
+      const match = userAgent.match(/Firefox\/(\d+)/);
+      if (match) version = match[1];
+    } else if (userAgent.includes('Safari')) {
+      browser = 'Safari';
+      const match = userAgent.match(/Version\/(\d+)/);
+      if (match) version = match[1];
+    } else if (userAgent.includes('Edge')) {
+      browser = 'Edge';
+      const match = userAgent.match(/Edge\/(\d+)/);
+      if (match) version = match[1];
+    } else if (userAgent.includes('Opera')) {
+      browser = 'Opera';
+      const match = userAgent.match(/Opera\/(\d+)/);
+      if (match) version = match[1];
+    }
+
+    return {
+      name: browser,
+      version: version,
+      userAgent: userAgent,
+      isMobile: /Mobile|Android|iPhone|iPad/.test(userAgent),
+      isTablet: /iPad|Android(?=.*\bMobile\b)(?=.*\bSafari\b)/.test(userAgent)
+    };
+  }
+
+  // 记录页面访问
+  async trackPageView(pagePath, pageName) {
+    try {
+      // 结束上一个页面的访问
+      if (this.currentPage && this.pageStartTime) {
+        this.endPageView();
+      }
+
+      // 开始新页面访问
+      this.currentPage = pagePath;
+      this.pageStartTime = Date.now();
+
+      // 获取访问信息
+      const ip = await this.getClientIP();
+      const location = await this.getLocationInfo(ip);
+      const browser = this.getBrowserInfo();
+
+      const visitRecord = {
+        id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        sessionId: this.sessionId,
+        pagePath,
+        pageName,
+        ip,
+        country: location.country,
+        city: location.city,
+        region: location.region,
+        browser: browser.name,
+        browserVersion: browser.version,
+        userAgent: browser.userAgent,
+        isMobile: browser.isMobile,
+        isTablet: browser.isTablet,
+        timestamp: new Date().toISOString(),
+        startTime: this.pageStartTime,
+        duration: null, // 将在页面结束时设置
+        status: 'active'
+      };
+
+      // 保存访问记录
+      this.visits.push(visitRecord);
+      this.saveVisits();
+
+      // 发送到服务器（如果有后端）
+      this.sendToServer(visitRecord);
+
+      console.log('Page view tracked:', visitRecord);
+    } catch (error) {
+      console.error('Failed to track page view:', error);
+    }
+  }
+
+  // 结束页面访问
+  endPageView() {
+    if (this.currentPage && this.pageStartTime) {
+      const duration = Date.now() - this.pageStartTime;
+      
+      // 更新最后一条记录
+      if (this.visits.length > 0) {
+        const lastVisit = this.visits[this.visits.length - 1];
+        if (lastVisit.pagePath === this.currentPage) {
+          lastVisit.duration = duration;
+          lastVisit.status = 'completed';
+          this.saveVisits();
+        }
+      }
+
+      this.currentPage = null;
+      this.pageStartTime = null;
+    }
+  }
+
+  // 记录工具使用
+  async trackToolUsage(toolName, action = 'view') {
+    try {
+      const ip = await this.getClientIP();
+      const location = await this.getLocationInfo(ip);
+      const browser = this.getBrowserInfo();
+
+      const toolRecord = {
+        id: Date.now() + '_' + Math.random().toString(36).substr(2, 9),
+        sessionId: this.sessionId,
+        tool: toolName,
+        action,
+        ip,
+        country: location.country,
+        city: location.city,
+        region: location.region,
+        browser: browser.name,
+        userAgent: browser.userAgent,
+        isMobile: browser.isMobile,
+        timestamp: new Date().toISOString(),
+        status: 'success'
+      };
+
+      // 保存工具使用记录
+      this.visits.push(toolRecord);
+      this.saveVisits();
+
+      // 发送到服务器
+      this.sendToServer(toolRecord);
+
+      console.log('Tool usage tracked:', toolRecord);
+    } catch (error) {
+      console.error('Failed to track tool usage:', error);
+    }
+  }
+
+  // 发送数据到服务器（模拟）
+  async sendToServer(data) {
+    try {
+      // 在实际应用中，这里应该发送到后端API
+      // const response = await fetch('/api/analytics', {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body: JSON.stringify(data)
+      // });
+      
+      // 模拟发送
+      console.log('Data sent to server:', data);
+    } catch (error) {
+      console.error('Failed to send data to server:', error);
+    }
+  }
+
+  // 获取访问统计
+  getStats() {
+    const now = Date.now();
+    const oneDay = 24 * 60 * 60 * 1000;
+    const oneWeek = 7 * oneDay;
+    const oneMonth = 30 * oneDay;
+
+    const allVisits = this.visits.filter(v => v.pagePath);
+    const toolVisits = this.visits.filter(v => v.tool);
+
+    return {
+      totalVisits: allVisits.length,
+      todayVisits: allVisits.filter(v => now - new Date(v.timestamp).getTime() < oneDay).length,
+      weekVisits: allVisits.filter(v => now - new Date(v.timestamp).getTime() < oneWeek).length,
+      monthVisits: allVisits.filter(v => now - new Date(v.timestamp).getTime() < oneMonth).length,
+      totalToolUsage: toolVisits.length,
+      uniqueIPs: new Set(allVisits.map(v => v.ip)).size,
+      countries: new Set(allVisits.map(v => v.country)).size,
+      averageSessionDuration: this.calculateAverageSessionDuration(),
+      topTools: this.getTopTools(),
+      topCountries: this.getTopCountries()
+    };
+  }
+
+  // 计算平均会话时长
+  calculateAverageSessionDuration() {
+    const sessions = {};
+    
+    this.visits.forEach(visit => {
+      if (!sessions[visit.sessionId]) {
+        sessions[visit.sessionId] = [];
+      }
+      sessions[visit.sessionId].push(visit);
+    });
+
+    let totalDuration = 0;
+    let sessionCount = 0;
+
+    Object.values(sessions).forEach(sessionVisits => {
+      const sessionDuration = sessionVisits.reduce((total, visit) => {
+        return total + (visit.duration || 0);
+      }, 0);
+      
+      if (sessionDuration > 0) {
+        totalDuration += sessionDuration;
+        sessionCount++;
+      }
+    });
+
+    return sessionCount > 0 ? Math.round(totalDuration / sessionCount) : 0;
+  }
+
+  // 获取最常用工具
+  getTopTools() {
+    const toolCounts = {};
+    
+    this.visits.forEach(visit => {
+      if (visit.tool) {
+        toolCounts[visit.tool] = (toolCounts[visit.tool] || 0) + 1;
+      }
+    });
+
+    return Object.entries(toolCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 10)
+      .map(([tool, count]) => ({ tool, count }));
+  }
+
+  // 获取访问最多的国家
+  getTopCountries() {
+    const countryCounts = {};
+    
+    this.visits.forEach(visit => {
+      if (visit.country) {
+        countryCounts[visit.country] = (countryCounts[visit.country] || 0) + 1;
+      }
+    });
+
+    return Object.entries(countryCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 10)
+      .map(([country, count]) => ({ country, count }));
+  }
+
+  // 清理旧数据
+  cleanupOldData(daysToKeep = 30) {
+    const cutoffTime = Date.now() - (daysToKeep * 24 * 60 * 60 * 1000);
+    this.visits = this.visits.filter(visit => 
+      new Date(visit.timestamp).getTime() > cutoffTime
+    );
+    this.saveVisits();
+  }
+}
+
+// 创建全局实例
+const analytics = new AnalyticsService();
+
+// 页面卸载时结束当前页面访问
+window.addEventListener('beforeunload', () => {
+  analytics.endPageView();
+});
+
+export default analytics; 

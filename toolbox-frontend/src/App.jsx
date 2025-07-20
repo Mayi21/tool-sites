@@ -5,8 +5,10 @@ import tools from './tools';
 import ToolCard from './components/ToolCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
+import AdminDashboard from './components/Dashboard/AdminDashboard';
+import NotFound from './components/NotFound';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space } from 'antd';
-import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 import ThemeTransition from './components/ThemeTransition';
 
 const { Header, Content, Footer } = Layout;
@@ -125,6 +127,19 @@ function NavigationBar({ theme, setTheme }) {
         </Space>
       ),
       onClick: goBack
+    },
+    {
+      type: 'divider'
+    },
+    {
+      key: 'dashboard',
+      label: (
+        <Space>
+          <DashboardOutlined />
+          管理员仪表板
+        </Space>
+      ),
+      onClick: () => navigate('/admin/dashboard')
     },
     {
       type: 'divider'
@@ -413,6 +428,14 @@ export default function App() {
                     } 
                   />
                 ))}
+                <Route 
+                  path="/admin/dashboard" 
+                  element={<AdminDashboard />} 
+                />
+                <Route 
+                  path="*" 
+                  element={<NotFound />} 
+                />
               </Routes>
             </Content>
             <Footer style={{ 

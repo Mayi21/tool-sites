@@ -7,6 +7,8 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import AdminDashboard from './components/Dashboard/AdminDashboard';
 import NotFound from './components/NotFound';
+import RouteTracker from './components/RouteTracker';
+import AnalyticsTest from './components/AnalyticsTest';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space } from 'antd';
 import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 import ThemeTransition from './components/ThemeTransition';
@@ -347,6 +349,7 @@ export default function App() {
     >
       <BrowserRouter>
         <DynamicTitle />
+        <RouteTracker />
         <ThemeTransition theme={theme}>
           <Layout style={{ minHeight: '100vh', width: '100%' }}>
             <NavigationBar theme={theme} setTheme={setTheme} />
@@ -431,6 +434,10 @@ export default function App() {
                 <Route 
                   path="/admin/dashboard" 
                   element={<AdminDashboard />} 
+                />
+                <Route 
+                  path="/analytics-test" 
+                  element={<AnalyticsTest />} 
                 />
                 <Route 
                   path="*" 

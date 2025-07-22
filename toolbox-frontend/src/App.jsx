@@ -59,9 +59,9 @@ function DynamicTitle() {
         document.title = `${t('Multi-function Toolbox')} - 多功能工具箱`;
       } else {
         // 查找当前工具
-        const currentTool = tools.find(tool => tool.path === path);
+        const currentTool = tools.find(tool => path === tool.path);
         if (currentTool) {
-          document.title = `${currentTool.name} - ${t('Multi-function Toolbox')}`;
+          document.title = `${t(currentTool.nameKey)} - ${t('Multi-function Toolbox')}`;
         } else {
           document.title = `${t('Multi-function Toolbox')} - 多功能工具箱`;
         }

@@ -109,10 +109,10 @@ class DashboardMockService {
       const dateStr = date.toLocaleDateString('zh-CN');
       
       // 过滤当天的访问记录
-      const dayVisits = visits.filter(visit => {
-        const visitDate = new Date(visit.timestamp);
-        return visitDate.toDateString() === date.toDateString();
-      });
+        const dayVisits = visits.filter(visit => {
+          const visitDate = new Date(visit.timestamp);
+          return visitDate.toDateString() === date.toDateString();
+        });
       
       const visitsCount = dayVisits.length;
       const uniqueVisitors = new Set(dayVisits.map(v => v.ip)).size;
@@ -223,7 +223,12 @@ class DashboardMockService {
           }));
         
         // 生成趋势数据
-        toolStats = this.generateTrendDataFromRealData(visits);
+        let days = 30; // 默认30天
+        if (dateRange && dateRange[0] && dateRange[1]) {
+          // 计算日期范围的天数
+          days = Math.ceil((dateRange[1].getTime() - dateRange[0].getTime()) / (24 * 60 * 60 * 1000)) + 1;
+        }
+        toolStats = this.generateTrendDataFromRealData(visits, days);
       } catch (error) {
         console.error('Failed to get real data, using mock data:', error);
         overview = this.generateOverviewData();
@@ -302,4 +307,4 @@ class DashboardMockService {
 // 创建全局实例
 const mockDashboardData = new DashboardMockService();
 
-export { mockDashboardData }; 
+export { mockDashboardData };

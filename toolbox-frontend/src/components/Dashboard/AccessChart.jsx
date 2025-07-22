@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { Card, Empty } from 'antd';
 import {
   Chart as ChartJS,
@@ -170,4 +170,4 @@ export default function AccessChart({ data }) {
       />
     </div>
   );
-} 
+}

@@ -19,7 +19,7 @@ export default function UnicodeConverter() {
   function chineseToUnicode(text) {
     return text.split('').map(char => {
       const code = char.charCodeAt(0);
-      return code > 127 ? `\\u${code.toString(16).padStart(4, '0')}` : char;
+      return `\\u${code.toString(16).padStart(4, '0')}`;
     }).join('');
   }
 
@@ -32,7 +32,7 @@ export default function UnicodeConverter() {
   function chineseToUnicodeEntity(text) {
     return text.split('').map(char => {
       const code = char.charCodeAt(0);
-      return code > 127 ? `&#x${code.toString(16).toUpperCase()};` : char;
+      return `&#x${code.toString(16).toUpperCase()};`;
     }).join('');
   }
 

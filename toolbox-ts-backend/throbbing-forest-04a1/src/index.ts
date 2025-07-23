@@ -21,7 +21,8 @@ app.use('*', cors({
     'http://localhost:5174', 
     'http://localhost:5175',
     'https://tool-sites.pages.dev',
-    'https://*.pages.dev'
+    'https://*.pages.dev',
+    'https://toolifyhub.top' // 新增
   ],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],

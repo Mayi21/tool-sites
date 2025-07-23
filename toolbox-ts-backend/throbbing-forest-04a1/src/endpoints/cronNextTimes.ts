@@ -1,4 +1,4 @@
-import { OpenAPIRoute, Str } from 'chanfana';
+import { OpenAPIRoute } from 'chanfana';
 import { z } from 'zod';
 import { type AppContext } from '../types';
 import cronParser from 'cron-parser';
@@ -39,21 +39,23 @@ export class CronNextTimes extends OpenAPIRoute {
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
     let { expr, type, count } = data.body;
-    function detectType(expr: string) {
+    function detectType(expr: string): 'linux' | 'spring' | 'unknown' {
       const parts = expr.trim().split(/\s+/);
       if (parts.length === 5) return 'linux';
       if (parts.length === 6) return 'spring';
+      if (parts.length === 7) return 'spring'; // Spring cron 7字段
       return 'unknown';
     }
-    if (type === 'auto') type = detectType(expr) as typeof type;
-    if (type === 'unknown') {
-      return { success: false, times: [], error: 'Unrecognized expression type (only 5 or 6 fields supported)' };
+    if (type === 'auto') type = detectType(expr) as 'linux' | 'spring';
+    if (type !== 'linux' && type !== 'spring') {
+      return { success: false, times: [], error: 'Unrecognized expression type (仅支持5/6/7字段的cron表达式，当前字段数不符)' };
     }
     if (type === 'linux') {
       expr = '0 ' + expr;
     }
     try {
-      const interval = (cronParser as any).parseExpression(expr);
+      const parser = (cronParser as any).default || cronParser;
+      const interval = parser.parseExpression(expr);
       const times: string[] = [];
       for (let i = 0; i < count; i++) {
         times.push(interval.next().toISOString());

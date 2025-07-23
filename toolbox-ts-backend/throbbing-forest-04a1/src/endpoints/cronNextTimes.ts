@@ -45,7 +45,7 @@ export class CronNextTimes extends OpenAPIRoute {
       if (parts.length === 6) return 'spring';
       return 'unknown';
     }
-    if (type === 'auto') type = detectType(expr);
+    if (type === 'auto') type = detectType(expr) as typeof type;
     if (type === 'unknown') {
       return { success: false, times: [], error: 'Unrecognized expression type (only 5 or 6 fields supported)' };
     }
@@ -53,7 +53,7 @@ export class CronNextTimes extends OpenAPIRoute {
       expr = '0 ' + expr;
     }
     try {
-      const interval = cronParser.parseExpression(expr);
+      const interval = (cronParser as any).parseExpression(expr);
       const times: string[] = [];
       for (let i = 0; i < count; i++) {
         times.push(interval.next().toISOString());

@@ -15,6 +15,7 @@ import JwtDecoder from './components/tools/JwtDecoder';
 import QrGenerator from './components/tools/QrGenerator';
 import ImageCompressor from './components/tools/ImageCompressor';
 import UnicodeConverter from './components/tools/UnicodeConverter';
+import CronParser from './components/tools/CronParser';
 
 export default [
   {
@@ -118,5 +119,11 @@ export default [
     nameKey: 'Unicode Converter',
     descKey: 'Chinese Unicode Converter',
     Component: UnicodeConverter,
+  },
+  {
+    path: '/cron-parser',
+    nameKey: 'Cron Expression Converter',
+    descKey: 'Cron Expression Linux/Spring Converter Tool',
+    Component: CronParser,
   },
 ]; 

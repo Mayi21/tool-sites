@@ -200,5 +200,17 @@
   "JWT Token Decoder": "JWT Token Decoder",
   "QR Code Generator Tool": "QR Code Generator Tool",
   "Online Image Compressor": "Online Image Compressor",
-  "Chinese Unicode Converter": "Chinese Unicode Converter"
+  "Chinese Unicode Converter": "Chinese Unicode Converter",
+  "Cron Expression Converter": "Cron Expression Converter",
+  "Cron Expression Linux/Spring Converter Tool": "Cron Expression Linux/Spring Converter Tool",
+  "Cron Execution Time Calculator": "Cron Execution Time Calculator",
+  "Enter a Linux (5 fields) or Spring (6 fields) cron expression, then click 'Run' to see the next 5 execution times.": "Enter a Linux (5 fields) or Spring (6 fields) cron expression, then click 'Run' to see the next 5 execution times.",
+  "Type": "Type",
+  "Auto Detect": "Auto Detect",
+  "Linux (5 fields)": "Linux (5 fields)",
+  "Spring (6 fields)": "Spring (6 fields)",
+  "Run": "Run",
+  "Next 5 execution times (UTC)": "Next 5 execution times (UTC):",
+  "Failed to parse: ": "Failed to parse: ",
+  "Unrecognized expression type (only 5 or 6 fields supported)": "Unrecognized expression type (only 5 or 6 fields supported)"
 } 

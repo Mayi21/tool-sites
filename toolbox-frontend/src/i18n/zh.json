@@ -200,5 +200,17 @@
   "JWT Token Decoder": "JWT 令牌解码工具",
   "QR Code Generator Tool": "二维码生成工具",
   "Online Image Compressor": "在线图片压缩工具",
-  "Chinese Unicode Converter": "中文 Unicode 转换工具"
+  "Chinese Unicode Converter": "中文 Unicode 转换工具",
+  "Cron Expression Converter": "Cron表达式转换",
+  "Cron Expression Linux/Spring Converter Tool": "Cron表达式 Linux/Spring 互转工具",
+  "Cron Execution Time Calculator": "Cron执行时间计算",
+  "Enter a Linux (5 fields) or Spring (6 fields) cron expression, then click 'Run' to see the next 5 execution times.": "请输入 Linux（5位）或 Spring（6位）cron表达式，点击“运行”可查看未来5次执行时间。",
+  "Type": "类型",
+  "Auto Detect": "自动识别",
+  "Linux (5 fields)": "Linux (5位)",
+  "Spring (6 fields)": "Spring (6位)",
+  "Run": "运行",
+  "Next 5 execution times (UTC)": "未来5次执行时间（UTC）：",
+  "Failed to parse: ": "解析失败: ",
+  "Unrecognized expression type (only 5 or 6 fields supported)": "无法识别表达式类型（仅支持5位或6位）"
 } 

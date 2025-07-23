@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Card, Input, Select, Button, Typography, Space, message } from 'antd';
 const { Title, Paragraph, Text } = Typography;
-import { CronExpressionParser } from 'cron-parser';
 import { useTranslation } from 'react-i18next';
+import { buildApiUrl } from '../../config/api';
 
 const CRON_TYPES = [
   { value: 'linux', label: 'Linux (5位)' },
@@ -36,6 +36,7 @@ export default function CronParser() {
   const [type, setType] = useState('auto'); // auto: 自动识别，linux: 5位，spring: 6位
   const [result, setResult] = useState([]);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   // 自动识别类型
   function detectType(expr) {
@@ -45,27 +46,26 @@ export default function CronParser() {
     return 'unknown';
   }
 
-  const handleRun = () => {
+  const handleRun = async () => {
     setError('');
     setResult([]);
-    let expr = input.trim();
-    let mode = type;
-    if (mode === 'auto') mode = detectType(expr);
-    if (mode === 'unknown') {
-      setError('无法识别表达式类型（仅支持5位或6位）');
-      return;
-    }
-    // Linux: 5位，Spring: 6位（秒 分 时 日 月 周）
-    if (mode === 'linux') {
-      expr = '0 ' + expr; // 补秒位
-    }
+    setLoading(true);
     try {
-      const cron = CronExpressionParser.parse(expr);
-      const times = cron.take(5)
-        .map(d => (d && typeof d.toISOString === 'function') ? d.toISOString() : String(d));
-      setResult(times);
+      const res = await fetch(buildApiUrl('/api/cron/next-times'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ expr: input.trim(), type, count: 5 })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setResult(data.times);
+      } else {
+        setError(data.error || t('Failed to parse: ') + 'unknown');
+      }
     } catch (e) {
-      setError('解析失败: ' + e.message);
+      setError(t('Failed to parse: ') + e.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -94,7 +94,7 @@ export default function CronParser() {
               { value: 'spring', label: t('Spring (6 fields)') },
             ]}
           />
-          <Button type="primary" onClick={handleRun}>{t('Run')}</Button>
+          <Button type="primary" onClick={handleRun} loading={loading}>{t('Run')}</Button>
         </Space>
         {error && <Text type="danger">{error}</Text>}
         {result.length > 0 && (

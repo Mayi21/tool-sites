@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "chanfana": "^2.6.3",
+    "cron-parser": "^5.3.0",
     "hono": "^4.6.20",
-    "zod": "^3.24.1",
-    "cron-parser": "^5.3.0"
+    "zod": "^3.24.1"
   },
   "devDependencies": {
     "@types/node": "22.13.0",

@@ -1,7 +1,7 @@
 import { OpenAPIRoute } from 'chanfana';
 import { z } from 'zod';
 import { type AppContext } from '../types';
-import cronParser from 'cron-parser';
+import CronExpressionParser from 'cron-parser';
 
 export class CronNextTimes extends OpenAPIRoute {
   schema = {
@@ -54,8 +54,7 @@ export class CronNextTimes extends OpenAPIRoute {
       expr = '0 ' + expr;
     }
     try {
-      const parser = (cronParser as any).default || cronParser;
-      const interval = parser.parseExpression(expr);
+      const interval = CronExpressionParser.parse(expr);
       const times: string[] = [];
       for (let i = 0; i < count; i++) {
         times.push(interval.next().toISOString());

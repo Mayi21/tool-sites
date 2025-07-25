@@ -1,18 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import tools from './tools';
 import ToolCard from './components/ToolCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
-import AdminDashboard from './components/Dashboard/AdminDashboard';
 import NotFound from './components/NotFound';
 import RouteTracker from './components/RouteTracker';
-import AnalyticsTest from './components/AnalyticsTest';
-import EnvInfo from './components/EnvInfo';
-import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space } from 'antd';
-import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 import ThemeTransition from './components/ThemeTransition';
+import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space, Spin } from 'antd';
+import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
+
+const AdminDashboard = lazy(() => import('./components/Dashboard/AdminDashboard'));
+const AnalyticsTest = lazy(() => import('./components/AnalyticsTest'));
+const EnvInfo = lazy(() => import('./components/EnvInfo'));
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -251,10 +252,10 @@ function NavigationBar({ theme, setTheme }) {
     <Header 
       style={{ 
         background: 'var(--header-bg)', 
-        boxShadow: '0 2px 8px var(--shadow-color)', 
+        boxShadow: 'none', 
         display: 'flex', 
         alignItems: 'center', 
-        padding: '0 2rem',
+        padding: '0 4rem',
         width: '100%',
         borderBottom: '1px solid var(--border-color)'
       }}
@@ -402,11 +403,11 @@ export default function App() {
                     {toolCategories.map((category, index) => (
                       <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '2rem' }}>
                         <Title level={3} style={{ 
-                          marginBottom: '1rem', 
+                          marginBottom: '1.5rem', 
                           color: 'var(--text-primary)',
-                          borderLeft: '4px solid #1677ff',
-                          paddingLeft: '0.75rem',
-                          fontSize: 'clamp(1.1rem, 3vw, 1.5rem)'
+                          fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
+                          textAlign: 'center',
+                          width: '100%'
                         }}>
                           {t(category.nameKey)}
                         </Title>
@@ -422,8 +423,8 @@ export default function App() {
                               sm={12} 
                               md={8} 
                               lg={6} 
-                              xl={4}
-                              xxl={3}
+                              xl={6}
+                              xxl={6}
                               style={{ display: 'flex', justifyContent: 'center' }}
                             >
                               <ToolCard 
@@ -435,7 +436,7 @@ export default function App() {
                           ))}
                         </Row>
                         {index < toolCategories.length - 1 && (
-                          <Divider style={{ margin: '1.5rem 0' }} />
+                          <Divider style={{ margin: '3rem 0' }} />
                         )}
                       </div>
                     ))}

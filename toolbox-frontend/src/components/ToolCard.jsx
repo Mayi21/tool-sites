@@ -34,19 +34,15 @@ export default function ToolCard({ path, nameKey, descKey }) {
     <Link to={path} style={{ textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }}>
       <Card 
         hoverable 
+        className="tool-card" /* Apply the new class for styling */
         style={{ 
-          borderRadius: 12, 
-          minHeight: 160, 
+          minHeight: 140, /* Adjusted for more compact size */
           width: '100%',
-          maxWidth: 320,
+          maxWidth: 280, /* Adjusted for more compact size */
           display: 'flex', 
           flexDirection: 'column', 
           alignItems: 'center', 
           justifyContent: 'center',
-          transition: 'all 0.3s ease',
-          boxShadow: '0 2px 8px var(--shadow-color)',
-          border: '1px solid var(--border-color)',
-          backgroundColor: 'var(--card-bg)',
           cursor: 'pointer',
           overflow: 'hidden'
         }}

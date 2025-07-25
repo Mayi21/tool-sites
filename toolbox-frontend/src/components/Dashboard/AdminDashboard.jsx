@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Row, Col, Statistic, Tabs, Alert, Space, Button, DatePicker, Select, Dropdown } from 'antd';
+import { Card, Row, Col, Statistic, Tabs, Alert, Space, Button, DatePicker, Select, Dropdown, Spin, Empty } from 'antd';
 import { 
   EyeOutlined, 
   UserOutlined, 
@@ -37,7 +37,6 @@ export default function AdminDashboard() {
       const adminUsername = localStorage.getItem('admin_username');
       const loginTime = localStorage.getItem('admin_login_time');
       
-      // 使用配置验证管理员令牌
       const isAdminUser = validateAdminToken(adminToken) && adminUsername;
       
       if (isAdminUser) {
@@ -46,21 +45,16 @@ export default function AdminDashboard() {
           username: adminUsername,
           loginTime: loginTime
         });
-        
-        // 记录访问日志
         logAdminAction('dashboard_access', { username: adminUsername });
       } else {
-        // 清除无效的令牌
         if (adminToken) {
           localStorage.removeItem('admin_token');
           localStorage.removeItem('admin_username');
           localStorage.removeItem('admin_login_time');
         }
-        
         setIsAdmin(false);
         setAdminInfo(null);
       }
-      
       setLoading(false);
     };
 
@@ -77,7 +71,6 @@ export default function AdminDashboard() {
   const loadDashboardData = async () => {
     setLoading(true);
     try {
-      // 模拟API调用
       const data = await mockDashboardData.getDashboardData({
         dateRange,
         tool: selectedTool
@@ -95,7 +88,6 @@ export default function AdminDashboard() {
   };
 
   const handleExport = () => {
-    // 导出数据功能
     console.log('Exporting dashboard data...');
   };
 
@@ -112,12 +104,9 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = () => {
-    // 记录登出日志
     if (adminInfo) {
       logAdminAction('logout', { username: adminInfo.username });
     }
-    
-    // 清除管理员信息
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_username');
     localStorage.removeItem('admin_login_time');
@@ -125,10 +114,10 @@ export default function AdminDashboard() {
     setAdminInfo(null);
   };
 
-  if (loading) {
+  if (loading && !dashboardData) { // 初始加载时显示全屏 Spin
     return (
-      <div style={{ padding: '50px', textAlign: 'center' }}>
-        <div>Loading...</div>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100vh - 150px)' }}>
+        <Spin size="large" tip="Loading Dashboard..." />
       </div>
     );
   }
@@ -137,15 +126,7 @@ export default function AdminDashboard() {
     return <AdminLogin onLogin={handleLogin} />;
   }
 
-  if (!dashboardData) {
-    return (
-      <div style={{ padding: '50px', textAlign: 'center' }}>
-        <div>No data available</div>
-      </div>
-    );
-  }
-
-  const { overview, toolStats, ipRecords } = dashboardData;
+  const { overview, toolStats, ipRecords } = dashboardData || {};
 
   const tabItems = [
     {
@@ -163,7 +144,7 @@ export default function AdminDashboard() {
               <Card>
                 <Statistic
                   title="总访问量"
-                  value={overview.totalVisits}
+                  value={overview?.totalVisits}
                   prefix={<EyeOutlined />}
                   valueStyle={{ color: '#3f8600' }}
                 />
@@ -173,7 +154,7 @@ export default function AdminDashboard() {
               <Card>
                 <Statistic
                   title="今日访问"
-                  value={overview.todayVisits}
+                  value={overview?.todayVisits}
                   prefix={<UserOutlined />}
                   valueStyle={{ color: '#1890ff' }}
                 />
@@ -183,7 +164,7 @@ export default function AdminDashboard() {
               <Card>
                 <Statistic
                   title="独立访客"
-                  value={overview.uniqueVisitors}
+                  value={overview?.uniqueVisitors}
                   prefix={<UserOutlined />}
                   valueStyle={{ color: '#722ed1' }}
                 />
@@ -193,7 +174,7 @@ export default function AdminDashboard() {
               <Card>
                 <Statistic
                   title="访问国家"
-                  value={overview.countries}
+                  value={overview?.countries}
                   prefix={<GlobalOutlined />}
                   valueStyle={{ color: '#eb2f96' }}
                 />
@@ -268,7 +249,6 @@ export default function AdminDashboard() {
     }
   ];
 
-  // 管理员操作菜单
   const adminMenuItems = [
     {
       key: 'profile',
@@ -279,7 +259,6 @@ export default function AdminDashboard() {
         </Space>
       ),
       onClick: () => {
-        // 显示管理员信息
         console.log('Admin info:', adminInfo);
       }
     },
@@ -292,7 +271,6 @@ export default function AdminDashboard() {
         </Space>
       ),
       onClick: () => {
-        // 打开系统设置
         console.log('Open settings');
       }
     },
@@ -312,50 +290,60 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div style={{ padding: '20px', background: '#f0f2f5', minHeight: '100vh' }}>
-      <div style={{ 
-        marginBottom: 24, 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center' 
-      }}>
-        <div>
-          <h1 style={{ margin: 0, color: '#1890ff' }}>
-            📊 管理员数据看板
-          </h1>
-          <p style={{ margin: '8px 0 0 0', color: '#666' }}>
-            实时监控网站访问数据和用户行为分析
-          </p>
-        </div>
-        
-        {adminInfo && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-            <span style={{ color: '#666', fontSize: '14px' }}>
-              欢迎，{adminInfo.username}
-            </span>
-            <Dropdown
-              menu={{ items: adminMenuItems }}
-              placement="bottomRight"
-              trigger={['click']}
-            >
-              <Button 
-                icon={<UserOutlined />} 
-                size="small"
-                style={{ borderRadius: '6px' }}
-              >
-                管理
-              </Button>
-            </Dropdown>
+    <Spin spinning={loading} size="large" tip="Updating data...">
+      <div style={{ padding: '20px', background: '#f0f2f5', minHeight: '100vh' }}>
+        <div style={{ 
+          marginBottom: 24, 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center' 
+        }}>
+          <div>
+            <h1 style={{ margin: 0, color: '#1890ff' }}>
+              📊 管理员数据看板
+            </h1>
+            <p style={{ margin: '8px 0 0 0', color: '#666' }}>
+              实时监控网站访问数据和用户行为分析
+            </p>
           </div>
+          
+          {adminInfo && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <span style={{ color: '#666', fontSize: '14px' }}>
+                欢迎，{adminInfo.username}
+              </span>
+              <Dropdown
+                menu={{ items: adminMenuItems }}
+                placement="bottomRight"
+                trigger={['click']}
+              >
+                <Button 
+                  icon={<UserOutlined />} 
+                  size="small"
+                  style={{ borderRadius: '6px' }}
+                >
+                  管理
+                </Button>
+              </Dropdown>
+            </div>
+          )}
+        </div>
+
+        {!dashboardData ? (
+          <Card style={{marginTop: 24}}>
+            <Empty description="No data available for the selected period.">
+              <Button type="primary" onClick={handleRefresh}>Refresh Now</Button>
+            </Empty>
+          </Card>
+        ) : (
+          <Tabs
+            items={tabItems}
+            defaultActiveKey="overview"
+            size="large"
+            style={{ background: 'white', padding: '24px', borderRadius: '8px' }}
+          />
         )}
       </div>
-
-      <Tabs
-        items={tabItems}
-        defaultActiveKey="overview"
-        size="large"
-        style={{ background: 'white', padding: '24px', borderRadius: '8px' }}
-      />
-    </div>
+    </Spin>
   );
 }

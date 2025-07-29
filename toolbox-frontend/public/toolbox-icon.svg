@@ -1,0 +1,31 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- 背景圆形 -->
+  <circle cx="16" cy="16" r="15" fill="#1677ff" stroke="#0958d9" stroke-width="1"/>
+  
+  <!-- 工具箱主体 -->
+  <rect x="6" y="10" width="20" height="12" rx="1.5" fill="white" opacity="0.95"/>
+  
+  <!-- 工具箱把手 -->
+  <rect x="12" y="8" width="8" height="3" rx="1.5" fill="white" opacity="0.8"/>
+  
+  <!-- 工具箱锁扣 -->
+  <rect x="14.5" y="10" width="3" height="1" rx="0.5" fill="#1677ff"/>
+  
+  <!-- 工具图标 - 扳手 -->
+  <path d="M9 14L10.5 12.5L12 14L10.5 15.5Z" fill="#1677ff"/>
+  
+  <!-- 工具图标 - 螺丝刀 -->
+  <rect x="19" y="13" width="1" height="3" fill="#1677ff"/>
+  <circle cx="19.5" cy="12.5" r="0.5" fill="#1677ff"/>
+  
+  <!-- 工具图标 - 齿轮 -->
+  <circle cx="22" cy="18" r="1.5" fill="#1677ff"/>
+  <circle cx="22" cy="18" r="0.7" fill="white"/>
+  <path d="M21 17L21 19M23 17L23 19M20.3 17.3L21.7 18.7M23.7 17.3L22.3 18.7" stroke="#1677ff" stroke-width="0.3"/>
+  
+  <!-- 工具图标 - 代码符号 -->
+  <text x="14" y="20" font-family="monospace" font-size="4" fill="#1677ff" text-anchor="middle">&lt;/&gt;</text>
+  
+  <!-- 底部装饰线 -->
+  <rect x="8" y="20.5" width="16" height="0.5" rx="0.25" fill="#1677ff" opacity="0.3"/>
+</svg>

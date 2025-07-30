@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Form, Input, Button, Select, DatePicker, Checkbox, Space, message } from 'antd';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
-import QRCode from 'qrcode.react';
+import { QRCode } from 'qrcode.react';
 
 const { Option } = Select;
 

@@ -11,6 +11,11 @@ import { AnalyticsToolUsage } from "./endpoints/analyticsToolUsage";
 import { AnalyticsEndVisit } from "./endpoints/analyticsEndVisit";
 import { AnalyticsGetLocation } from "./endpoints/analyticsGetLocation";
 import { CronNextTimes } from './endpoints/cronNextTimes';
+import { createQuestionnaire } from './endpoints/questionnaire/createQuestionnaire';
+import { getQuestionnaire } from './endpoints/questionnaire/getQuestionnaire';
+import { submitQuestionnaire } from './endpoints/questionnaire/submitQuestionnaire';
+import { getQuestionnaireResults } from './endpoints/questionnaire/getQuestionnaireResults';
+import { closeQuestionnaire } from './endpoints/questionnaire/closeQuestionnaire';
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();

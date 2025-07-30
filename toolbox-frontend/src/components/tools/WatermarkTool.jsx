@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Input, Button, Space, Row, Col, Slider, ColorPicker, Upload, message, Spin } from 'antd';
-import { UploadOutlined, DownloadOutlined, ImageOutlined } from 'antd/es/icons';
+import { UploadOutlined, DownloadOutlined, ImageOutlined } from '@ant-design/icons';
 import { getBase64 } from '../../utils/imageUtils';
 
 const { TextArea } = Input;

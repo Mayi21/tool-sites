@@ -12,6 +12,7 @@
     "chanfana": "^2.6.3",
     "cron-parser": "^5.3.0",
     "hono": "^4.6.20",
+    "itty-router": "^5.0.20",
     "zod": "^3.24.1"
   },
   "devDependencies": {

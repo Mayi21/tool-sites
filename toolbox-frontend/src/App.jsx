@@ -465,6 +465,8 @@ export default function App() {
                   path="*" 
                   element={<NotFound />} 
                 />
+                <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
+                <Route path="/questionnaire/:id/results" element={<ViewResults />} />
               </Routes>
             </Content>
             <Footer style={{ 

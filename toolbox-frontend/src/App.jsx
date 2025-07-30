@@ -14,6 +14,8 @@ import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, Dashbo
 const AdminDashboard = lazy(() => import('./components/Dashboard/AdminDashboard'));
 const AnalyticsTest = lazy(() => import('./components/AnalyticsTest'));
 const EnvInfo = lazy(() => import('./components/EnvInfo'));
+const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
+const ViewResults = lazy(() => import('./components/tools/ViewResults'));
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
@@ -23,7 +25,7 @@ const toolCategories = [
   {
     nameKey: 'Development Tools',
     key: 'dev',
-    tools: ['base64', 'json-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser']
+    tools: ['base64', 'json-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser', 'create-questionnaire']
   },
   {
     nameKey: 'Text Processing',
@@ -379,95 +381,97 @@ export default function App() {
                 minHeight: 'calc(100vh - 64px - 70px)'
               }}
             >
-              <Routes>
-                <Route path="/" element={
-                  <div style={{ 
-                    width: '100%', 
-                    maxWidth: '1400px', 
-                    margin: '0 auto', 
-                    padding: '0 8px'
-                  }}>
-                    <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                      <Title level={2} style={{ marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-                        {t('Multi-function Toolbox')}
-                      </Title>
-                      <p style={{ fontSize: 'clamp(14px, 3vw, 16px)', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                        {t('One-stop online tool collection to improve development efficiency')}
-                      </p>
-                    </div>
-                    
-                    {toolCategories.map((category, index) => (
-                      <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '2rem' }}>
-                        <Title level={3} style={{ 
-                          marginBottom: '1.5rem', 
-                          color: 'var(--text-primary)',
-                          fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
-                          textAlign: 'center',
-                          width: '100%'
-                        }}>
-                          {t(category.nameKey)}
+              <Suspense fallback={<Spin size="large" />}>
+                <Routes>
+                  <Route path="/" element={
+                    <div style={{ 
+                      width: '100%', 
+                      maxWidth: '1400px', 
+                      margin: '0 auto', 
+                      padding: '0 8px'
+                    }}>
+                      <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                        <Title level={2} style={{ marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
+                          {t('Multi-function Toolbox')}
                         </Title>
-                        <Row
-                          gutter={[16, 16]}
-                          justify="start"
-                          style={{ width: '100%' }}
-                        >
-                          {categorizedTools[category.key]?.map(tool => (
-                            <Col 
-                              key={tool.path} 
-                              xs={24} 
-                              sm={12} 
-                              md={8} 
-                              lg={6} 
-                              xl={6}
-                              xxl={6}
-                              style={{ display: 'flex', justifyContent: 'center' }}
-                            >
-                              <ToolCard 
-                              path={tool.path}
-                              nameKey={tool.nameKey}
-                              descKey={tool.descKey}
-                            />
-                            </Col>
-                          ))}
-                        </Row>
-                        {index < toolCategories.length - 1 && (
-                          <Divider style={{ margin: '3rem 0' }} />
-                        )}
+                        <p style={{ fontSize: 'clamp(14px, 3vw, 16px)', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
+                          {t('One-stop online tool collection to improve development efficiency')}
+                        </p>
                       </div>
-                    ))}
-                  </div>
-                } />
-                {tools.map(tool => (
+                      
+                      {toolCategories.map((category, index) => (
+                        <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '2rem' }}>
+                          <Title level={3} style={{ 
+                            marginBottom: '1.5rem', 
+                            color: 'var(--text-primary)',
+                            fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
+                            textAlign: 'center',
+                            width: '100%'
+                          }}>
+                            {t(category.nameKey)}
+                          </Title>
+                          <Row
+                            gutter={[16, 16]}
+                            justify="start"
+                            style={{ width: '100%' }}
+                          >
+                            {categorizedTools[category.key]?.map(tool => (
+                              <Col 
+                                key={tool.path} 
+                                xs={24} 
+                                sm={12} 
+                                md={8} 
+                                lg={6} 
+                                xl={6}
+                                xxl={6}
+                                style={{ display: 'flex', justifyContent: 'center' }}
+                              >
+                                <ToolCard 
+                                path={tool.path}
+                                nameKey={tool.nameKey}
+                                descKey={tool.descKey}
+                              />
+                              </Col>
+                            ))}
+                          </Row>
+                          {index < toolCategories.length - 1 && (
+                            <Divider style={{ margin: '3rem 0' }} />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  } />
+                  {tools.map(tool => (
+                    <Route 
+                      key={tool.path} 
+                      path={tool.path} 
+                      element={
+                        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 8px', width: '100%' }}>
+                          <tool.Component />
+                        </div>
+                      } 
+                    />
+                  ))}
                   <Route 
-                    key={tool.path} 
-                    path={tool.path} 
-                    element={
-                      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 8px', width: '100%' }}>
-                        <tool.Component />
-                      </div>
-                    } 
+                    path="/admin/dashboard" 
+                    element={<AdminDashboard />} 
                   />
-                ))}
-                <Route 
-                  path="/admin/dashboard" 
-                  element={<AdminDashboard />} 
-                />
-                <Route 
-                  path="/analytics-test" 
-                  element={<AnalyticsTest />} 
-                />
-                <Route 
-                  path="/env-info" 
-                  element={<EnvInfo />} 
-                />
-                <Route 
-                  path="*" 
-                  element={<NotFound />} 
-                />
-                <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
-                <Route path="/questionnaire/:id/results" element={<ViewResults />} />
-              </Routes>
+                  <Route 
+                    path="/analytics-test" 
+                    element={<AnalyticsTest />} 
+                  />
+                  <Route 
+                    path="/env-info" 
+                    element={<EnvInfo />} 
+                  />
+                  <Route 
+                    path="*" 
+                    element={<NotFound />} 
+                  />
+                  <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
+                  <Route path="/questionnaire/:id/results" element={<ViewResults />} />
+                </Routes>
+              </Suspense>
             </Content>
             <Footer style={{ 
               textAlign: 'center', 

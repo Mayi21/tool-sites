@@ -40,11 +40,7 @@ const toolCategories = [
     key: 'security',
     tools: ['hash-generator']
   },
-  {
-    nameKey: 'Design Tools',
-    key: 'design',
-    tools: ['color-converter', 'qr-generator', 'image-compressor']
-  }
+  { nameKey: 'Design Tools', key: 'design', tools: ['color-converter', 'qr-generator', 'image-compressor', 'image-watermark'] }
 ];
 
 // 动态标题组件

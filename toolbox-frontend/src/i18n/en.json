@@ -271,5 +271,21 @@
   "imageWatermark.textColorLabel": "Text Color",
   "imageWatermark.opacityLabel": "Opacity",
   "imageWatermark.downloadButton": "Download Watermarked Image",
-  "imageWatermark.errorSize": "File size exceeds 10MB"
+  "imageWatermark.errorSize": "File size exceeds 10MB",
+  "Image Watermark": "Image Watermark",
+  "Add watermark to image": "Add watermark to image",
+  "Image size cannot exceed 10MB": "Image size cannot exceed 10MB",
+  "Failed to upload image": "Failed to upload image",
+  "Please upload an image": "Please upload an image",
+  "Please enter watermark text": "Please enter watermark text",
+  "Failed to process image": "Failed to process image",
+  "Select Image": "Select Image",
+  "Enter watermark text": "Enter watermark text",
+  "Watermark Color": "Watermark Color",
+  "Add Watermark and Download": "Add Watermark and Download",
+  "Preview will appear here": "Preview will appear here",
+  "Watermark Type": "Watermark Type",
+  "Single": "Single",
+  "Tiled": "Tiled",
+  "Opacity": "Opacity"
 }

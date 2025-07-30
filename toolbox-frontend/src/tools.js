@@ -109,4 +109,10 @@ export default [
     descKey: 'Cron Expression Linux/Spring Converter Tool',
     Component: lazy(() => import('./components/tools/CronParser')),
   },
-]; 
+  {
+    path: '/image-watermark',
+    nameKey: 'Image Watermark',
+    descKey: 'Add watermark to image',
+    Component: lazy(() => import('./components/tools/ImageWatermark')),
+  },
+];

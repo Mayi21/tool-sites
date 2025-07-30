@@ -42,6 +42,10 @@ a:hover {
   text-decoration: underline;
 }
 
+.custom-card-body .ant-card-body {
+  padding: 24px;
+}
+
 /* Layout and Typography */
 #root {
   max-width: 100%; /* Adjust as needed for overall layout */

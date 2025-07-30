@@ -264,5 +264,21 @@
   "Run": "运行",
   "Next 5 execution times (UTC)": "未来5次执行时间（UTC）：",
   "Failed to parse: ": "解析失败: ",
-  "Unrecognized expression type (only 5 or 6 fields supported)": "无法识别表达式类型（仅支持5位或6位）"
+  "Unrecognized expression type (only 5 or 6 fields supported)": "无法识别表达式类型（仅支持5位或6位）",
+  "Image Watermark": "图片水印",
+  "Add watermark to image": "给图片添加水印",
+  "Image size cannot exceed 10MB": "图片大小不能超过10MB",
+  "Failed to upload image": "图片上传失败",
+  "Please upload an image": "请上传图片",
+  "Please enter watermark text": "请输入水印文字",
+  "Failed to process image": "图片处理失败",
+  "Select Image": "选择图片",
+  "Enter watermark text": "输入水印文字",
+  "Watermark Color": "水印颜色",
+  "Add Watermark and Download": "添加水印并下载",
+  "Preview will appear here": "预览将显示在这里",
+  "Watermark Type": "水印类型",
+  "Single": "单个",
+  "Tiled": "平铺",
+  "Opacity": "透明度"
 } 

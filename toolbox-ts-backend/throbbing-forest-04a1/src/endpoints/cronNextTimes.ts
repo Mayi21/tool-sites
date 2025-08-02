@@ -1,7 +1,9 @@
 import { OpenAPIRoute } from 'chanfana';
 import { z } from 'zod';
 import { type AppContext } from '../types';
-import CronExpressionParser from 'cron-parser';
+
+// Import cron-parser using require for version 5.x compatibility
+const parser = require('cron-parser');
 
 export class CronNextTimes extends OpenAPIRoute {
   schema = {
@@ -13,7 +15,6 @@ export class CronNextTimes extends OpenAPIRoute {
           'application/json': {
             schema: z.object({
               expr: z.string(),
-              type: z.enum(['auto', 'linux', 'spring']).default('auto'),
               count: z.number().default(5)
             })
           }
@@ -38,30 +39,29 @@ export class CronNextTimes extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
-    let { expr, type, count } = data.body;
-    function detectType(expr: string): 'linux' | 'spring' | 'unknown' {
-      const parts = expr.trim().split(/\s+/);
-      if (parts.length === 5) return 'linux';
-      if (parts.length === 6) return 'spring';
-      if (parts.length === 7) return 'spring'; // Spring cron 7字段
-      return 'unknown';
+    let { expr, count } = data.body;
+
+    let processedExpr = expr.trim().replace(/\?/g, '*');
+    const parts = processedExpr.split(/\s+/);
+
+    if (parts.length === 5) {
+        processedExpr = '0 ' + processedExpr;
     }
-    if (type === 'auto') type = detectType(expr) as 'linux' | 'spring';
-    if (type !== 'linux' && type !== 'spring') {
-      return { success: false, times: [], error: 'Unrecognized expression type (仅支持5/6/7字段的cron表达式，当前字段数不符)' };
+
+    const finalParts = processedExpr.split(/\s+/);
+    if (finalParts.length < 6 || finalParts.length > 7) {
+        return { success: false, times: [], error: 'Invalid expression format. Must be 5, 6, or 7 fields.' };
     }
-    if (type === 'linux') {
-      expr = '0 ' + expr;
-    }
+
     try {
-      const interval = CronExpressionParser.parse(expr);
-      const times: string[] = [];
+      const interval = parser.default.parse(processedExpr);
+      const times = [];
       for (let i = 0; i < count; i++) {
         times.push(interval.next().toISOString());
       }
-      return { success: true, times };
-    } catch (e: any) {
-      return { success: false, times: [], error: 'Failed to parse: ' + e.message };
+      return { success: true, times: times };
+    } catch (err: any) {
+      return { success: false, times: [], error: err.message };
     }
   }
-} 
+}

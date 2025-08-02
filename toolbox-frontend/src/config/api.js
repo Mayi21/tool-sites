@@ -33,6 +33,7 @@ const API_CONFIG = {
     
     // 工具使用记录
     ANALYTICS_TOOL_USAGE: '/api/analytics/tool-usage',
+    CRON_NEXT_TIMES: '/api/cron/next-times',
     
     // 管理员操作
     ADMIN_LOGS: '/api/admin/logs'

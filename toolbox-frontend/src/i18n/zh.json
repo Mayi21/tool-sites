@@ -338,6 +338,7 @@
     "enterWatermark": "输入水印文字",
     "color": "水印颜色",
     "transparency": "透明度",
+    "fontSize": "字体大小",
     "addWatermarkAndDownload": "添加水印并下载",
     "successUpload": "图片上传成功",
     "failUpload": "图片上传失败",
@@ -346,4 +347,4 @@
     "failProcess": "图片处理失败",
     "failWatermark": "添加水印失败"
   }
-}
+} 

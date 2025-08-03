@@ -345,6 +345,7 @@
     "enterWatermark": "Enter watermark text",
     "color": "Watermark Color",
     "transparency": "Transparency",
+    "fontSize": "Font Size",
     "addWatermarkAndDownload": "Add Watermark and Download",
     "successUpload": "Image uploaded successfully",
     "failUpload": "Failed to upload image",

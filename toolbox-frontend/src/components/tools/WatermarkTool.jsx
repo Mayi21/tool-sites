@@ -12,6 +12,7 @@ export default function WatermarkTool() {
   const [watermarkText, setWatermarkText] = useState('Watermark');
   const [watermarkColor, setWatermarkColor] = useState('rgba(0, 0, 0, 0.5)');
   const [transparency, setTransparency] = useState(0.5);
+  const [fontSize, setFontSize] = useState(24);
   const [loading, setLoading] = useState(false);
   const canvasRef = useRef(null);
 
@@ -46,7 +47,7 @@ export default function WatermarkTool() {
       if (watermarkText.trim()) {
         ctx.fillStyle = watermarkColor;
         ctx.globalAlpha = transparency;
-        ctx.font = '24px Arial';
+        ctx.font = `${fontSize}px Arial`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(watermarkText, canvas.width / 2, canvas.height / 2);
@@ -57,7 +58,7 @@ export default function WatermarkTool() {
         message.error(t('watermarkTool.failProcess'));
     };
 
-  }, [imageUrl, watermarkText, watermarkColor, transparency, t]);
+  }, [imageUrl, watermarkText, watermarkColor, transparency, fontSize, t]);
 
   const handleDownload = () => {
     if (!imageUrl) {
@@ -120,6 +121,17 @@ export default function WatermarkTool() {
               />
             </Col>
           </Row>
+
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8 }}>{t('watermarkTool.fontSize')} ({fontSize}px)</div>
+            <Slider
+              value={fontSize}
+              min={12}
+              max={128}
+              step={1}
+              onChange={setFontSize}
+            />
+          </div>
 
           <Button
             type="primary"

@@ -105,22 +105,21 @@ export default function WatermarkTool() {
             />
           </div>
 
-          <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
-            <Col span={12}>
-              <div style={{ marginBottom: 8 }}>{t('watermarkTool.color')}</div>
-              <ColorPicker value={watermarkColor} onChange={(c) => setWatermarkColor(c.toRgbString())} />
-            </Col>
-            <Col span={12}>
-              <div style={{ marginBottom: 8 }}>{t('watermarkTool.transparency')} ({(transparency * 100).toFixed(0)}%)</div>
-              <Slider
-                value={transparency}
-                min={0}
-                max={1}
-                step={0.01}
-                onChange={setTransparency}
-              />
-            </Col>
-          </Row>
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8 }}>{t('watermarkTool.color')}</div>
+            <ColorPicker value={watermarkColor} onChange={(c) => setWatermarkColor(c.toRgbString())} />
+          </div>
+
+          <div style={{ marginBottom: 16 }}>
+            <div style={{ marginBottom: 8 }}>{t('watermarkTool.transparency')} ({(transparency * 100).toFixed(0)}%)</div>
+            <Slider
+              value={transparency}
+              min={0}
+              max={1}
+              step={0.01}
+              onChange={setTransparency}
+            />
+          </div>
 
           <div style={{ marginBottom: 16 }}>
             <div style={{ marginBottom: 8 }}>{t('watermarkTool.fontSize')} ({fontSize}px)</div>

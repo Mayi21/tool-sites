@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, Input, Button, Space, Row, Col, Slider, ColorPicker, Upload, message, Spin } from 'antd';
-import { UploadOutlined, DownloadOutlined, ImageOutlined } from '@ant-design/icons';
+import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getBase64 } from '../../utils/imageUtils';
 
 const { TextArea } = Input;
@@ -22,10 +22,10 @@ export default function WatermarkTool() {
     try {
       const base64Url = await getBase64(file.originFileObj);
       setImageUrl(base64Url);
-      message.success(t('Image uploaded successfully'));
+      message.success(t('watermarkTool.successUpload'));
     } catch (error) {
       console.error('Image upload error:', error);
-      message.error(t('Failed to upload image'));
+      message.error(t('watermarkTool.failUpload'));
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,7 @@ export default function WatermarkTool() {
   // 绘制水印并下载
   const handleAddWatermark = () => {
     if (!imageUrl || !watermarkText.trim()) {
-      message.warning(t('Please upload an image and enter watermark text'));
+      message.warning(t('watermarkTool.warnUpload'));
       return;
     }
 
@@ -72,24 +72,24 @@ export default function WatermarkTool() {
         link.download = 'watermarked-image.png';
         link.click();
 
-        message.success(t('Watermark added successfully'));
+        message.success(t('watermarkTool.successWatermark'));
         setLoading(false);
       };
 
       img.onerror = () => {
-        message.error(t('Failed to process image'));
+        message.error(t('watermarkTool.failProcess'));
         setLoading(false);
       };
     } catch (error) {
       console.error('Watermark error:', error);
-      message.error(t('Failed to add watermark'));
+      message.error(t('watermarkTool.failWatermark'));
       setLoading(false);
     }
   };
 
   return (
     <Card 
-      title={t('Image Watermark Tool')} 
+      title={t('watermarkTool.title')} 
       className="tool-card custom-card-body" 
     >
       <div style={{ marginBottom: 20 }}>
@@ -101,11 +101,11 @@ export default function WatermarkTool() {
           accept="image/*"
         >
           {imageUrl ? (
-            <img src={imageUrl} alt={t('Uploaded image')} style={{ width: '100%', maxHeight: 300, objectFit: 'contain' }} />
+            <img src={imageUrl} alt={t('watermarkTool.uploaded')} style={{ width: '100%', maxHeight: 300, objectFit: 'contain' }} />
           ) : (
             <div style={{ textAlign: 'center', padding: '30px 0' }}>
               <UploadOutlined style={{ fontSize: 32, color: '#1890ff' }} />
-              <div style={{ marginTop: 16 }}>{t('Click to upload image')}</div>
+              <div style={{ marginTop: 16 }}>{t('watermarkTool.upload')}</div>
             </div>
           )}
         </Upload>
@@ -113,7 +113,7 @@ export default function WatermarkTool() {
 
       <div style={{ marginBottom: 16 }}>
         <TextArea
-          placeholder={t('Enter watermark text')}
+          placeholder={t('watermarkTool.enterWatermark')}
           value={watermarkText}
           onChange={(e) => setWatermarkText(e.target.value)}
           rows={4}
@@ -122,11 +122,11 @@ export default function WatermarkTool() {
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col span={12}>
-          <div style={{ marginBottom: 8 }}>{t('Watermark Color')}</div>
+          <div style={{ marginBottom: 8 }}>{t('watermarkTool.color')}</div>
           <ColorPicker value={watermarkColor} onChange={setWatermarkColor} />
         </Col>
         <Col span={12}>
-          <div style={{ marginBottom: 8 }}>{t('Transparency')} ({(transparency * 100).toFixed(0)}%)</div>
+          <div style={{ marginBottom: 8 }}>{t('watermarkTool.transparency')} ({(transparency * 100).toFixed(0)}%)</div>
           <Slider
             value={transparency}
             min={0}
@@ -144,7 +144,7 @@ export default function WatermarkTool() {
         loading={loading}
         block
       >
-        {t('Add Watermark and Download')}
+        {t('watermarkTool.addWatermarkAndDownload')}
       </Button>
 
       {/* 隐藏的Canvas用于处理图片 */}

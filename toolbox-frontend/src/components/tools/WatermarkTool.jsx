@@ -20,7 +20,7 @@ export default function WatermarkTool() {
   const handleImageUpload = async (file) => {
     setLoading(true);
     try {
-      const base64Url = await getBase64(file.originFileObj);
+      const base64Url = await getBase64(file);
       setImageUrl(base64Url);
       message.success(t('watermarkTool.successUpload'));
     } catch (error) {

@@ -40,8 +40,11 @@ export default function WatermarkTool() {
     img.src = imageUrl;
 
     img.onload = () => {
+      // 设置 canvas 为原始图片尺寸
       canvas.width = img.width;
       canvas.height = img.height;
+      
+      // 绘制图片
       ctx.drawImage(img, 0, 0);
 
       if (watermarkText.trim()) {
@@ -143,7 +146,24 @@ export default function WatermarkTool() {
           </Button>
         </Col>
         <Col xs={24} md={16}>
-          <canvas ref={canvasRef} style={{ width: '100%', border: '1px dashed #ccc' }}/>
+          <div style={{ 
+            width: '100%', 
+            height: 465,
+            border: '1px dashed #ccc',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            overflow: 'hidden'
+          }}>
+            <canvas 
+              ref={canvasRef} 
+              style={{ 
+                maxWidth: '100%', 
+                maxHeight: '100%', 
+                objectFit: 'contain' 
+              }}
+            />
+          </div>
         </Col>
       </Row>
     </Card>

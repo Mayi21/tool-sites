@@ -4,8 +4,6 @@
   font-weight: 400;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,10 +12,8 @@
   
   /* Theme transition */
   transition: all 0.3s ease;
-}
 
-/* Light theme variables */
-:root.light {
+  /* Default (light) theme variables to avoid initial flash */
   --bg-primary: #ffffff;
   --bg-secondary: #f7f8fa;
   --bg-tertiary: #f0f2f5;
@@ -37,6 +33,9 @@
   --error-color: #ff4d4f;
   --error-border: #ffccc7;
 }
+
+/* Light theme class (optional) */
+:root.light {}
 
 /* Dark theme variables */
 :root.dark {
@@ -122,8 +121,8 @@
   }
 }
 
-/* Smooth transitions for theme changes */
-* {
+/* Smooth transitions for theme changes - limit to high-level containers */
+.theme-transition, .ant-card, .ant-btn, .ant-input, .ant-select, .ant-modal, .ant-dropdown-menu {
   transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
 }
 

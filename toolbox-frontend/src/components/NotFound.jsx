@@ -6,14 +6,7 @@ import { HomeOutlined, ArrowLeftOutlined, ReloadOutlined } from '@ant-design/ico
 export default function NotFound() {
   const navigate = useNavigate();
 
-  // 3秒后自动跳转到主页
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      navigate('/', { replace: true });
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [navigate]);
+  // 保留手动跳转，取消自动跳转，避免打断用户
 
   const handleGoHome = () => {
     navigate('/', { replace: true });
@@ -45,7 +38,7 @@ export default function NotFound() {
               抱歉，您访问的页面不存在。
             </p>
             <p style={{ fontSize: '14px', color: '#666' }}>
-              3秒后自动跳转到主页...
+              您可以返回主页或上一页继续浏览。
             </p>
           </div>
         }

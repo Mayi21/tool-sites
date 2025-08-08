@@ -8,7 +8,6 @@ export default function ThemeSwitcher({ theme, setTheme }) {
   const [isLoading, setIsLoading] = useState(false);
   
   useEffect(() => {
-    document.body.setAttribute('data-theme', theme);
     localStorage.setItem('theme', theme);
     const htmlElement = document.documentElement;
     if (theme === 'dark') {

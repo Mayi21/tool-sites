@@ -291,7 +291,7 @@ export default function AdminDashboard() {
 
   return (
     <Spin spinning={loading} size="large" tip="Updating data...">
-      <div style={{ padding: '20px', background: '#f0f2f5', minHeight: '100vh' }}>
+      <div style={{ padding: '20px', background: 'var(--bg-secondary)', minHeight: '100vh' }}>
         <div style={{ 
           marginBottom: 24, 
           display: 'flex', 

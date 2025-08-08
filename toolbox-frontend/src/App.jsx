@@ -253,7 +253,6 @@ function NavigationBar({ theme, setTheme }) {
         boxShadow: 'none', 
         display: 'flex', 
         alignItems: 'center', 
-        padding: '0 4rem',
         width: '100%',
         borderBottom: '1px solid var(--border-color)'
       }}
@@ -273,6 +272,7 @@ function NavigationBar({ theme, setTheme }) {
                 icon={<ArrowLeftOutlined />}
                 onClick={goBack}
                 size="small"
+                aria-label={t('Go Back')}
                 style={{
                   borderRadius: '6px',
                   backgroundColor: 'var(--bg-tertiary)',
@@ -288,6 +288,7 @@ function NavigationBar({ theme, setTheme }) {
                 icon={<HomeOutlined />}
                 onClick={goHome}
                 size="small"
+                aria-label={t('Back to Home')}
                 style={{
                   borderRadius: '6px'
                 }}
@@ -306,6 +307,7 @@ function NavigationBar({ theme, setTheme }) {
                 <Button
                   icon={<MenuOutlined />}
                   size="small"
+                  aria-label={t('Quick Navigation')}
                   style={{
                     borderRadius: '6px',
                     backgroundColor: 'var(--bg-tertiary)',
@@ -376,7 +378,7 @@ export default function App() {
             <Content 
               style={{ 
                 background: 'var(--bg-secondary)', 
-                padding: '1.5rem 0.5rem',
+                padding: 'clamp(12px, 2vw, 24px) clamp(8px, 2vw, 24px)',
                 width: '100%',
                 minHeight: 'calc(100vh - 64px - 70px)'
               }}
@@ -386,7 +388,7 @@ export default function App() {
                   <Route path="/" element={
                     <div style={{ 
                       width: '100%', 
-                      maxWidth: '1400px', 
+                      maxWidth: '1280px', 
                       margin: '0 auto', 
                       padding: '0 8px'
                     }}>

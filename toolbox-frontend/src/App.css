@@ -1,27 +1,6 @@
-/* Global Styles */
-:root {
-  /* Light Theme Colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f5f5f7;
-  --bg-tertiary: #e0e0e0;
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --border-color: #d2d2d7;
-  --shadow-color: rgba(0, 0, 0, 0.08);
-  --highlight-color: #007aff; /* Apple Blue */
-}
+/* Global light theme variables moved to index.css (.light) */
 
-/* Dark Theme Colors (example, adjust as needed) */
-[data-theme="dark"] {
-  --bg-primary: #1c1c1e;
-  --bg-secondary: #2c2c2e;
-  --bg-tertiary: #3a3a3c;
-  --text-primary: #f5f5f7;
-  --text-secondary: #aeaeb2;
-  --border-color: #48484a;
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --highlight-color: #0a84ff;
-}
+/* 移除 data-theme 方案，统一使用 .light / .dark（参见 index.css） */
 
 body {
   margin: 0;

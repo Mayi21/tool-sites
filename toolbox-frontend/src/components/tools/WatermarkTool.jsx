@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Input, Button, Row, Col, Slider, ColorPicker, Upload, message } from 'antd';
+import { Card, Input, Button, Row, Col, Slider, ColorPicker, Upload, message, Modal } from 'antd';
 import { UploadOutlined, DownloadOutlined } from '@ant-design/icons';
 import { getBase64 } from '../../utils/imageUtils';
 
@@ -14,6 +14,8 @@ export default function WatermarkTool() {
   const [transparency, setTransparency] = useState(0.5);
   const [fontSize, setFontSize] = useState(24);
   const [loading, setLoading] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState(null);
   const canvasRef = useRef(null);
 
   const handleImageUpload = async (file) => {
@@ -75,6 +77,16 @@ export default function WatermarkTool() {
     link.download = 'watermarked-image.png';
     link.click();
     message.success(t('watermarkTool.successWatermark'));
+  };
+
+  const handleDoubleClickPreview = () => {
+    if (!imageUrl || !canvasRef.current) {
+      message.warning(t('watermarkTool.warnUpload'));
+      return;
+    }
+    const url = canvasRef.current.toDataURL('image/png');
+    setPreviewUrl(url);
+    setPreviewOpen(true);
   };
 
   return (
@@ -146,14 +158,15 @@ export default function WatermarkTool() {
           </Button>
         </Col>
         <Col xs={24} md={16}>
-          <div style={{ 
+          <div onDoubleClick={handleDoubleClickPreview} title="双击预览" style={{ 
             width: '100%', 
             height: 465,
             border: '1px dashed #ccc',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            overflow: 'hidden'
+            overflow: 'hidden',
+            cursor: imageUrl ? 'zoom-in' : 'default'
           }}>
             <canvas 
               ref={canvasRef} 
@@ -166,6 +179,24 @@ export default function WatermarkTool() {
           </div>
         </Col>
       </Row>
+      <Modal
+        open={previewOpen}
+        footer={null}
+        onCancel={() => setPreviewOpen(false)}
+        width="80vw"
+        style={{ top: 20 }}
+        destroyOnClose
+      >
+        <div style={{ width: '100%', maxHeight: '80vh', overflow: 'auto' }}>
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="preview"
+              style={{ width: '100%', height: 'auto', objectFit: 'contain' }}
+            />
+          )}
+        </div>
+      </Modal>
     </Card>
   );
 }

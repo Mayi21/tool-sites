@@ -73,6 +73,16 @@ function DynamicTitle() {
   return null;
 }
 
+// 路由过渡包装，基于 pathname 触发入场动画
+function RouteTransitionWrapper({ children }) {
+  const loc = useLocation();
+  return (
+    <div className="route-transition" key={loc.pathname}>
+      {children}
+    </div>
+  );
+}
+
 // 导航栏组件
 function NavigationBar({ theme, setTheme }) {
   const { t } = useTranslation();
@@ -347,6 +357,10 @@ export default function App() {
   // Configure theme algorithm
   const { defaultAlgorithm, darkAlgorithm } = antdTheme;
 
+  // 移除收藏/最近使用/搜索逻辑，保持首页简洁
+
+  const [activeCategoryKey, setActiveCategoryKey] = useState('all');
+
   // 按分类组织工具
   const getToolsByCategory = () => {
     const categorizedTools = {};
@@ -360,8 +374,15 @@ export default function App() {
     return categorizedTools;
   };
 
+  // 过滤函数移除（不再提供搜索）
+
   const categorizedTools = getToolsByCategory();
+  const categoriesToRender = activeCategoryKey === 'all'
+    ? toolCategories
+    : toolCategories.filter(c => c.key === activeCategoryKey);
   
+  // 简化后不再使用收藏与最近使用
+
   return (
     <ConfigProvider
       key={theme}
@@ -372,6 +393,7 @@ export default function App() {
       <BrowserRouter>
         <DynamicTitle />
         <RouteTracker />
+        {/* 路由过渡动画容器 */}
         <ThemeTransition theme={theme}>
           <Layout style={{ minHeight: '100vh', width: '100%' }}>
             <NavigationBar theme={theme} setTheme={setTheme} />
@@ -383,8 +405,9 @@ export default function App() {
                 minHeight: 'calc(100vh - 64px - 70px)'
               }}
             >
-              <Suspense fallback={<Spin size="large" />}>
-                <Routes>
+              <RouteTransitionWrapper>
+                <Suspense fallback={<Spin size="large" />}>
+                  <Routes>
                   <Route path="/" element={
                     <div style={{ 
                       width: '100%', 
@@ -400,8 +423,30 @@ export default function App() {
                           {t('One-stop online tool collection to improve development efficiency')}
                         </p>
                       </div>
+
+                      {/* 分类快捷标签保留，仅用于切换分类 */}
+                      <div style={{ margin: '0 auto 24px', display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        {['dev','text','data','security','design','all'].map(key => (
+                          <button
+                            key={key}
+                            onClick={() => setActiveCategoryKey(key)}
+                            style={{
+                              padding: '6px 10px',
+                              borderRadius: 6,
+                              border: '1px solid var(--border-color)',
+                              background: activeCategoryKey === key ? '#1677ff' : 'var(--bg-tertiary)',
+                              color: activeCategoryKey === key ? '#fff' : 'var(--text-primary)',
+                              cursor: 'pointer'
+                            }}
+                          >
+                            {key === 'all' ? t('All') : t(toolCategories.find(c => c.key === key)?.nameKey)}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* 移除收藏与最近使用区块 */}
                       
-                      {toolCategories.map((category, index) => (
+                      {categoriesToRender.map((category, index) => (
                         <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '2rem' }}>
                           <Title level={3} style={{ 
                             marginBottom: '1.5rem', 
@@ -429,14 +474,14 @@ export default function App() {
                                 style={{ display: 'flex', justifyContent: 'center' }}
                               >
                                 <ToolCard 
-                                path={tool.path}
-                                nameKey={tool.nameKey}
-                                descKey={tool.descKey}
-                              />
+                                  path={tool.path}
+                                  nameKey={tool.nameKey}
+                                  descKey={tool.descKey}
+                                />
                               </Col>
                             ))}
                           </Row>
-                          {index < toolCategories.length - 1 && (
+                          {index < categoriesToRender.length - 1 && (
                             <Divider style={{ margin: '3rem 0' }} />
                           )}
                         </div>
@@ -472,8 +517,9 @@ export default function App() {
                   />
                   <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
                   <Route path="/questionnaire/:id/results" element={<ViewResults />} />
-                </Routes>
-              </Suspense>
+                  </Routes>
+                </Suspense>
+              </RouteTransitionWrapper>
             </Content>
             <Footer style={{ 
               textAlign: 'center', 

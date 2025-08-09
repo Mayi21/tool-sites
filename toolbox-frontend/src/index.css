@@ -240,6 +240,24 @@ button:focus-visible {
   animation: fadeIn 0.3s ease;
 }
 
+/* 路由入场过渡 */
+.route-transition {
+  animation: routeFadeIn 220ms ease;
+}
+
+@keyframes routeFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: saturate(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: saturate(1);
+  }
+}
+
 /* Card hover effects for different themes */
 .light .ant-card:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -258,6 +276,17 @@ button:focus-visible {
 
 .dark .ant-btn:hover {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* 卡片与按钮轻微入场动效 */
+.ant-card, .ant-btn {
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.ant-card { animation: cardIn 240ms ease; }
+@keyframes cardIn {
+  from { transform: translateY(4px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* Navigation styles */

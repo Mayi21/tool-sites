@@ -8,6 +8,7 @@ import ThemeSwitcher from './components/ThemeSwitcher';
 import NotFound from './components/NotFound';
 import RouteTracker from './components/RouteTracker';
 import ThemeTransition from './components/ThemeTransition';
+import './App.css';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space, Spin } from 'antd';
 import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 
@@ -268,15 +269,17 @@ function NavigationBar({ theme, setTheme }) {
       }}
     >
       {/* 左侧：Logo和返回按钮 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-        <div style={{ fontSize: 24, fontWeight: 700, display: 'flex', alignItems: 'center' }}>
-          <AppstoreOutlined style={{ fontSize: 28, marginRight: 12, color: '#1677ff' }} />
-          {t('Multi-function Toolbox')}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+          <AppstoreOutlined style={{ fontSize: 22, marginRight: 8, color: '#1677ff' }} />
+          <span className="header-title-text" style={{ minWidth: 0, flex: 1 }}>
+            {t('Multi-function Toolbox')}
+          </span>
         </div>
         
         {/* 在工具页面显示导航按钮 */}
         {isInToolPage && (
-          <Space size="small">
+          <Space size="small" style={{ flexShrink: 0 }}>
             <Tooltip title={`${t('Go Back')} (Alt + ←)`} placement="bottom">
               <Button
                 icon={<ArrowLeftOutlined />}

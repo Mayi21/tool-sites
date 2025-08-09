@@ -629,6 +629,16 @@ kbd:hover {
   body {
     font-size: 14px;
   }
+
+  /* Ensure header left container and title can shrink without overflow */
+  .ant-layout-header > div:first-child {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
+  .ant-layout-header > div:first-child > div:first-child {
+    min-width: 0 !important;
+    overflow: hidden !important;
+  }
   
   h1 {
     font-size: 2em;

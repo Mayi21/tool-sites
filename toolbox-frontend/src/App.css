@@ -77,3 +77,32 @@ a:hover {
 .ant-divider {
   background-color: var(--border-color);
 }
+
+/* Responsive Header Title */
+.header-title-text {
+  font-size: 24px;
+  font-weight: 700;
+  /* Prevent wrapping and clip with ellipsis on narrow screens */
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* Allow the title to shrink within the header */
+  max-width: clamp(140px, 42vw, 420px);
+}
+
+/* On screens smaller than 768px, reduce font size and allow more width */
+@media (max-width: 768px) {
+  .header-title-text {
+    font-size: 18px;
+    max-width: 56vw;
+  }
+}
+
+/* On very small screens, keep it visible with smaller size */
+@media (max-width: 480px) {
+  .header-title-text {
+    font-size: 16px;
+    max-width: 60vw;
+  }
+}

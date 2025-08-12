@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "deploy": "wrangler deploy",
-    "dev": "wrangler dev",
-    "start": "wrangler dev",
-    "cf-typegen": "wrangler types"
+    "deploy": "node_modules/.bin/wrangler deploy",
+    "dev": "node_modules/.bin/wrangler dev",
+    "start": "node_modules/.bin/wrangler dev",
+    "cf-typegen": "node_modules/.bin/wrangler types"
   },
   "dependencies": {
     "chanfana": "^2.6.3",

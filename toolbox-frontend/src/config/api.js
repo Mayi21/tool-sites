@@ -7,7 +7,7 @@ const API_CONFIG = {
   BASE_URL: (() => {
     // 生产环境强制使用生产API地址
     if (import.meta.env.PROD) {
-      const prodApiUrl = 'https://throbbing-forest-04a1.xaoohii.workers.dev';
+      const prodApiUrl = 'https://toolifyhub-backend.xaoohii.workers.dev';
       log.info('Production environment detected, using:', prodApiUrl);
       return prodApiUrl;
     }

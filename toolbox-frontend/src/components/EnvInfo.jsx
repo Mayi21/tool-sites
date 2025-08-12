@@ -144,7 +144,7 @@ const EnvInfo = () => {
           
           <h4>API地址选择逻辑：</h4>
           <ol>
-            <li><strong>生产环境</strong>：强制使用 <code>https://throbbing-forest-04a1.xaoohii.workers.dev</code></li>
+            <li><strong>生产环境</strong>：强制使用 <code>https://toolifyhub-backend.xaoohii.workers.dev</code></li>
             <li><strong>开发环境</strong>：优先使用 <code>VITE_API_BASE_URL</code> 环境变量</li>
             <li><strong>开发环境</strong>：如果未设置环境变量，使用 <code>http://localhost:8787</code></li>
           </ol>

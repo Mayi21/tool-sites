@@ -6,13 +6,11 @@ import ToolCard from './components/ToolCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import NotFound from './components/NotFound';
-import RouteTracker from './components/RouteTracker';
 import ThemeTransition from './components/ThemeTransition';
 import './App.css';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space, Spin } from 'antd';
 import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 
-const AnalyticsTest = lazy(() => import('./components/AnalyticsTest'));
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
 
@@ -375,7 +373,6 @@ export default function App() {
     >
       <BrowserRouter>
         <DynamicTitle />
-        <RouteTracker />
         {/* 路由过渡动画容器 */}
         <ThemeTransition theme={theme}>
           <Layout style={{ minHeight: '100vh', width: '100%' }}>

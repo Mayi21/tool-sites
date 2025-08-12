@@ -63,12 +63,12 @@ export const getEnvConfig = () => {
       logLevel: 'debug'
     },
     [ENV_TYPES.PRODUCTION]: {
-      apiBaseUrl: 'https://throbbing-forest-04a1.xaoohii.workers.dev',
+      apiBaseUrl: 'toolifyhub-backend.xaoohii.workers.dev',
       debug: false,
       logLevel: 'error'
     },
     [ENV_TYPES.PREVIEW]: {
-      apiBaseUrl: 'https://throbbing-forest-04a1.xaoohii.workers.dev',
+      apiBaseUrl: 'toolifyhub-backend.xaoohii.workers.dev',
       debug: true,
       logLevel: 'warn'
     }
@@ -81,7 +81,7 @@ export const getEnvConfig = () => {
 export const getCurrentApiUrl = () => {
   // 生产环境强制使用生产API地址
   if (import.meta.env.PROD) {
-    return 'https://throbbing-forest-04a1.xaoohii.workers.dev';
+    return 'toolifyhub-backend.xaoohii.workers.dev';
   }
   
   // 开发环境：如果设置了环境变量，使用环境变量

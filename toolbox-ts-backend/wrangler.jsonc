@@ -4,7 +4,7 @@
  */
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "throbbing-forest-04a1",
+	"name": "toolifyhub-backend",
 	"main": "src/index.ts",
 	"compatibility_date": "2025-07-19",
 	"observability": {

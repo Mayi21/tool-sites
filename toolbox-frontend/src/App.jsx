@@ -12,9 +12,7 @@ import './App.css';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space, Spin } from 'antd';
 import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
 
-const AdminDashboard = lazy(() => import('./components/Dashboard/AdminDashboard'));
 const AnalyticsTest = lazy(() => import('./components/AnalyticsTest'));
-const EnvInfo = lazy(() => import('./components/EnvInfo'));
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
 
@@ -144,16 +142,7 @@ function NavigationBar({ theme, setTheme }) {
     {
       type: 'divider'
     },
-    {
-      key: 'dashboard',
-      label: (
-        <Space>
-          <DashboardOutlined />
-          管理员仪表板
-        </Space>
-      ),
-      onClick: () => navigate('/admin/dashboard')
-    },
+    
     {
       key: 'analytics',
       label: (
@@ -164,16 +153,7 @@ function NavigationBar({ theme, setTheme }) {
       ),
       onClick: () => navigate('/analytics-test')
     },
-    {
-      key: 'env-info',
-      label: (
-        <Space>
-          <DashboardOutlined />
-          环境信息
-        </Space>
-      ),
-      onClick: () => navigate('/env-info')
-    },
+    
     {
       type: 'divider'
     },
@@ -502,18 +482,12 @@ export default function App() {
                       } 
                     />
                   ))}
-                  <Route 
-                    path="/admin/dashboard" 
-                    element={<AdminDashboard />} 
-                  />
+                  
                   <Route 
                     path="/analytics-test" 
                     element={<AnalyticsTest />} 
                   />
-                  <Route 
-                    path="/env-info" 
-                    element={<EnvInfo />} 
-                  />
+                  
                   <Route 
                     path="*" 
                     element={<NotFound />} 

@@ -14,7 +14,6 @@ class TestDataGenerator {
       { path: '/', name: '首页' },
       { path: '/base64', name: 'Base64工具' },
       { path: '/diff', name: '文本对比' },
-      { path: '/admin', name: '管理员面板' },
       { path: '/analytics-test', name: '分析测试' }
     ];
 

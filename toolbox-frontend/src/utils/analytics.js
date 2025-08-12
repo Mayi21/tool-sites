@@ -31,9 +31,8 @@ class AnalyticsService {
       '': 'Home Page',
       'base64': 'Base64 Tool',
       'diff': 'Diff Tool',
-      'admin': 'Admin Panel',
       'analytics-test': 'Analytics Test',
-      'env-info': 'Environment Info'
+      
     };
     
     // 检查是否有预定义的名称

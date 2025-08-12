@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Card, Statistic, Row, Col, message, Spin } from 'antd';
 import analytics from '../utils/analytics.js';
-import { getEnvInfo, getCurrentEnv, getCurrentApiUrl } from '../utils/env.js';
+import { getCurrentEnv, getCurrentApiUrl } from '../utils/env.js';
 
 const AnalyticsTest = () => {
   const [stats, setStats] = useState(null);
@@ -230,11 +230,11 @@ const AnalyticsTest = () => {
       <Card title="调试信息">
         <div>
           <p><strong>当前环境:</strong> {getCurrentEnv()}</p>
-          <p><strong>环境模式:</strong> {getEnvInfo().mode}</p>
+          <p><strong>环境模式:</strong> {import.meta.env.MODE}</p>
           <p><strong>会话ID:</strong> {analytics.sessionId}</p>
           <p><strong>本地访问记录数:</strong> {analytics.visits.length}</p>
           <p><strong>当前页面:</strong> {analytics.currentPage || '无'}</p>
-          <p><strong>API基础URL:</strong> {import.meta.env.VITE_API_BASE_URL || '自动检测'}</p>
+          <p><strong>API基础URL:</strong> {import.meta.env.API_URL || '自动检测'}</p>
           <p><strong>实际API地址:</strong> {getCurrentApiUrl()}</p>
         </div>
       </Card>

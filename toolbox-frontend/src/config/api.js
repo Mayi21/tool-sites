@@ -3,25 +3,24 @@ import { getEnvConfig, log } from '../utils/env.js';
 // API配置
 const API_CONFIG = {
   // 后端API基础URL
-  // 根据环境自动选择API地址
+  // 优先从环境变量 API_URL 获取；本地开发缺失时回退到 http://localhost:8787
   BASE_URL: (() => {
-    // 生产环境强制使用生产API地址
-    if (import.meta.env.PROD) {
-      const prodApiUrl = 'https://toolifyhub-backend.xaoohii.workers.dev';
-      log.info('Production environment detected, using:', prodApiUrl);
-      return prodApiUrl;
+    const envApiUrl = import.meta.env.API_URL;
+    if (envApiUrl && typeof envApiUrl === 'string' && envApiUrl.trim().length > 0) {
+      log.info('Using API_URL from environment:', envApiUrl);
+      return envApiUrl.trim();
     }
-    
-    // 开发环境：如果设置了环境变量，使用环境变量
-    if (import.meta.env.VITE_API_BASE_URL) {
-      log.info('Using VITE_API_BASE_URL:', import.meta.env.VITE_API_BASE_URL);
-      return import.meta.env.VITE_API_BASE_URL;
+
+    // 本地开发默认值
+    const localDefault = 'http://localhost:8787';
+    if (import.meta.env.DEV) {
+      log.info('API_URL not set. Using local default:', localDefault);
+      return localDefault;
     }
-    
-    // 开发环境：使用默认本地地址
-    const devApiUrl = 'http://localhost:8787';
-    log.info('Development environment, using default:', devApiUrl);
-    return devApiUrl;
+
+    // 生产/预览环境如果未设置，仍回退到本地默认以避免崩溃
+    log.warn('API_URL not set in environment. Falling back to local default:', localDefault);
+    return localDefault;
   })(),
   
   // API端点
@@ -34,9 +33,6 @@ const API_CONFIG = {
     // 工具使用记录
     ANALYTICS_TOOL_USAGE: '/api/analytics/tool-usage',
     CRON_NEXT_TIMES: '/api/cron/next-times',
-    
-    // 管理员操作
-    ADMIN_LOGS: '/api/admin/logs'
   },
   
   // 请求配置

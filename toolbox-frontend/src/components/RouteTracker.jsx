@@ -28,12 +28,6 @@ const RouteTracker = () => {
             tool: currentTool.name,
             toolAction: 'view'
           };
-        } else if (path === '/admin/dashboard') {
-          pageName = '管理员仪表板';
-          toolInfo = {
-            tool: '管理员仪表板',
-            toolAction: 'view'
-          };
         } else {
           pageName = '未知页面';
         }

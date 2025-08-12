@@ -41,16 +41,7 @@ export const isPreview = () => {
 };
 
 // 获取环境信息
-export const getEnvInfo = () => {
-  return {
-    mode: import.meta.env.MODE,
-    isDev: import.meta.env.DEV,
-    isProd: import.meta.env.PROD,
-    baseUrl: import.meta.env.BASE_URL,
-    apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
-    currentEnv: getCurrentEnv()
-  };
-};
+// 已去除 env_info 页面，保留最小必要方法，若有其它地方引用请直接使用 import.meta.env
 
 // 根据环境获取配置
 export const getEnvConfig = () => {
@@ -79,17 +70,12 @@ export const getEnvConfig = () => {
 
 // 获取当前API地址（与API配置保持一致）
 export const getCurrentApiUrl = () => {
-  // 生产环境强制使用生产API地址
-  if (import.meta.env.PROD) {
-    return 'toolifyhub-backend.xaoohii.workers.dev';
+  // 优先使用环境变量 API_URL
+  if (import.meta.env.API_URL && String(import.meta.env.API_URL).trim().length > 0) {
+    return String(import.meta.env.API_URL).trim();
   }
-  
-  // 开发环境：如果设置了环境变量，使用环境变量
-  if (import.meta.env.VITE_API_BASE_URL) {
-    return import.meta.env.VITE_API_BASE_URL;
-  }
-  
-  // 开发环境：使用默认本地地址
+
+  // 本地启动获取不到则默认本地地址
   return 'http://localhost:8787';
 };
 
@@ -121,7 +107,6 @@ export default {
   isDevelopment,
   isProduction,
   isPreview,
-  getEnvInfo,
   getEnvConfig,
   log
 }; 

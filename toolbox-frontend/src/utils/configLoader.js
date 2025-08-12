@@ -9,14 +9,7 @@ class ConfigLoader {
   loadFromEnv() {
     const config = {};
     
-    // 从环境变量读取（在构建时注入）
-    if (import.meta.env.VITE_ADMIN_USERNAME) {
-      config.admin_username = import.meta.env.VITE_ADMIN_USERNAME;
-    }
-    
-    if (import.meta.env.VITE_ADMIN_PASSWORD) {
-      config.admin_password = import.meta.env.VITE_ADMIN_PASSWORD;
-    }
+    // 目前无管理员看板，移除相关环境变量读取
     
     return config;
   }
@@ -47,10 +40,7 @@ class ConfigLoader {
   // 获取默认配置（仅用于开发环境）
   getDefaultConfig() {
     if (import.meta.env.DEV) {
-      return {
-        admin_username: 'dev_admin',
-        admin_password: 'dev_password_123'
-      };
+      return {};
     }
     return {};
   }
@@ -65,38 +55,19 @@ class ConfigLoader {
       // 按优先级加载配置
       let config = {};
       
-      // 1. 首先尝试从环境变量加载
+      // 1. 优先从环境变量加载（当前无变量，保持空配置）
       const envConfig = this.loadFromEnv();
-      if (envConfig.admin_username && envConfig.admin_password) {
-        config = envConfig;
-        console.log('Config loaded from environment variables');
-      } else {
-        // 2. 尝试从配置文件加载（优先于本地存储）
-        const fileConfig = this.loadFromFile();
-        if (fileConfig.admin_username && fileConfig.admin_password) {
-          config = fileConfig;
-          console.log('Config loaded from file (env.cfg)');
-        } else {
-          // 3. 尝试从本地存储加载（开发环境）
-          const localConfig = this.loadFromLocalStorage();
-          if (localConfig.admin_username && localConfig.admin_password) {
-            config = localConfig;
-            console.log('Config loaded from local storage');
-          } else {
-            // 4. 使用默认配置
-            config = this.getDefaultConfig();
-            console.log('Config loaded from defaults');
-          }
-        }
-      }
+      config = { ...config, ...envConfig };
+      // 2. 从本地存储加载（开发环境可用）
+      const localConfig = this.loadFromLocalStorage();
+      config = { ...config, ...localConfig };
+      // 3. 默认配置兜底
+      config = { ...this.getDefaultConfig(), ...config };
 
       this.config = config;
       this.loaded = true;
       
-      console.log('Final admin config:', {
-        username: config.admin_username,
-        password: config.admin_password ? '***' : 'undefined'
-      });
+      console.log('Final config loaded');
       
       return config;
     } catch (error) {

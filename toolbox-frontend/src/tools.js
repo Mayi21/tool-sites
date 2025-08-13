@@ -115,10 +115,4 @@ export default [
     descKey: 'Add watermark to image',
     Component: lazy(() => import('./components/tools/WatermarkTool')),
   },
-  {
-    path: '/create-questionnaire',
-    nameKey: 'Questionnaire Generator',
-    descKey: 'Create and manage questionnaires',
-    Component: lazy(() => import('./components/tools/CreateQuestionnaire')),
-  },
 ];

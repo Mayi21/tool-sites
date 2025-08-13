@@ -66,7 +66,8 @@ export default function MarkdownPreview() {
                 padding: 16,
                 minHeight: 400,
                 backgroundColor: 'var(--card-bg)',
-                overflow: 'auto'
+                overflow: 'auto',
+                textAlign: 'left'
               }}
               dangerouslySetInnerHTML={{ __html: renderMarkdown(markdown) }}
             />

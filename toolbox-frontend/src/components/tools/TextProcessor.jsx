@@ -87,6 +87,9 @@ export default function TextProcessor() {
         <Row gutter={[24, 24]}>
           <Col span={12}>
             <Space direction="vertical" size="large" style={{ width: '100%' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span>{t('Input')}</span>
+              </div>
               <TextArea 
                 value={input} 
                 onChange={e => setInput(e.target.value)} 

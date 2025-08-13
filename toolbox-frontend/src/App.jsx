@@ -8,8 +8,8 @@ import ThemeSwitcher from './components/ThemeSwitcher';
 import NotFound from './components/NotFound';
 import ThemeTransition from './components/ThemeTransition';
 import './App.css';
-import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space, Spin } from 'antd';
-import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined } from '@ant-design/icons';
+import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Space, Spin } from 'antd';
+import { AppstoreOutlined } from '@ant-design/icons';
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
@@ -22,7 +22,7 @@ const toolCategories = [
   {
     nameKey: 'Development Tools',
     key: 'dev',
-    tools: ['base64', 'json-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser', 'create-questionnaire']
+    tools: ['base64', 'json-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser']
   },
   {
     nameKey: 'Text Processing',
@@ -89,19 +89,8 @@ function NavigationBar({ theme, setTheme }) {
   // 检查是否在工具页面
   const isInToolPage = location.pathname !== '/';
   
-  // 返回上一页
-  const goBack = () => {
-    if (window.history.length > 1) {
-      navigate(-1);
-    } else {
-      navigate('/');
-    }
-  };
-
-  // 返回主页
-  const goHome = () => {
-    navigate('/');
-  };
+  // 点击Logo或标题返回首页
+  const goHome = () => navigate('/');
 
   // 返回工具分类
   const goToCategory = (category) => {
@@ -115,31 +104,7 @@ function NavigationBar({ theme, setTheme }) {
     }, 100);
   };
 
-  // 快速导航选项
   const quickNavItems = [
-    {
-      key: 'home',
-      label: (
-        <Space>
-          <HomeOutlined />
-          {t('Back to Home')}
-        </Space>
-      ),
-      onClick: goHome
-    },
-    {
-      key: 'back',
-      label: (
-        <Space>
-          <ArrowLeftOutlined />
-          {t('Go Back')}
-        </Space>
-      ),
-      onClick: goBack
-    },
-    {
-      type: 'divider'
-    },
     {
       key: 'dev',
       label: (
@@ -192,33 +157,7 @@ function NavigationBar({ theme, setTheme }) {
     }
   ];
 
-  // 键盘快捷键支持
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      // Alt + H 返回主页
-      if (e.altKey && e.key === 'h') {
-        e.preventDefault();
-        goHome();
-      }
-      // Alt + ← 返回上一页
-      if (e.altKey && e.key === 'ArrowLeft') {
-        e.preventDefault();
-        goBack();
-      }
-      // Escape 返回主页
-      if (e.key === 'Escape') {
-        goHome();
-      }
-    };
-
-    if (isInToolPage) {
-      document.addEventListener('keydown', handleKeyPress);
-    }
-
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress);
-    };
-  }, [isInToolPage]);
+  // 去掉键盘快捷键
 
   return (
     <Header 
@@ -231,70 +170,14 @@ function NavigationBar({ theme, setTheme }) {
         borderBottom: '1px solid var(--border-color)'
       }}
     >
-      {/* 左侧：Logo和返回按钮 */}
+      {/* 左侧：Logo与标题（点击返回首页） */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1, cursor: 'pointer' }} onClick={goHome}>
           <AppstoreOutlined style={{ fontSize: 22, marginRight: 8, color: '#1677ff' }} />
           <span className="header-title-text" style={{ minWidth: 0, flex: 1 }}>
             {t('Multi-function Toolbox')}
           </span>
         </div>
-        
-        {/* 在工具页面显示导航按钮 */}
-        {isInToolPage && (
-          <Space size="small" style={{ flexShrink: 0 }}>
-            <Tooltip title={`${t('Go Back')} (Alt + ←)`} placement="bottom">
-              <Button
-                icon={<ArrowLeftOutlined />}
-                onClick={goBack}
-                size="small"
-                aria-label={t('Go Back')}
-                style={{
-                  borderRadius: '6px',
-                  backgroundColor: 'var(--bg-tertiary)',
-                  border: '1px solid var(--border-color)',
-                  color: 'var(--text-primary)'
-                }}
-              />
-            </Tooltip>
-
-            <Tooltip title={`${t('Back to Home')} (Alt + H)`} placement="bottom">
-              <Button
-                type="primary"
-                icon={<HomeOutlined />}
-                onClick={goHome}
-                size="small"
-                aria-label={t('Back to Home')}
-                style={{
-                  borderRadius: '6px'
-                }}
-              />
-            </Tooltip>
-
-            <Dropdown
-              menu={{
-                items: quickNavItems,
-                placement: 'bottomRight'
-              }}
-              trigger={['click']}
-              placement="bottomRight"
-            >
-              <Tooltip title={t('Quick Navigation')} placement="bottom">
-                <Button
-                  icon={<MenuOutlined />}
-                  size="small"
-                  aria-label={t('Quick Navigation')}
-                  style={{
-                    borderRadius: '6px',
-                    backgroundColor: 'var(--bg-tertiary)',
-                    border: '1px solid var(--border-color)',
-                    color: 'var(--text-primary)'
-                  }}
-                />
-              </Tooltip>
-            </Dropdown>
-          </Space>
-        )}
       </div>
       
       {/* 右侧：语言切换和主题切换 */}

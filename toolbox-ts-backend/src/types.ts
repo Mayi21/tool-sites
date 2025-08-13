@@ -5,6 +5,7 @@ import { z } from "zod";
 // 环境变量类型定义
 export interface Env {
   DB: D1Database;
+  FRONTEND_DOMAIN?: string; // 允许单个或逗号分隔的多个域名/通配符
 }
 
 export type AppContext = Context<{ Bindings: Env }>;

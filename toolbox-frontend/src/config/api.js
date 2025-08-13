@@ -1,5 +1,3 @@
-import { getEnvConfig, log } from '../utils/env.js';
-
 // API配置
 const API_CONFIG = {
   // 后端API基础URL

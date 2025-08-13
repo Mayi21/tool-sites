@@ -6,11 +6,6 @@ import { TaskDelete } from "./endpoints/taskDelete";
 import { TaskFetch } from "./endpoints/taskFetch";
 import { TaskList } from "./endpoints/taskList";
 import { CronNextTimes } from './endpoints/cronNextTimes';
-import { createQuestionnaire } from './endpoints/questionnaire/createQuestionnaire';
-import { getQuestionnaire } from './endpoints/questionnaire/getQuestionnaire';
-import { submitQuestionnaire } from './endpoints/questionnaire/submitQuestionnaire';
-import { getQuestionnaireResults } from './endpoints/questionnaire/getQuestionnaireResults';
-import { closeQuestionnaire } from './endpoints/questionnaire/closeQuestionnaire';
 
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
@@ -23,36 +18,50 @@ const app = new Hono<{ Bindings: Env }>();
 app.use('*', cors({
   origin: (requestOrigin, c) => {
     const configured = c.env.FRONTEND_DOMAIN?.trim();
+
+    console.log('[CORS] Request Origin:', requestOrigin);
+    console.log('[CORS] Configured FRONTEND_DOMAIN:', configured);
+
     // 开发环境未配置时允许本地常用端口
     if (!configured) {
+      console.log('[CORS] No FRONTEND_DOMAIN set, using dev whitelist.');
       const devAllowed = ['http://localhost:5173','http://localhost:5174','http://localhost:5175'];
-      if (!requestOrigin) return false;
-      return devAllowed.includes(requestOrigin) ? requestOrigin : false;
+      if (!requestOrigin) {
+        console.log('[CORS] No request origin, denying.');
+        return false;
+      }
+      const allowed = devAllowed.includes(requestOrigin);
+      console.log('[CORS] Dev whitelist match:', allowed);
+      return allowed ? requestOrigin : false;
     }
+
+    console.log('[CORS] FRONTEND_DOMAIN configured, checking match...');
     const allowed = configured.split(',').map(s => s.trim()).filter(Boolean);
-    if (!requestOrigin) return false;
+    if (!requestOrigin) {
+      console.log('[CORS] No request origin, denying.');
+      return false;
+    }
+
     try {
       const originUrl = new URL(requestOrigin);
-      const originHost = originUrl.host; // includes hostname:port
-      return allowed.some(pattern => {
-        // exact match
+      const originHost = originUrl.host;
+      const match = allowed.some(pattern => {
         if (pattern === requestOrigin) return requestOrigin;
-        // allow specifying domain without scheme
         if (!pattern.startsWith('http')) {
-          // match host (with optional port)
           if (originHost === pattern || originHost.endsWith(pattern)) return requestOrigin;
         }
-        // wildcard like https://*.pages.dev
         if (pattern.includes('*')) {
           const regex = new RegExp('^' + pattern
             .replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&')
             .replace(/\\\*/g, '.*') + '$');
           return regex.test(requestOrigin) ? requestOrigin : false;
         }
-        // scheme+host compare ignoring trailing slashes
         return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false;
       });
-    } catch {
+      console.log('[CORS] Allowed match:', match);
+      return match;
+    } catch (err) {
+      console.error('[CORS] Error parsing origin:', err);
       return false;
     }
   },
@@ -60,6 +69,7 @@ app.use('*', cors({
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 }));
+
 
 // Setup OpenAPI registry
 const openapi = fromHono(app, {

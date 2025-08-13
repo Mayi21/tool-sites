@@ -13,7 +13,7 @@
     "cron-parser": "^5.3.0",
     "hono": "^4.6.20",
     "itty-router": "^5.0.20",
-    "zod": "^3.24.1"
+    "zod": "3.22.4"
   },
   "devDependencies": {
     "@types/node": "22.13.0",

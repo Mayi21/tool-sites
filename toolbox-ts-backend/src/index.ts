@@ -26,31 +26,31 @@ app.use('*', cors({
     // 开发环境未配置时允许本地常用端口
     if (!configured) {
       const devAllowed = ['http://localhost:5173','http://localhost:5174','http://localhost:5175'];
-      if (!requestOrigin) return true;
-      return devAllowed.includes(requestOrigin);
+      if (!requestOrigin) return false;
+      return devAllowed.includes(requestOrigin) ? requestOrigin : false;
     }
     const allowed = configured.split(',').map(s => s.trim()).filter(Boolean);
-    if (!requestOrigin) return true;
+    if (!requestOrigin) return false;
     try {
       const originUrl = new URL(requestOrigin);
       const originHost = originUrl.host; // includes hostname:port
       return allowed.some(pattern => {
         // exact match
-        if (pattern === requestOrigin) return true;
+        if (pattern === requestOrigin) return requestOrigin;
         // allow specifying domain without scheme
         if (!pattern.startsWith('http')) {
           // match host (with optional port)
-          if (originHost === pattern || originHost.endsWith(pattern)) return true;
+          if (originHost === pattern || originHost.endsWith(pattern)) return requestOrigin;
         }
         // wildcard like https://*.pages.dev
         if (pattern.includes('*')) {
           const regex = new RegExp('^' + pattern
             .replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&')
             .replace(/\\\*/g, '.*') + '$');
-          return regex.test(requestOrigin);
+          return regex.test(requestOrigin) ? requestOrigin : false;
         }
         // scheme+host compare ignoring trailing slashes
-        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '');
+        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false;
       });
     } catch {
       return false;

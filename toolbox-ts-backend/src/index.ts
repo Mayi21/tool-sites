@@ -5,11 +5,6 @@ import { TaskCreate } from "./endpoints/taskCreate";
 import { TaskDelete } from "./endpoints/taskDelete";
 import { TaskFetch } from "./endpoints/taskFetch";
 import { TaskList } from "./endpoints/taskList";
-import { AnalyticsRecordVisit } from "./endpoints/analyticsRecordVisit";
-import { AnalyticsGetStats } from "./endpoints/analyticsGetStats";
-import { AnalyticsToolUsage } from "./endpoints/analyticsToolUsage";
-import { AnalyticsEndVisit } from "./endpoints/analyticsEndVisit";
-import { AnalyticsGetLocation } from "./endpoints/analyticsGetLocation";
 import { CronNextTimes } from './endpoints/cronNextTimes';
 import { createQuestionnaire } from './endpoints/questionnaire/createQuestionnaire';
 import { getQuestionnaire } from './endpoints/questionnaire/getQuestionnaire';
@@ -46,12 +41,7 @@ openapi.post("/api/tasks", TaskCreate);
 openapi.get("/api/tasks/:taskSlug", TaskFetch);
 openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 
-// Analytics endpoints
-openapi.post("/api/analytics/visit", AnalyticsRecordVisit);
-openapi.get("/api/analytics/stats", AnalyticsGetStats);
-openapi.post("/api/analytics/tool-usage", AnalyticsToolUsage);
-openapi.put("/api/analytics/visit/:visitId/end", AnalyticsEndVisit);
-openapi.get("/api/analytics/location", AnalyticsGetLocation);
+// 已移除 Analytics 端点
 openapi.post('/api/cron/next-times', CronNextTimes);
 
 // You may also register routes for non OpenAPI directly on Hono

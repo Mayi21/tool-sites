@@ -25,13 +25,6 @@ const API_CONFIG = {
   
   // API端点
   ENDPOINTS: {
-    // 访问记录
-    ANALYTICS_VISIT: '/api/analytics/visit',
-    ANALYTICS_STATS: '/api/analytics/stats',
-    ANALYTICS_VISIT_END: '/api/analytics/visit/{id}/end',
-    
-    // 工具使用记录
-    ANALYTICS_TOOL_USAGE: '/api/analytics/tool-usage',
     CRON_NEXT_TIMES: '/api/cron/next-times',
   },
   

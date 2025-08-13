@@ -9,7 +9,7 @@ import NotFound from './components/NotFound';
 import ThemeTransition from './components/ThemeTransition';
 import './App.css';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Button, Tooltip, Dropdown, Space, Spin } from 'antd';
-import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined, DashboardOutlined } from '@ant-design/icons';
+import { AppstoreOutlined, HomeOutlined, ArrowLeftOutlined, MenuOutlined } from '@ant-design/icons';
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
@@ -137,21 +137,6 @@ function NavigationBar({ theme, setTheme }) {
       ),
       onClick: goBack
     },
-    {
-      type: 'divider'
-    },
-    
-    {
-      key: 'analytics',
-      label: (
-        <Space>
-          <DashboardOutlined />
-          分析功能测试
-        </Space>
-      ),
-      onClick: () => navigate('/analytics-test')
-    },
-    
     {
       type: 'divider'
     },
@@ -480,10 +465,7 @@ export default function App() {
                     />
                   ))}
                   
-                  <Route 
-                    path="/analytics-test" 
-                    element={<AnalyticsTest />} 
-                  />
+                  
                   
                   <Route 
                     path="*" 

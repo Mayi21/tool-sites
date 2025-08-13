@@ -10,6 +10,9 @@
 	"observability": {
 		"enabled": true
 	},
+	"vars": {
+		"FRONTEND_DOMAIN": "https://toolifyhub.top,https://tool-sites.pages.dev"
+	},
 	"d1_databases": [
 		{
 			"binding": "DB",

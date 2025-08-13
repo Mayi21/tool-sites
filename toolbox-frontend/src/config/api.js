@@ -5,19 +5,14 @@ const API_CONFIG = {
   BASE_URL: (() => {
     const envApiUrl = import.meta.env.API_URL;
     if (envApiUrl && typeof envApiUrl === 'string' && envApiUrl.trim().length > 0) {
-      log.info('Using API_URL from environment:', envApiUrl);
       return envApiUrl.trim();
     }
 
     // 本地开发默认值
     const localDefault = 'http://localhost:8787';
     if (import.meta.env.DEV) {
-      log.info('API_URL not set. Using local default:', localDefault);
       return localDefault;
     }
-
-    // 生产/预览环境如果未设置，仍回退到本地默认以避免崩溃
-    log.warn('API_URL not set in environment. Falling back to local default:', localDefault);
     return localDefault;
   })(),
   

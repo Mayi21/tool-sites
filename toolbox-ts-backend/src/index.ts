@@ -15,16 +15,47 @@ import { closeQuestionnaire } from './endpoints/questionnaire/closeQuestionnaire
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
 
-// 配置CORS中间件
+// 配置CORS中间件：从环境变量 FRONTEND_DOMAIN 读取允许的来源
+// 支持：
+// - 单个完整来源（如 https://example.com）
+// - 逗号分隔多个来源
+// - 通配符域名（如 https://*.pages.dev）
 app.use('*', cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:5174', 
-    'http://localhost:5175',
-    'https://tool-sites.pages.dev',
-    'https://*.pages.dev',
-    'https://toolifyhub.top' // 新增
-  ],
+  origin: (requestOrigin, c) => {
+    const configured = c.env.FRONTEND_DOMAIN?.trim();
+    // 开发环境未配置时允许本地常用端口
+    if (!configured) {
+      const devAllowed = ['http://localhost:5173','http://localhost:5174','http://localhost:5175'];
+      if (!requestOrigin) return true;
+      return devAllowed.includes(requestOrigin);
+    }
+    const allowed = configured.split(',').map(s => s.trim()).filter(Boolean);
+    if (!requestOrigin) return true;
+    try {
+      const originUrl = new URL(requestOrigin);
+      const originHost = originUrl.host; // includes hostname:port
+      return allowed.some(pattern => {
+        // exact match
+        if (pattern === requestOrigin) return true;
+        // allow specifying domain without scheme
+        if (!pattern.startsWith('http')) {
+          // match host (with optional port)
+          if (originHost === pattern || originHost.endsWith(pattern)) return true;
+        }
+        // wildcard like https://*.pages.dev
+        if (pattern.includes('*')) {
+          const regex = new RegExp('^' + pattern
+            .replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&')
+            .replace(/\\\*/g, '.*') + '$');
+          return regex.test(requestOrigin);
+        }
+        // scheme+host compare ignoring trailing slashes
+        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '');
+      });
+    } catch {
+      return false;
+    }
+  },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowHeaders: ['Content-Type', 'Authorization'],
   credentials: true

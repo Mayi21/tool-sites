@@ -25,7 +25,14 @@ app.use('*', cors({
     // 开发环境未配置时允许本地常用端口
     if (!configured) {
       console.log('[CORS] No FRONTEND_DOMAIN set, using dev whitelist.');
-      const devAllowed = ['http://localhost:5173','http://localhost:5174','http://localhost:5175'];
+      const devAllowed = [
+        'http://localhost:5173',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        'http://127.0.0.1:5173',
+        'http://127.0.0.1:5174',
+        'http://127.0.0.1:5175'
+      ];
       if (!requestOrigin) {
         console.log('[CORS] No request origin, denying.');
         return false;
@@ -45,7 +52,7 @@ app.use('*', cors({
     try {
       const originUrl = new URL(requestOrigin);
       const originHost = originUrl.host;
-      const match = allowed.some(pattern => {
+      const isAllowed = allowed.some(pattern => {
         if (pattern === requestOrigin) return requestOrigin;
         if (!pattern.startsWith('http')) {
           if (originHost === pattern || originHost.endsWith(pattern)) return requestOrigin;
@@ -58,15 +65,17 @@ app.use('*', cors({
         }
         return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false;
       });
-      console.log('[CORS] Allowed match:', match);
-      return match;
+      console.log('[CORS] Allowed match:', isAllowed);
+      // When credentials: true, we must return the specific origin string, not true/'*'
+      return isAllowed ? requestOrigin : false;
     } catch (err) {
       console.error('[CORS] Error parsing origin:', err);
       return false;
     }
   },
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowHeaders: ['Content-Type', 'Authorization'],
+  // Reflect or allow any requested headers to avoid preflight failures
+  allowHeaders: ['*'],
   credentials: true
 }));
 

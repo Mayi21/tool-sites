@@ -151,7 +151,7 @@ app.get('/sitemap.xml', (c) => {
 
   sitemap += `</urlset>`;
 
-  return c.text(sitemap.trim(), 200, { // Added .trim() here
+  return c.text(sitemap.replace(/\uFEFF/g, '').trim(), 200, { // Added .replace(/\uFEFF/g, '') and .trim() here
     'Content-Type': 'application/xml'
   });
 });

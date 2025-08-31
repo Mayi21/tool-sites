@@ -63,7 +63,7 @@ app.use('*', cors({
             .replace(/\*/g, '.*') + '$');
           return regex.test(requestOrigin) ? requestOrigin : false;
         }
-        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false; // Corrected line
+        return requestOrigin.replace(///$/, '') === pattern.replace(///$/, '') ? requestOrigin : false; // Corrected line
       });
       console.log('[CORS] Allowed match:', isAllowed);
       // When credentials: true, we must return the specific origin string, not true/'*'
@@ -151,7 +151,7 @@ app.get('/sitemap.xml', (c) => {
 
   sitemap += `</urlset>`;
 
-  return c.text(sitemap, 200, {
+  return c.text(sitemap.trim(), 200, { // Added .trim() here
     'Content-Type': 'application/xml'
   });
 });

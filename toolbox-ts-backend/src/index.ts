@@ -60,10 +60,10 @@ app.use('*', cors({
         if (pattern.includes('*')) {
           const regex = new RegExp('^' + pattern
             .replace(/[-/\\^$+?.()|[\]{}]/g, '\\$&')
-            .replace(/\\\*/g, '.*') + '$');
+            .replace(/\*/g, '.*') + '$');
           return regex.test(requestOrigin) ? requestOrigin : false;
         }
-        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false;
+        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false; // Corrected line
       });
       console.log('[CORS] Allowed match:', isAllowed);
       // When credentials: true, we must return the specific origin string, not true/'*'
@@ -98,4 +98,62 @@ openapi.post('/api/cron/next-times', CronNextTimes);
 // app.get('/test', (c) => c.text('Hono!'))
 
 // Export the Hono app
+
+app.get('/robots.txt', (c) => {
+  return c.text(`User-agent: *
+Allow: /`);
+});
+
+app.get('/sitemap.xml', (c) => {
+  const baseUrl = c.env.FRONTEND_DOMAIN || 'https://your-frontend-domain.com'; // Fallback for local development
+  const toolPaths = [
+    "/base64",
+    "/diff",
+    "/json-formatter",
+    "/url-encoder",
+    "/timestamp",
+    "/color-converter",
+    "/regex-tester",
+    "/text-analyzer",
+    "/hash-generator",
+    "/text-processor",
+    "/data-generator",
+    "/markdown-preview",
+    "/csv-converter",
+    "/jwt-decoder",
+    "/qr-generator",
+    "/image-compressor",
+    "/unicode-converter",
+    "/cron-parser",
+    "/image-watermark",
+  ];
+
+  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+`;
+
+  // Add homepage
+  sitemap += `  <url>
+    <loc>${baseUrl}/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+`;
+
+  // Add each tool page
+  toolPaths.forEach(path => {
+    sitemap += `  <url>
+    <loc>${baseUrl}${path}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+`;
+  });
+
+  sitemap += `</urlset>`;
+
+  return c.text(sitemap, 200, {
+    'Content-Type': 'application/xml'
+  });
+});
+
 export default app;

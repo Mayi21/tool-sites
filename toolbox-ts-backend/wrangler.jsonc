@@ -11,7 +11,7 @@
 		"enabled": true
 	},
 	"vars": {
-		"FRONTEND_DOMAIN": "http://localhost:5175,https://toolifyhub.top,https://tool-sites.pages.dev"
+		"FRONTEND_DOMAIN": "https://toolifyhub.top"
 	},
 	"d1_databases": [
 		{

@@ -63,7 +63,7 @@ app.use('*', cors({
             .replace(/\*/g, '.*') + '$');
           return regex.test(requestOrigin) ? requestOrigin : false;
         }
-        return requestOrigin.replace(/\/$/, '') === pattern.replace(/\/$/, '') ? requestOrigin : false; // Corrected line
+        return requestOrigin.replace(///$/, '') === pattern.replace(///$/, '') ? requestOrigin : false; // Corrected line
       });
       console.log('[CORS] Allowed match:', isAllowed);
       // When credentials: true, we must return the specific origin string, not true/'*'

@@ -1,4 +1,4 @@
 # 将对 /robots.txt 的请求重写到后端 Worker
-/robots.txt https://toolifyhub-backend.xaoohii.workers.dev/robots.txt 200 Content-Type: text/plain
+/robots.txt https://toolifyhub-backend.xaoohii.workers.dev/robots.txt 200
 # 将对 /sitemap.xml 的请求重写到后端 Worker
-/sitemap.xml https://toolifyhub-backend.xaoohii.workers.dev/sitemap.xml 200 Content-Type: application/xml
+/sitemap.xml https://toolifyhub-backend.xaoohii.workers.dev/sitemap.xml 200

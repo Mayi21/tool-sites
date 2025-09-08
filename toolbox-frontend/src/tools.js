@@ -115,4 +115,10 @@ export default [
     descKey: 'Add watermark to image',
     Component: lazy(() => import('./components/tools/WatermarkTool')),
   },
+  {
+    path: '/password-generator',
+    nameKey: 'Password Generator',
+    descKey: 'Secure Password Generator',
+    Component: lazy(() => import('./components/tools/PasswordGenerator')),
+  },
 ];

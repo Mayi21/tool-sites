@@ -37,7 +37,7 @@ const toolCategories = [
   {
     nameKey: 'Security & Encryption',
     key: 'security',
-    tools: ['hash-generator']
+    tools: ['hash-generator', 'password-generator']
   },
   { nameKey: 'Design Tools', key: 'design', tools: ['color-converter', 'qr-generator', 'image-compressor', 'image-watermark'] }
 ];

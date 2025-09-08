@@ -480,6 +480,16 @@ kbd:hover {
   border-color: var(--border-color) !important;
 }
 
+/* Fix for checked state */
+.ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #1677ff !important; /* Ant Design primary color */
+  border-color: #1677ff !important;
+}
+
+.ant-checkbox-checked .ant-checkbox-inner::after {
+  border-color: #fff !important; /* Ensure checkmark is white */
+}
+
 /* Radio theme */
 .ant-radio-wrapper {
   color: var(--text-primary) !important;

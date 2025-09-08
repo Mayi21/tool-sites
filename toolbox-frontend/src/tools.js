@@ -62,10 +62,10 @@ export default [
     Component: lazy(() => import('./components/tools/TextProcessor')),
   },
   {
-    path: '/data-generator',
-    nameKey: 'Data Generator',
-    descKey: 'Random Data Generator',
-    Component: lazy(() => import('./components/tools/DataGenerator')),
+    path: '/uuid-generator',
+    nameKey: 'UUID Generator',
+    descKey: 'UUID Generator Tool',
+    Component: lazy(() => import('./components/tools/UUIDGenerator')),
   },
   {
     path: '/markdown-preview',

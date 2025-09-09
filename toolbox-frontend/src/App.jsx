@@ -9,7 +9,6 @@ import NotFound from './components/NotFound';
 import ThemeTransition from './components/ThemeTransition';
 import './App.css';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Space, Spin } from 'antd';
-import { AppstoreOutlined } from '@ant-design/icons';
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
@@ -120,7 +119,7 @@ function NavigationBar({ theme, setTheme }) {
       key: 'dev',
       label: (
         <Space>
-          <AppstoreOutlined />
+          <span>•</span>
           {t('Development Tools')}
         </Space>
       ),
@@ -130,7 +129,7 @@ function NavigationBar({ theme, setTheme }) {
       key: 'text',
       label: (
         <Space>
-          <AppstoreOutlined />
+          <span>•</span>
           {t('Text Processing')}
         </Space>
       ),
@@ -140,7 +139,7 @@ function NavigationBar({ theme, setTheme }) {
       key: 'data',
       label: (
         <Space>
-          <AppstoreOutlined />
+          <span>•</span>
           {t('Data Conversion')}
         </Space>
       ),
@@ -150,7 +149,7 @@ function NavigationBar({ theme, setTheme }) {
       key: 'security',
       label: (
         <Space>
-          <AppstoreOutlined />
+          <span>•</span>
           {t('Security & Encryption')}
         </Space>
       ),
@@ -160,7 +159,7 @@ function NavigationBar({ theme, setTheme }) {
       key: 'design',
       label: (
         <Space>
-          <AppstoreOutlined />
+          <span>•</span>
           {t('Design Tools')}
         </Space>
       ),
@@ -177,22 +176,53 @@ function NavigationBar({ theme, setTheme }) {
         boxShadow: 'none', 
         display: 'flex', 
         alignItems: 'center', 
+        justifyContent: 'space-between',
         width: '100%',
-        borderBottom: '1px solid var(--border-color)'
+        borderBottom: '1px solid var(--border-color)',
+        height: '64px',
+        padding: '0 24px'
       }}
     >
       {/* 左侧：Logo与标题（点击返回首页） */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 16, minWidth: 0, flex: 1 }}>
-        <div style={{ display: 'flex', alignItems: 'center', minWidth: 0, flex: 1, cursor: 'pointer' }} onClick={goHome}>
-          <AppstoreOutlined style={{ fontSize: 22, marginRight: 8, color: '#1677ff' }} />
-          <span className="header-title-text" style={{ minWidth: 0, flex: 1 }}>
-            {t('Multi-function Toolbox')}
-          </span>
-        </div>
+      <div 
+        style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          cursor: 'pointer',
+          flex: '1 1 auto',
+          overflow: 'hidden'
+        }} 
+        onClick={goHome}
+      >
+        <img 
+          src="/toolbox-icon.svg" 
+          alt="Toolbox Icon" 
+          style={{ 
+            width: 22, 
+            height: 22, 
+            marginRight: 3,
+            flexShrink: 0
+          }} 
+        />
+        <span 
+          className="header-title-text" 
+          style={{ 
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            transform: 'translateY(-2px)'  // 微调垂直位置
+          }}
+        >
+          {t('Multi-function Toolbox')}
+        </span>
       </div>
       
       {/* 右侧：语言切换和主题切换 */}
-      <div style={{ marginLeft: 'auto', display: 'flex', gap: 16 }}>
+      <div style={{ 
+          display: 'flex', 
+          alignItems: 'center',
+          gap: 16
+        }}>
         <LanguageSwitcher />
         <ThemeSwitcher theme={theme} setTheme={setTheme} />
       </div>
@@ -200,7 +230,7 @@ function NavigationBar({ theme, setTheme }) {
   );
 }
 
-export default function App() {
+function App() {
   const { t } = useTranslation();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
   
@@ -274,14 +304,7 @@ export default function App() {
                       margin: '0 auto', 
                       padding: '0 8px'
                     }}>
-                      <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                        <Title level={2} style={{ marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-                          {t('Multi-function Toolbox')}
-                        </Title>
-                        <p style={{ fontSize: 'clamp(14px, 3vw, 16px)', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                          {t('One-stop online tool collection to improve development efficiency')}
-                        </p>
-                      </div>
+
 
                       {/* 分类快捷标签保留，仅用于切换分类 */}
                       <div style={{ margin: '0 auto 24px', display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -386,3 +409,5 @@ export default function App() {
     </ConfigProvider>
   );
 }
+
+export default App;

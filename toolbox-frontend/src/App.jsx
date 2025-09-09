@@ -53,6 +53,17 @@ function DynamicTitle() {
       
       if (path === '/') {
         document.title = `${t('Multi-function Toolbox')} - 多功能工具箱`;
+      } else if (path === '/base64') {
+        document.title = t('base64.pageTitle');
+        const metaDescription = document.querySelector('meta[name="description"]');
+        if (metaDescription) {
+          metaDescription.setAttribute('content', t('base64.pageDescription'));
+        } else {
+          const newMeta = document.createElement('meta');
+          newMeta.name = 'description';
+          newMeta.content = t('base64.pageDescription');
+          document.head.appendChild(newMeta);
+        }
       } else {
         // 查找当前工具
         const currentTool = tools.find(tool => path === tool.path);

@@ -3,8 +3,8 @@ import { lazy } from 'react';
 export default [
   {
     path: '/base64',
-    nameKey: 'Base64',
-    descKey: 'Base64 Encode/Decode Tool',
+    nameKey: 'base64.mainTitle',
+    descKey: 'base64.cardDescription',
     Component: lazy(() => import('./components/tools/Base64Tool')),
   },
   {

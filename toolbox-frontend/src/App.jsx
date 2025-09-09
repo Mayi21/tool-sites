@@ -293,14 +293,7 @@ function App() {
                       margin: '0 auto', 
                       padding: '0 8px'
                     }}>
-                      <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
-                        <Title level={2} style={{ marginBottom: '0.5rem', fontSize: 'clamp(1.5rem, 4vw, 2.5rem)' }}>
-                          {t('Multi-function Toolbox')}
-                        </Title>
-                        <p style={{ fontSize: 'clamp(14px, 3vw, 16px)', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                          {t('One-stop online tool collection to improve development efficiency')}
-                        </p>
-                      </div>
+
 
                       {/* 分类快捷标签保留，仅用于切换分类 */}
                       <div style={{ margin: '0 auto 24px', display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>

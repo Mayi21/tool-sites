@@ -199,8 +199,7 @@ function NavigationBar({ theme, setTheme }) {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            padding: '2px 0',
-            display: 'inline-block'
+            transform: 'translateY(-2px)'  // 微调垂直位置
           }}
         >
           {t('Multi-function Toolbox')}

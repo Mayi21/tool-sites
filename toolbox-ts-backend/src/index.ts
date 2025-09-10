@@ -100,59 +100,121 @@ openapi.post('/api/cron/next-times', CronNextTimes);
 // Export the Hono app
 
 app.get('/robots.txt', (c) => {
+  const baseUrl = c.env.FRONTEND_DOMAIN || 'https://toolifyhub.top';
   return c.text(`User-agent: *
-Allow: /`);
+Allow: /
+
+# Sitemap location
+Sitemap: ${baseUrl}/sitemap.xml
+
+# Block common bot paths (if you have these)
+Disallow: /admin/
+Disallow: /api/
+Disallow: /_next/
+Disallow: /node_modules/
+
+# Allow important crawling
+Allow: /base64
+Allow: /json-formatter
+Allow: /regex-tester
+Allow: /url-encoder
+Allow: /timestamp
+Allow: /hash-generator
+Allow: /qr-generator
+
+# Crawl-delay for aggressive bots
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: AhrefsBot
+Crawl-delay: 10`);
 });
 
 app.get('/sitemap.xml', (c) => {
-  const baseUrl = c.env.FRONTEND_DOMAIN || 'https://your-frontend-domain.com'; // Fallback for local development
-  const toolPaths = [
+  const baseUrl = c.env.FRONTEND_DOMAIN || 'https://toolifyhub.top';
+  const today = new Date().toISOString().split('T')[0];
+  
+  // 工具按重要程度分类（优先级不同）
+  const highPriorityTools = [
     "/base64",
-    "/diff",
-    "/json-formatter",
-    "/url-encoder",
-    "/timestamp",
-    "/color-converter",
+    "/json-formatter", 
     "/regex-tester",
-    "/text-analyzer",
+    "/url-encoder",
+    "/timestamp"
+  ];
+  
+  const mediumPriorityTools = [
     "/hash-generator",
-    "/text-processor",
-    "/data-generator",
+    "/jwt-decoder",
+    "/color-converter",
+    "/qr-generator",
+    "/diff"
+  ];
+  
+  const normalPriorityTools = [
+    "/text-analyzer",
+    "/text-processor", 
     "/markdown-preview",
     "/csv-converter",
-    "/jwt-decoder",
-    "/qr-generator",
     "/image-compressor",
     "/unicode-converter",
     "/cron-parser",
     "/image-watermark",
+    "/uuid-generator",
+    "/password-generator"
   ];
 
-  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 `;
 
-  // Add homepage
+  // 添加首页
   sitemap += `  <url>
     <loc>${baseUrl}/</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
 `;
 
-  // Add each tool page
-  toolPaths.forEach(path => {
+  // 添加高优先级工具
+  highPriorityTools.forEach(path => {
     sitemap += `  <url>
     <loc>${baseUrl}${path}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+`;
+  });
+
+  // 添加中等优先级工具
+  mediumPriorityTools.forEach(path => {
+    sitemap += `  <url>
+    <loc>${baseUrl}${path}</loc>
+    <lastmod>${today}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
 `;
   });
 
+  // 添加普通优先级工具
+  normalPriorityTools.forEach(path => {
+    sitemap += `  <url>
+    <loc>${baseUrl}${path}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+`;
+  });
+
   sitemap += `</urlset>`;
 
-  return c.text(sitemap.replace(/\uFEFF/g, '').trim(), 200, { // Added .replace(/\uFEFF/g, '') and .trim() here
-    'Content-Type': 'application/xml'
+  return c.text(sitemap.trim(), 200, {
+    'Content-Type': 'application/xml; charset=utf-8',
+    'Cache-Control': 'public, max-age=86400' // 缓存1天
   });
 });
 

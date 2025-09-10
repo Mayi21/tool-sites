@@ -391,6 +391,7 @@
   "base64.pageTitle": "Base64在线编解码工具 - 文本转Base64 / Base64解码文本 - 多功能工具箱",
   "base64.pageDescription": "免费在线Base64编解码工具，支持文本、中文、URL、JSON等一键编码或解码。无广告、速度快、支持复制，开发者和运维人员必备神器。",
   "base64.mainTitle": "Base64 在线编解码工具",
+  "index.metaDescription": "一站式在线工具集合，包含 Base64 编解码、JSON 格式化、正则测试、Cron 解析等常用开发工具，支持中英文。",
   "base64.whatIsTitle": "什么是 Base64 编码？",
   "base64.whatIsText": "Base64 是一种基于64个可打印字符来表示二进制数据的编码方式，常用于在HTTP环境中传输二进制数据（如图片、文件），或将JSON、URL等文本数据安全传输。",
   "base64.featuresTitle": "本工具支持的功能",
@@ -419,5 +420,62 @@
   "base64.faq4Text.part3": "。如需转换图片，请先将图片转为 Data URL（如 ",
   "base64.faq4Text.part4": "data:image/png;base64,xxx",
   "base64.faq4Text.part5": "），再粘贴“xxx”部分进行解码。",
-  "base64.cardDescription": "Base64在线编解码，支持文本、中文、URL、JSON等"
+  "base64.cardDescription": "Base64在线编解码，支持文本、中文、URL、JSON等",
+
+  "diff.pageTitle": "文本对比 — 高亮差异与并排比较 | 多功能工具箱",
+  "diff.pageDescription": "并排比较两段文本并高亮新增/删除内容，适用于代码审查、校对差异和快速定位改动点。",
+
+  "json-formatter.pageTitle": "JSON 格式化 — 美化 & 压缩 | 多功能工具箱",
+  "json-formatter.pageDescription": "即时格式化、校验与压缩 JSON，方便调试与日志处理，支持复制和下载，隐私友好且响应迅速。",
+
+  "url-encoder.pageTitle": "URL 编码/解码 — 安全处理查询参数 | 多功能工具箱",
+  "url-encoder.pageDescription": "对 URL 与查询字符串进行编码与解码，正确处理特殊字符与空格，方便表单和 API 调试。",
+
+  "timestamp.pageTitle": "时间戳转换器 — Unix 时间戳与日期互转 | 多功能工具箱",
+  "timestamp.pageDescription": "在 Unix 时间戳（秒/毫秒）与可读日期格式间互转，便于调试、日志分析与时间数据核对。",
+
+  "color-converter.pageTitle": "颜色转换器 — RGB / HEX / HSL 转换 | 多功能工具箱",
+  "color-converter.pageDescription": "在 RGB、HEX、HSL 间快速转换，方便设计师与前端开发人员对齐配色并测试视觉效果。",
+
+  "regex-tester.pageTitle": "正则测试 — 实时匹配与捕获组查看 | 多功能工具箱",
+  "regex-tester.pageDescription": "在线测试正则表达式并实时高亮匹配与捕获组，加速正则调试与验证。",
+
+  "text-analyzer.pageTitle": "文本分析 — 字数统计与阅读时长 | 多功能工具箱",
+  "text-analyzer.pageDescription": "提供字符、单词、行数统计以及阅读时长估算，帮助内容创作者进行 SEO 与可读性优化。",
+
+  "hash-generator.pageTitle": "哈希生成器 — MD5 / SHA 摘要 | 多功能工具箱",
+  "hash-generator.pageDescription": "在线生成 MD5、SHA-1、SHA-256 等哈希值，用于校验、签名测试与数据完整性验证。",
+
+  "text-processor.pageTitle": "文本处理 — 大小写/去重/排序 | 多功能工具箱",
+  "text-processor.pageDescription": "批量文本处理工具：大小写转换、去重、修剪、排序等，快速清洗和转换内容。",
+
+  "uuid-generator.pageTitle": "UUID 生成器 — 快速生成唯一 ID | 多功能工具箱",
+  "uuid-generator.pageDescription": "生成符合 RFC 标准的 UUID，用于测试、数据库键和数据标识。",
+
+  "markdown-preview.pageTitle": "Markdown 预览 — 实时渲染 | 多功能工具箱",
+  "markdown-preview.pageDescription": "实时渲染 Markdown，支持常见语法，便于撰写、预览与复制生成的 HTML。",
+
+  "csv-converter.pageTitle": "CSV ↔ JSON 转换器 — 表格数据互转 | 多功能工具箱",
+  "csv-converter.pageDescription": "在 CSV 与 JSON 之间互相转换，支持表头处理和格式校验，方便数据导入导出。",
+
+  "jwt-decoder.pageTitle": "JWT 解码器 — 在线解析 Token | 多功能工具箱",
+  "jwt-decoder.pageDescription": "解码 JWT Token 的 header、payload 与 signature，便于调试认证和鉴权流程。",
+
+  "qr-generator.pageTitle": "二维码生成器 — 生成可下载 QR 图像 | 多功能工具箱",
+  "qr-generator.pageDescription": "从文本或 URL 生成二维码并下载高质量图片，适用于分享、测试与打印。",
+
+  "image-compressor.pageTitle": "图片压缩器 — 在线减小图片体积 | 多功能工具箱",
+  "image-compressor.pageDescription": "压缩图片以减小文件大小并保持可接受的视觉质量，有助于网页性能和带宽节省。",
+
+  "unicode-converter.pageTitle": "Unicode 转换器 — 中文与 Unicode 实体处理 | 多功能工具箱",
+  "unicode-converter.pageDescription": "在中文与 Unicode/HTML 实体之间相互转换，解决编码相关问题并准备多环境发布。",
+
+  "cron-parser.pageTitle": "Cron 解析器 — 支持 Linux 与 Spring 表达式 | 多功能工具箱",
+  "cron-parser.pageDescription": "解析 5 或 6 字段的 Cron 表达式，显示下次执行时间并解释各字段含义，便于调试调度任务。",
+
+  "image-watermark.pageTitle": "图片水印 — 添加文本或平铺水印 | 多功能工具箱",
+  "image-watermark.pageDescription": "在线给图片添加文本或平铺水印，可自定义位置与透明度，生成带水印的可下载图片。",
+
+  "password-generator.pageTitle": "密码生成器 — 安全密码与强度评估 | 多功能工具箱",
+  "password-generator.pageDescription": "生成安全密码，支持自定义长度与字符集合并提供强度评估，帮助提升账户安全。"
 }

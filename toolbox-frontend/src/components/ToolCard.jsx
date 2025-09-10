@@ -27,7 +27,7 @@ const getToolIcon = (path) => {
   }
 };
 
-export default function ToolCard({ path, nameKey, descKey }) {
+export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey }) {
   const { t } = useTranslation();
   
   return (
@@ -36,15 +36,14 @@ export default function ToolCard({ path, nameKey, descKey }) {
         hoverable 
         className="tool-card" /* Apply the new class for styling */
         style={{ 
-          minHeight: 140, /* Adjusted for more compact size */
           width: '100%',
-          maxWidth: 280, /* Adjusted for more compact size */
-          display: 'flex', 
+          maxWidth: 320,
           flexDirection: 'column', 
           alignItems: 'center', 
           justifyContent: 'center',
           cursor: 'pointer',
-          overflow: 'hidden'
+            overflow: 'hidden',
+            position: 'relative'
         }}
         bodyStyle={{
           display: 'flex',
@@ -78,17 +77,23 @@ export default function ToolCard({ path, nameKey, descKey }) {
             </span>
           } 
           description={
-            <span style={{ 
-              fontSize: 13, 
-              color: 'var(--text-secondary)',
-              lineHeight: 1.4,
-              display: 'block',
-              wordBreak: 'break-word',
-              overflowWrap: 'break-word',
-              hyphens: 'auto'
-            }}>
-              {t(descKey)}
-            </span>
+            <div style={{ width: '100%' }}>
+              <span style={{ 
+                fontSize: 13, 
+                color: 'var(--text-secondary)',
+                lineHeight: 1.4,
+                display: '-webkit-box',
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                wordBreak: 'break-word',
+                overflowWrap: 'break-word',
+                hyphens: 'auto'
+              }}>
+                {t(pageDescriptionKey || descKey)}
+              </span>
+            </div>
           } 
         />
       </Card>

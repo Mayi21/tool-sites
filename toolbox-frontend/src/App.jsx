@@ -1,5 +1,5 @@
 import { useState, useEffect, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import tools from './tools';
 import ToolCard from './components/ToolCard';
@@ -7,14 +7,41 @@ import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import NotFound from './components/NotFound';
 import ThemeTransition from './components/ThemeTransition';
+import BreadcrumbNav from './components/BreadcrumbNav';
+import RelatedTools from './components/RelatedTools';
+import ToolDetailDescription from './components/ToolDetailDescription';
 import './App.css';
 import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Space, Spin } from 'antd';
+import { Helmet } from 'react-helmet-async';
+import Seo from './components/Seo';
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
 
 const { Header, Content, Footer } = Layout;
 const { Title } = Typography;
+
+// 为每个工具生成SEO关键词
+const getToolKeywords = (path, t) => {
+  const keywordMap = {
+    '/base64': 'base64,encoder,decoder,online,free,base64 encode,base64 decode,编码,解码',
+    '/json-formatter': 'json,formatter,validator,beautify,minify,json format,json validator,格式化',
+    '/regex-tester': 'regex,regular expression,tester,pattern,match,正则表达式,测试',
+    '/url-encoder': 'url,encoder,decoder,encode,decode,query string,网址编码,解码',
+    '/timestamp': 'timestamp,unix,converter,datetime,时间戳,转换器,unix时间',
+    '/color-converter': 'color,converter,hex,rgb,hsl,颜色转换器,颜色代码',
+    '/hash-generator': 'hash,md5,sha1,sha256,generator,哈希,加密,生成器',
+    '/jwt-decoder': 'jwt,json web token,decoder,decode,jwt解码,token解析',
+    '/qr-generator': 'qr,qr code,generator,二维码,生成器,qrcode',
+    '/diff': 'text,diff,comparison,compare,文本对比,差异比较',
+    '/text-analyzer': 'text,analyzer,word count,character count,文本分析,字数统计',
+    '/csv-converter': 'csv,json,converter,convert,数据转换,csv转json',
+    '/cron-parser': 'cron,parser,expression,schedule,定时任务,cron表达式',
+    '/unicode-converter': 'unicode,converter,chinese,unicode转换,中文编码'
+  };
+  
+  return keywordMap[path] || 'online tools,free tools,developer tools,在线工具,开发工具';
+};
 
 // 工具分类
 const toolCategories = [
@@ -298,12 +325,137 @@ function App() {
                 <Suspense fallback={<Spin size="large" />}>
                   <Routes>
                   <Route path="/" element={
-                    <div style={{ 
+                    <>
+                      <Seo
+                        title="ToolifyHub - Free Online Developer Tools Collection | 多功能在线工具箱"
+                        description="20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。"
+                        canonical="https://toolifyhub.top/"
+                        keywords="online tools,developer tools,base64,json formatter,regex tester,free tools,web tools,programming tools,在线工具,开发工具,免费工具,程序员工具"
+                      />
+                      <div style={{ 
                       width: '100%', 
                       maxWidth: '1280px', 
                       margin: '0 auto', 
                       padding: '0 8px'
                     }}>
+
+                      {/* SEO内容区块 */}
+                      <div style={{ 
+                        textAlign: 'center', 
+                        marginBottom: '2rem',
+                        padding: '1rem 0'
+                      }}>
+                        <Title level={1} style={{ 
+                          color: 'var(--text-primary)', 
+                          fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
+                          marginBottom: '1rem'
+                        }}>
+                          {t('Multi-function Toolbox')} - 免费在线开发工具集合
+                        </Title>
+                        <p style={{ 
+                          fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
+                          color: 'var(--text-secondary)',
+                          maxWidth: '800px',
+                          margin: '0 auto 1.5rem',
+                          lineHeight: 1.6
+                        }}>
+                          为开发者精心打造的20+款实用在线工具，涵盖编码解码、格式转换、文本处理、数据生成等核心功能。
+                          完全免费，隐私安全，即开即用，助力提升开发效率。
+                        </p>
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'center',
+                          gap: '1rem',
+                          flexWrap: 'wrap',
+                          marginBottom: '1rem'
+                        }}>
+                          <span style={{ 
+                            padding: '0.5rem 1rem', 
+                            background: 'var(--bg-primary)', 
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            color: 'var(--text-secondary)'
+                          }}>🚀 即时处理</span>
+                          <span style={{ 
+                            padding: '0.5rem 1rem', 
+                            background: 'var(--bg-primary)', 
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            color: 'var(--text-secondary)'
+                          }}>🔒 隐私安全</span>
+                          <span style={{ 
+                            padding: '0.5rem 1rem', 
+                            background: 'var(--bg-primary)', 
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            color: 'var(--text-secondary)'
+                          }}>📱 移动适配</span>
+                          <span style={{ 
+                            padding: '0.5rem 1rem', 
+                            background: 'var(--bg-primary)', 
+                            borderRadius: '20px',
+                            fontSize: '0.9rem',
+                            color: 'var(--text-secondary)'
+                          }}>🆓 完全免费</span>
+                        </div>
+                      </div>
+
+                      {/* 内链优化：热门工具组合推荐 */}
+                      <div style={{
+                        textAlign: 'center',
+                        marginBottom: '2rem',
+                        padding: '1.5rem',
+                        background: 'var(--bg-primary)',
+                        borderRadius: '12px',
+                        border: '1px solid var(--border-color)'
+                      }}>
+                        <Title level={4} style={{ 
+                          color: 'var(--text-primary)',
+                          marginBottom: '1rem'
+                        }}>
+                          🔥 热门工具组合 | Popular Tool Combinations
+                        </Title>
+                        <div style={{
+                          display: 'flex',
+                          flexWrap: 'wrap',
+                          justifyContent: 'center',
+                          gap: '1rem'
+                        }}>
+                          <Link to="/base64" style={{
+                            padding: '0.5rem 1rem',
+                            background: 'rgba(22, 119, 255, 0.1)',
+                            borderRadius: '20px',
+                            textDecoration: 'none',
+                            color: '#1677ff',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                          }}>
+                            Base64编码 → URL编码 → 哈希生成
+                          </Link>
+                          <Link to="/json-formatter" style={{
+                            padding: '0.5rem 1rem',
+                            background: 'rgba(82, 196, 26, 0.1)',
+                            borderRadius: '20px',
+                            textDecoration: 'none',
+                            color: '#52c41a',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                          }}>
+                            JSON格式化 → CSV转换 → 文本对比
+                          </Link>
+                          <Link to="/regex-tester" style={{
+                            padding: '0.5rem 1rem',
+                            background: 'rgba(114, 46, 209, 0.1)',
+                            borderRadius: '20px',
+                            textDecoration: 'none',
+                            color: '#722ed1',
+                            fontSize: '14px',
+                            fontWeight: '500'
+                          }}>
+                            正则测试 → 文本分析 → 文本处理
+                          </Link>
+                        </div>
+                      </div>
 
 
                       {/* 分类快捷标签保留，仅用于切换分类 */}
@@ -359,6 +511,7 @@ function App() {
                                   path={tool.path}
                                   nameKey={tool.nameKey}
                                   descKey={tool.descKey}
+                                  pageDescriptionKey={tool.pageDescriptionKey}
                                 />
                               </Col>
                             ))}
@@ -369,6 +522,7 @@ function App() {
                         </div>
                       ))}
                     </div>
+                      </>
                   } />
                   {tools.map(tool => (
                     <Route 
@@ -376,7 +530,16 @@ function App() {
                       path={tool.path} 
                       element={
                         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 8px', width: '100%' }}>
+                          <Seo
+                            title={t(tool.pageTitleKey || tool.nameKey)}
+                            description={t(tool.pageDescriptionKey || tool.descKey)}
+                            canonical={typeof window !== 'undefined' ? window.location.href : `https://toolifyhub.top${tool.path}`}
+                            keywords={getToolKeywords(tool.path, t)}
+                          />
+                          <BreadcrumbNav currentToolName={t(tool.nameKey)} />
                           <tool.Component />
+                          <ToolDetailDescription toolPath={tool.path} />
+                          <RelatedTools currentPath={tool.path} allTools={tools} />
                         </div>
                       } 
                     />

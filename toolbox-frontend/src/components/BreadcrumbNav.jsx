@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Breadcrumb } from 'antd';
-import { HomeOutlined } from '@ant-design/icons';
+import { Breadcrumbs, Typography, Box } from '@mui/material';
+import { Home } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
 // 工具分类映射
@@ -41,44 +41,47 @@ export default function BreadcrumbNav({ currentToolName }) {
     return null;
   }
 
-  const items = [
-    {
-      title: (
-        <Link to="/" style={{ color: 'var(--text-secondary)' }}>
-          <HomeOutlined style={{ marginRight: '4px' }} />
+  return (
+    <Box sx={{ mb: 2 }}>
+      <Breadcrumbs 
+        aria-label="breadcrumb"
+        sx={{
+          fontSize: '14px',
+          color: 'text.secondary'
+        }}
+      >
+        <Link 
+          to="/" 
+          style={{ 
+            textDecoration: 'none',
+            color: 'inherit',
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          <Home sx={{ mr: 0.5, fontSize: 16 }} />
           {t('Home')}
         </Link>
-      ),
-    }
-  ];
-
-  if (category) {
-    items.push({
-      title: (
-        <Link to="/" style={{ color: 'var(--text-secondary)' }}>
-          {t(category)}
-        </Link>
-      ),
-    });
-  }
-
-  items.push({
-    title: (
-      <span style={{ color: 'var(--text-primary)', fontWeight: '500' }}>
-        {currentToolName || 'Current Tool'}
-      </span>
-    ),
-  });
-
-  return (
-    <div style={{ marginBottom: '1rem' }}>
-      <Breadcrumb 
-        items={items}
-        style={{
-          fontSize: '14px',
-          color: 'var(--text-secondary)'
-        }}
-      />
-    </div>
+        
+        {category && (
+          <Link 
+            to="/" 
+            style={{ 
+              textDecoration: 'none',
+              color: 'inherit'
+            }}
+          >
+            {t(category)}
+          </Link>
+        )}
+        
+        <Typography 
+          color="text.primary" 
+          sx={{ fontWeight: 500 }}
+        >
+          {currentToolName || 'Current Tool'}
+        </Typography>
+      </Breadcrumbs>
+    </Box>
   );
 }

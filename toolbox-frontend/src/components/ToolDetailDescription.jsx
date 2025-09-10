@@ -1,15 +1,25 @@
 import React from 'react';
-import { Typography, Card, Row, Col, Divider, Space } from 'antd';
-import { useTranslation } from 'react-i18next';
 import { 
-  InfoCircleOutlined, 
-  BulbOutlined, 
-  ToolOutlined, 
-  QuestionCircleOutlined,
-  CheckCircleOutlined 
-} from '@ant-design/icons';
-
-const { Title, Paragraph, Text } = Typography;
+  Typography, 
+  Card, 
+  CardContent,
+  Grid, 
+  Divider, 
+  Box,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  useTheme
+} from '@mui/material';
+import { 
+  InfoOutlined,
+  LightbulbOutlined,
+  BuildOutlined,
+  HelpOutlineOutlined,
+  CheckCircleOutlined
+} from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 
 // 工具详细信息配置
 const getToolDetails = (path, t) => {
@@ -701,6 +711,7 @@ const getToolDetails = (path, t) => {
 
 export default function ToolDetailDescription({ toolPath }) {
   const { t } = useTranslation();
+  const theme = useTheme();
   const details = getToolDetails(toolPath, t);
 
   if (!details) {
@@ -708,105 +719,172 @@ export default function ToolDetailDescription({ toolPath }) {
   }
 
   return (
-    <div style={{ marginTop: '2rem', marginBottom: '2rem' }}>
-      <Card 
-        style={{ 
-          background: 'var(--bg-primary)', 
-          border: '1px solid var(--border-color)' 
-        }}
-      >
-        {/* 工具描述 */}
-        <div style={{ marginBottom: '1.5rem' }}>
-          <Space style={{ marginBottom: '0.5rem' }}>
-            <InfoCircleOutlined style={{ color: '#1677ff' }} />
-            <Title level={4} style={{ margin: 0, color: 'var(--text-primary)' }}>
-              工具介绍 | About This Tool
-            </Title>
-          </Space>
-          <Paragraph style={{ color: 'var(--text-secondary)', fontSize: '15px', lineHeight: 1.6 }}>
-            {details.description}
-          </Paragraph>
-        </div>
+    <Box sx={{ mt: 4, mb: 4 }}>
+      <Card elevation={2}>
+        <CardContent>
+          {/* 工具描述 */}
+          <Box sx={{ mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+              <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
+              <Typography variant="h5" sx={{ m: 0, color: 'text.primary' }}>
+                工具介绍 | About This Tool
+              </Typography>
+            </Box>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: 'text.secondary', 
+                fontSize: '15px', 
+                lineHeight: 1.6 
+              }}
+            >
+              {details.description}
+            </Typography>
+          </Box>
 
-        <Divider />
+          <Divider sx={{ my: 2 }} />
 
-        <Row gutter={[24, 24]}>
-          {/* 核心功能 */}
-          <Col xs={24} md={12}>
-            <Space style={{ marginBottom: '1rem' }}>
-              <CheckCircleOutlined style={{ color: '#52c41a' }} />
-              <Title level={5} style={{ margin: 0, color: 'var(--text-primary)' }}>
-                核心功能 | Key Features
-              </Title>
-            </Space>
-            <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
-              {details.features.map((feature, index) => (
-                <li key={index} style={{ marginBottom: '0.5rem' }}>
-                  {feature}
-                </li>
+          <Grid container spacing={3}>
+            {/* 核心功能 */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <CheckCircleOutlined sx={{ color: 'secondary.main', mr: 1 }} />
+                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                  核心功能 | Key Features
+                </Typography>
+              </Box>
+              <List dense>
+                {details.features.map((feature, index) => (
+                  <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
+                    <ListItemIcon sx={{ minWidth: 20 }}>
+                      <Box 
+                        sx={{ 
+                          width: 6, 
+                          height: 6, 
+                          borderRadius: '50%', 
+                          backgroundColor: 'secondary.main' 
+                        }} 
+                      />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={feature} 
+                      primaryTypographyProps={{ 
+                        fontSize: '14px', 
+                        color: 'text.secondary' 
+                      }} 
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
+
+            {/* 使用场景 */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <BuildOutlined sx={{ color: '#722ed1', mr: 1 }} />
+                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                  使用场景 | Use Cases
+                </Typography>
+              </Box>
+              <List dense>
+                {details.useCases.map((useCase, index) => (
+                  <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
+                    <ListItemIcon sx={{ minWidth: 20 }}>
+                      <Box 
+                        sx={{ 
+                          width: 6, 
+                          height: 6, 
+                          borderRadius: '50%', 
+                          backgroundColor: '#722ed1' 
+                        }} 
+                      />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={useCase} 
+                      primaryTypographyProps={{ 
+                        fontSize: '14px', 
+                        color: 'text.secondary' 
+                      }} 
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
+          </Grid>
+
+          <Divider sx={{ my: 2 }} />
+
+          <Grid container spacing={3}>
+            {/* 使用技巧 */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <LightbulbOutlined sx={{ color: '#fa8c16', mr: 1 }} />
+                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                  使用技巧 | Tips & Tricks
+                </Typography>
+              </Box>
+              <List dense>
+                {details.tips.map((tip, index) => (
+                  <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
+                    <ListItemIcon sx={{ minWidth: 20 }}>
+                      <Box 
+                        sx={{ 
+                          width: 6, 
+                          height: 6, 
+                          borderRadius: '50%', 
+                          backgroundColor: '#fa8c16' 
+                        }} 
+                      />
+                    </ListItemIcon>
+                    <ListItemText 
+                      primary={tip} 
+                      primaryTypographyProps={{ 
+                        fontSize: '14px', 
+                        color: 'text.secondary' 
+                      }} 
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
+
+            {/* 常见问题 */}
+            <Grid item xs={12} md={6}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <HelpOutlineOutlined sx={{ color: '#eb2f96', mr: 1 }} />
+                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                  常见问题 | FAQ
+                </Typography>
+              </Box>
+              {details.faq.map((faq, index) => (
+                <Box key={index} sx={{ mb: 2 }}>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'text.primary', 
+                      fontWeight: 600, 
+                      display: 'block',
+                      mb: 0.5
+                    }}
+                  >
+                    Q: {faq.q}
+                  </Typography>
+                  <Typography 
+                    variant="body2" 
+                    sx={{ 
+                      color: 'text.secondary', 
+                      fontSize: '14px',
+                      pl: 1
+                    }}
+                  >
+                    A: {faq.a}
+                  </Typography>
+                </Box>
               ))}
-            </ul>
-          </Col>
-
-          {/* 使用场景 */}
-          <Col xs={24} md={12}>
-            <Space style={{ marginBottom: '1rem' }}>
-              <ToolOutlined style={{ color: '#722ed1' }} />
-              <Title level={5} style={{ margin: 0, color: 'var(--text-primary)' }}>
-                使用场景 | Use Cases
-              </Title>
-            </Space>
-            <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
-              {details.useCases.map((useCase, index) => (
-                <li key={index} style={{ marginBottom: '0.5rem' }}>
-                  {useCase}
-                </li>
-              ))}
-            </ul>
-          </Col>
-        </Row>
-
-        <Divider />
-
-        <Row gutter={[24, 24]}>
-          {/* 使用技巧 */}
-          <Col xs={24} md={12}>
-            <Space style={{ marginBottom: '1rem' }}>
-              <BulbOutlined style={{ color: '#fa8c16' }} />
-              <Title level={5} style={{ margin: 0, color: 'var(--text-primary)' }}>
-                使用技巧 | Tips & Tricks
-              </Title>
-            </Space>
-            <ul style={{ paddingLeft: '1.5rem', color: 'var(--text-secondary)' }}>
-              {details.tips.map((tip, index) => (
-                <li key={index} style={{ marginBottom: '0.5rem' }}>
-                  {tip}
-                </li>
-              ))}
-            </ul>
-          </Col>
-
-          {/* 常见问题 */}
-          <Col xs={24} md={12}>
-            <Space style={{ marginBottom: '1rem' }}>
-              <QuestionCircleOutlined style={{ color: '#eb2f96' }} />
-              <Title level={5} style={{ margin: 0, color: 'var(--text-primary)' }}>
-                常见问题 | FAQ
-              </Title>
-            </Space>
-            {details.faq.map((faq, index) => (
-              <div key={index} style={{ marginBottom: '1rem' }}>
-                <Text strong style={{ color: 'var(--text-primary)', display: 'block' }}>
-                  Q: {faq.q}
-                </Text>
-                <Text style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>
-                  A: {faq.a}
-                </Text>
-              </div>
-            ))}
-          </Col>
-        </Row>
+            </Grid>
+          </Grid>
+        </CardContent>
       </Card>
-    </div>
+    </Box>
   );
 }

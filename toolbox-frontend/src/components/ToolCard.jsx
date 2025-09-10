@@ -1,29 +1,29 @@
 import { Link } from 'react-router-dom';
-import { Card } from 'antd';
+import { Card, CardContent, Typography, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { 
   CodeOutlined, 
-  FileTextOutlined, 
-  DatabaseOutlined, 
-  SafetyOutlined, 
-  BgColorsOutlined,
-  ToolOutlined
-} from '@ant-design/icons';
+  ArticleOutlined, 
+  StorageOutlined, 
+  SecurityOutlined, 
+  PaletteOutlined,
+  BuildOutlined
+} from '@mui/icons-material';
 
 // 工具图标映射
 const getToolIcon = (path) => {
   if (path.includes('base64') || path.includes('json') || path.includes('url') || path.includes('timestamp') || path.includes('regex') || path.includes('jwt')) {
-    return <CodeOutlined style={{ fontSize: 32, color: '#1677ff' }} />;
+    return <CodeOutlined sx={{ fontSize: 32, color: '#1677ff' }} />;
   } else if (path.includes('diff') || path.includes('text') || path.includes('markdown')) {
-    return <FileTextOutlined style={{ fontSize: 32, color: '#52c41a' }} />;
+    return <ArticleOutlined sx={{ fontSize: 32, color: '#52c41a' }} />;
   } else if (path.includes('csv') || path.includes('data')) {
-    return <DatabaseOutlined style={{ fontSize: 32, color: '#722ed1' }} />;
+    return <StorageOutlined sx={{ fontSize: 32, color: '#722ed1' }} />;
   } else if (path.includes('hash')) {
-    return <SafetyOutlined style={{ fontSize: 32, color: '#fa8c16' }} />;
+    return <SecurityOutlined sx={{ fontSize: 32, color: '#fa8c16' }} />;
   } else if (path.includes('color') || path.includes('qr') || path.includes('image')) {
-    return <BgColorsOutlined style={{ fontSize: 32, color: '#eb2f96' }} />;
+    return <PaletteOutlined sx={{ fontSize: 32, color: '#eb2f96' }} />;
   } else {
-    return <ToolOutlined style={{ fontSize: 32, color: '#13c2c2' }} />;
+    return <BuildOutlined sx={{ fontSize: 32, color: '#13c2c2' }} />;
   }
 };
 
@@ -33,69 +33,70 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
   return (
     <Link to={path} style={{ textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }}>
       <Card 
-        hoverable 
-        className="tool-card" /* Apply the new class for styling */
-        style={{ 
+        sx={{ 
           width: '100%',
           maxWidth: 320,
-          flexDirection: 'column', 
-          alignItems: 'center', 
-          justifyContent: 'center',
           cursor: 'pointer',
-            overflow: 'hidden',
-            position: 'relative'
-        }}
-        bodyStyle={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '16px 12px',
-          textAlign: 'center',
-          width: '100%',
-          height: '100%',
-          overflow: 'hidden'
+          overflow: 'hidden',
+          position: 'relative',
+          '&:hover': {
+            transform: 'translateY(-4px)',
+          },
+          transition: 'all 0.2s ease-in-out'
         }}
       >
-        <div style={{ marginBottom: 8, flexShrink: 0 }}>
-          {getToolIcon(path)}
-        </div>
-        <Card.Meta 
-          title={
-            <span style={{ 
+        <CardContent
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            p: 2,
+            textAlign: 'center',
+            width: '100%',
+            height: '100%',
+            overflow: 'hidden'
+          }}
+        >
+          <Box sx={{ mb: 1, flexShrink: 0 }}>
+            {getToolIcon(path)}
+          </Box>
+          
+          <Typography 
+            variant="h6" 
+            sx={{ 
               fontSize: 16, 
               fontWeight: 600, 
-              color: 'var(--text-primary)',
-              marginBottom: 6,
-              display: 'block',
+              color: 'text.primary',
+              mb: 1,
               lineHeight: 1.4,
               wordBreak: 'break-word',
               overflowWrap: 'break-word',
               hyphens: 'auto'
-            }}>
-              {t(nameKey)}
-            </span>
-          } 
-          description={
-            <div style={{ width: '100%' }}>
-              <span style={{ 
-                fontSize: 13, 
-                color: 'var(--text-secondary)',
-                lineHeight: 1.4,
-                display: '-webkit-box',
-                WebkitLineClamp: 3,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                wordBreak: 'break-word',
-                overflowWrap: 'break-word',
-                hyphens: 'auto'
-              }}>
-                {t(pageDescriptionKey || descKey)}
-              </span>
-            </div>
-          } 
-        />
+            }}
+          >
+            {t(nameKey)}
+          </Typography>
+          
+          <Typography 
+            variant="body2" 
+            sx={{ 
+              fontSize: 13, 
+              color: 'text.secondary',
+              lineHeight: 1.4,
+              display: '-webkit-box',
+              WebkitLineClamp: 3,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+              wordBreak: 'break-word',
+              overflowWrap: 'break-word',
+              hyphens: 'auto'
+            }}
+          >
+            {t(pageDescriptionKey || descKey)}
+          </Typography>
+        </CardContent>
       </Card>
     </Link>
   );

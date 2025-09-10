@@ -1,11 +1,34 @@
 import { useEffect, useState } from 'react';
-import { Button, Tooltip, Dropdown, Space } from 'antd';
-import { BulbOutlined, MoonOutlined, DesktopOutlined } from '@ant-design/icons';
+import { 
+  IconButton, 
+  Tooltip, 
+  Menu, 
+  MenuItem, 
+  Box,
+  ListItemIcon,
+  ListItemText,
+  CircularProgress
+} from '@mui/material';
+import { 
+  LightMode, 
+  DarkMode, 
+  Monitor
+} from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 
 export default function ThemeSwitcher({ theme, setTheme }) {
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   
   useEffect(() => {
     localStorage.setItem('theme', theme);
@@ -44,81 +67,86 @@ export default function ThemeSwitcher({ theme, setTheme }) {
   const handleThemeChange = (newTheme) => {
     setIsLoading(true);
     setTheme(newTheme);
+    handleClose();
     setTimeout(() => {
       setIsLoading(false);
     }, 300);
   };
 
   const getCurrentThemeIcon = () => {
-    if (theme === 'dark') return <MoonOutlined style={{ fontSize: 16 }} />;
-    if (theme === 'light') return <BulbOutlined style={{ fontSize: 16 }} />;
-    return <DesktopOutlined style={{ fontSize: 16 }} />;
+    if (theme === 'dark') return <DarkMode sx={{ fontSize: 20 }} />;
+    if (theme === 'light') return <LightMode sx={{ fontSize: 20 }} />;
+    return <Monitor sx={{ fontSize: 20 }} />;
   };
 
   const themeOptions = [
     {
       key: 'light',
-      label: (
-        <Space>
-          <BulbOutlined style={{ fontSize: 14 }} />
-          {t('Light Mode')}
-        </Space>
-      )
+      icon: <LightMode sx={{ fontSize: 18 }} />,
+      label: t('Light Mode')
     },
     {
-      key: 'dark',
-      label: (
-        <Space>
-          <MoonOutlined style={{ fontSize: 14 }} />
-          {t('Dark Mode')}
-        </Space>
-      )
+      key: 'dark', 
+      icon: <DarkMode sx={{ fontSize: 18 }} />,
+      label: t('Dark Mode')
     },
     {
       key: 'system',
-      label: (
-        <Space>
-          <DesktopOutlined style={{ fontSize: 14 }} />
-          {t('System')}
-        </Space>
-      )
+      icon: <Monitor sx={{ fontSize: 18 }} />,
+      label: t('System')
     }
   ];
   
   return (
-    <Dropdown
-      menu={{
-        items: themeOptions,
-        selectedKeys: [theme],
-        onClick: ({ key }) => handleThemeChange(key)
-      }}
-      placement="bottomRight"
-      trigger={['click']}
-    >
-      <Tooltip 
-        title={t('Theme Settings')}
-        placement="bottom"
-      >
-        <Button
-          type="text"
-          icon={getCurrentThemeIcon()}
-          loading={isLoading}
-          style={{
+    <Box>
+      <Tooltip title={t('Theme Settings')} placement="bottom">
+        <IconButton
+          onClick={handleClick}
+          sx={{
             width: 40,
             height: 40,
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            transition: 'all 0.3s ease',
-            color: 'var(--text-primary)',
-            backgroundColor: 'var(--bg-tertiary)',
-            border: '1px solid var(--border-color)',
-            boxShadow: '0 1px 3px var(--shadow-color)'
+            color: 'text.primary',
+            bgcolor: 'background.paper',
+            border: 1,
+            borderColor: 'divider',
+            boxShadow: 1,
+            '&:hover': {
+              bgcolor: 'action.hover'
+            }
           }}
-          className="theme-switcher-btn"
-        />
+          disabled={isLoading}
+        >
+          {isLoading ? (
+            <CircularProgress size={20} />
+          ) : (
+            getCurrentThemeIcon()
+          )}
+        </IconButton>
       </Tooltip>
-    </Dropdown>
+      
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleClose}
+        MenuListProps={{
+          'aria-labelledby': 'theme-button',
+        }}
+        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      >
+        {themeOptions.map((option) => (
+          <MenuItem
+            key={option.key}
+            selected={theme === option.key}
+            onClick={() => handleThemeChange(option.key)}
+          >
+            <ListItemIcon>
+              {option.icon}
+            </ListItemIcon>
+            <ListItemText>{option.label}</ListItemText>
+          </MenuItem>
+        ))}
+      </Menu>
+    </Box>
   );
 } 

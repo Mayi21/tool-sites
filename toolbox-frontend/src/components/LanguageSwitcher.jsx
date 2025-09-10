@@ -1,17 +1,30 @@
 import { useTranslation } from 'react-i18next';
-import { Select } from 'antd';
+import { FormControl, Select, MenuItem } from '@mui/material';
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
+  
   return (
-    <Select
-      value={i18n.language}
-      onChange={v => i18n.changeLanguage(v)}
-      style={{ width: 100 }}
-      options={[
-        { value: 'zh', label: '中文' },
-        { value: 'en', label: 'English' },
-      ]}
-    />
+    <FormControl size="small" sx={{ minWidth: 100 }}>
+      <Select
+        value={i18n.language}
+        onChange={e => i18n.changeLanguage(e.target.value)}
+        sx={{
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: 'none'
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            border: 'none'
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            border: '1px solid',
+            borderColor: 'primary.main'
+          }
+        }}
+      >
+        <MenuItem value="zh">中文</MenuItem>
+        <MenuItem value="en">English</MenuItem>
+      </Select>
+    </FormControl>
   );
 } 

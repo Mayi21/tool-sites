@@ -1,25 +1,33 @@
 import { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { 
+  ThemeProvider, 
+  CssBaseline, 
+  Box, 
+  Container, 
+  Grid, 
+  Typography,
+  AppBar,
+  Toolbar,
+  Paper,
+  Divider,
+  CircularProgress
+} from '@mui/material';
+import { lightTheme, darkTheme } from './theme/muiTheme';
 import tools from './tools';
 import ToolCard from './components/ToolCard';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import NotFound from './components/NotFound';
-import ThemeTransition from './components/ThemeTransition';
 import BreadcrumbNav from './components/BreadcrumbNav';
 import RelatedTools from './components/RelatedTools';
 import ToolDetailDescription from './components/ToolDetailDescription';
-import './App.css';
-import { Layout, Row, Col, ConfigProvider, theme as antdTheme, Typography, Divider, Space, Spin } from 'antd';
 import { Helmet } from 'react-helmet-async';
 import Seo from './components/Seo';
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
-
-const { Header, Content, Footer } = Layout;
-const { Title } = Typography;
 
 // 为每个工具生成SEO关键词
 const getToolKeywords = (path, t) => {
@@ -91,7 +99,6 @@ function DynamicTitle() {
           document.head.appendChild(newMeta);
         }
       } else {
-        // 查找当前工具
         const currentTool = tools.find(tool => path === tool.path);
         if (currentTool) {
           document.title = `${t(currentTool.nameKey)} - ${t('Multi-function Toolbox')}`;
@@ -107,153 +114,62 @@ function DynamicTitle() {
   return null;
 }
 
-// 路由过渡包装，基于 pathname 触发入场动画
-function RouteTransitionWrapper({ children }) {
-  const loc = useLocation();
-  return (
-    <div className="route-transition" key={loc.pathname}>
-      {children}
-    </div>
-  );
-}
-
 // 导航栏组件
 function NavigationBar({ theme, setTheme }) {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   
-  // 检查是否在工具页面
-  const isInToolPage = location.pathname !== '/';
-  
-  // 点击Logo或标题返回首页
   const goHome = () => navigate('/');
 
-  // 返回工具分类
-  const goToCategory = (category) => {
-    navigate('/');
-    // 滚动到对应分类
-    setTimeout(() => {
-      const element = document.getElementById(`category-${category}`);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 100);
-  };
-
-  const quickNavItems = [
-    {
-      key: 'dev',
-      label: (
-        <Space>
-          <span>•</span>
-          {t('Development Tools')}
-        </Space>
-      ),
-      onClick: () => goToCategory('dev')
-    },
-    {
-      key: 'text',
-      label: (
-        <Space>
-          <span>•</span>
-          {t('Text Processing')}
-        </Space>
-      ),
-      onClick: () => goToCategory('text')
-    },
-    {
-      key: 'data',
-      label: (
-        <Space>
-          <span>•</span>
-          {t('Data Conversion')}
-        </Space>
-      ),
-      onClick: () => goToCategory('data')
-    },
-    {
-      key: 'security',
-      label: (
-        <Space>
-          <span>•</span>
-          {t('Security & Encryption')}
-        </Space>
-      ),
-      onClick: () => goToCategory('security')
-    },
-    {
-      key: 'design',
-      label: (
-        <Space>
-          <span>•</span>
-          {t('Design Tools')}
-        </Space>
-      ),
-      onClick: () => goToCategory('design')
-    }
-  ];
-
-  // 去掉键盘快捷键
-
   return (
-    <Header 
-      style={{ 
-        background: 'var(--header-bg)', 
-        boxShadow: 'none', 
-        display: 'flex', 
-        alignItems: 'center', 
-        justifyContent: 'space-between',
-        width: '100%',
-        borderBottom: '1px solid var(--border-color)',
-        height: '64px',
-        padding: '0 24px'
+    <AppBar 
+      position="static" 
+      elevation={0}
+      sx={{ 
+        bgcolor: 'background.paper',
+        borderBottom: 1,
+        borderColor: 'divider'
       }}
     >
-      {/* 左侧：Logo与标题（点击返回首页） */}
-      <div 
-        style={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          cursor: 'pointer',
-          flex: '1 1 auto',
-          overflow: 'hidden'
-        }} 
-        onClick={goHome}
-      >
-        <img 
-          src="/toolbox-icon.svg" 
-          alt="Toolbox Icon" 
-          style={{ 
-            width: 22, 
-            height: 22, 
-            marginRight: 3,
-            flexShrink: 0
-          }} 
-        />
-        <span 
-          className="header-title-text" 
-          style={{ 
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            transform: 'translateY(-2px)'  // 微调垂直位置
+      <Toolbar sx={{ justifyContent: 'space-between' }}>
+        <Box 
+          onClick={goHome}
+          sx={{ 
+            display: 'flex', 
+            alignItems: 'center',
+            cursor: 'pointer',
+            '&:hover': { opacity: 0.8 }
           }}
         >
-          {t('Multi-function Toolbox')}
-        </span>
-      </div>
-      
-      {/* 右侧：语言切换和主题切换 */}
-      <div style={{ 
-          display: 'flex', 
-          alignItems: 'center',
-          gap: 16
-        }}>
-        <LanguageSwitcher />
-        <ThemeSwitcher theme={theme} setTheme={setTheme} />
-      </div>
-    </Header>
+          <Box
+            component="img"
+            src="/toolbox-icon.svg"
+            alt="Toolbox Icon"
+            sx={{ width: 22, height: 22, mr: 1 }}
+          />
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              color: 'text.primary',
+              fontWeight: 700,
+              fontSize: { xs: '1rem', sm: '1.25rem' },
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}
+          >
+            {t('Multi-function Toolbox')}
+          </Typography>
+        </Box>
+        
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <LanguageSwitcher />
+          <ThemeSwitcher theme={theme} setTheme={setTheme} />
+        </Box>
+      </Toolbar>
+    </AppBar>
   );
 }
 
@@ -270,11 +186,6 @@ function App() {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
-  
-  // Configure theme algorithm
-  const { defaultAlgorithm, darkAlgorithm } = antdTheme;
-
-  // 移除收藏/最近使用/搜索逻辑，保持首页简洁
 
   const [activeCategoryKey, setActiveCategoryKey] = useState('all');
 
@@ -291,285 +202,266 @@ function App() {
     return categorizedTools;
   };
 
-  // 过滤函数移除（不再提供搜索）
-
   const categorizedTools = getToolsByCategory();
   const categoriesToRender = activeCategoryKey === 'all'
     ? toolCategories
     : toolCategories.filter(c => c.key === activeCategoryKey);
-  
-  // 简化后不再使用收藏与最近使用
+
+  const currentTheme = theme === 'dark' ? darkTheme : lightTheme;
 
   return (
-    <ConfigProvider
-      key={theme}
-      theme={{
-        algorithm: theme === 'dark' ? darkAlgorithm : defaultAlgorithm,
-      }}
-    >
+    <ThemeProvider theme={currentTheme}>
+      <CssBaseline />
       <BrowserRouter>
         <DynamicTitle />
-        {/* 路由过渡动画容器 */}
-        <ThemeTransition theme={theme}>
-          <Layout style={{ minHeight: '100vh', width: '100%' }}>
-            <NavigationBar theme={theme} setTheme={setTheme} />
-            <Content 
-              style={{ 
-                background: 'var(--bg-secondary)', 
-                padding: 'clamp(12px, 2vw, 24px) clamp(8px, 2vw, 24px)',
-                width: '100%',
-                minHeight: 'calc(100vh - 64px - 70px)'
-              }}
-            >
-              <RouteTransitionWrapper>
-                <Suspense fallback={<Spin size="large" />}>
-                  <Routes>
-                  <Route path="/" element={
-                    <>
-                      <Seo
-                        title="ToolifyHub - Free Online Developer Tools Collection | 多功能在线工具箱"
-                        description="20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。"
-                        canonical="https://toolifyhub.top/"
-                        keywords="online tools,developer tools,base64,json formatter,regex tester,free tools,web tools,programming tools,在线工具,开发工具,免费工具,程序员工具"
-                      />
-                      <div style={{ 
-                      width: '100%', 
-                      maxWidth: '1280px', 
-                      margin: '0 auto', 
-                      padding: '0 8px'
-                    }}>
-
+        <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+          <NavigationBar theme={theme} setTheme={setTheme} />
+          
+          <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
+            <Suspense fallback={
+              <Box display="flex" justifyContent="center" alignItems="center" minHeight="400px">
+                <CircularProgress />
+              </Box>
+            }>
+              <Routes>
+                <Route path="/" element={
+                  <>
+                    <Seo
+                      title="ToolifyHub - Free Online Developer Tools Collection | 多功能在线工具箱"
+                      description="20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。"
+                      canonical="https://toolifyhub.top/"
+                      keywords="online tools,developer tools,base64,json formatter,regex tester,free tools,web tools,programming tools,在线工具,开发工具,免费工具,程序员工具"
+                    />
+                    <Container maxWidth="lg" sx={{ px: 2 }}>
                       {/* SEO内容区块 */}
-                      <div style={{ 
-                        textAlign: 'center', 
-                        marginBottom: '2rem',
-                        padding: '1rem 0'
-                      }}>
-                        <Title level={1} style={{ 
-                          color: 'var(--text-primary)', 
-                          fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
-                          marginBottom: '1rem'
-                        }}>
+                      <Paper 
+                        elevation={0}
+                        sx={{ 
+                          textAlign: 'center', 
+                          mb: 4,
+                          p: 3,
+                          bgcolor: 'background.paper',
+                          borderRadius: 2
+                        }}
+                      >
+                        <Typography 
+                          variant="h1" 
+                          sx={{ 
+                            fontSize: { xs: '1.8rem', sm: '2.5rem' },
+                            fontWeight: 700,
+                            mb: 2,
+                            background: 'linear-gradient(45deg, #1677ff 30%, #52c41a 90%)',
+                            backgroundClip: 'text',
+                            textFillColor: 'transparent',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent'
+                          }}
+                        >
                           {t('Multi-function Toolbox')} - 免费在线开发工具集合
-                        </Title>
-                        <p style={{ 
-                          fontSize: 'clamp(1rem, 2.5vw, 1.2rem)',
-                          color: 'var(--text-secondary)',
-                          maxWidth: '800px',
-                          margin: '0 auto 1.5rem',
-                          lineHeight: 1.6
-                        }}>
+                        </Typography>
+                        <Typography 
+                          variant="body1" 
+                          sx={{ 
+                            fontSize: { xs: '1rem', sm: '1.2rem' },
+                            color: 'text.secondary',
+                            maxWidth: '800px',
+                            mx: 'auto',
+                            mb: 3,
+                            lineHeight: 1.6
+                          }}
+                        >
                           为开发者精心打造的20+款实用在线工具，涵盖编码解码、格式转换、文本处理、数据生成等核心功能。
                           完全免费，隐私安全，即开即用，助力提升开发效率。
-                        </p>
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                          gap: '1rem',
-                          flexWrap: 'wrap',
-                          marginBottom: '1rem'
-                        }}>
-                          <span style={{ 
-                            padding: '0.5rem 1rem', 
-                            background: 'var(--bg-primary)', 
-                            borderRadius: '20px',
-                            fontSize: '0.9rem',
-                            color: 'var(--text-secondary)'
-                          }}>🚀 即时处理</span>
-                          <span style={{ 
-                            padding: '0.5rem 1rem', 
-                            background: 'var(--bg-primary)', 
-                            borderRadius: '20px',
-                            fontSize: '0.9rem',
-                            color: 'var(--text-secondary)'
-                          }}>🔒 隐私安全</span>
-                          <span style={{ 
-                            padding: '0.5rem 1rem', 
-                            background: 'var(--bg-primary)', 
-                            borderRadius: '20px',
-                            fontSize: '0.9rem',
-                            color: 'var(--text-secondary)'
-                          }}>📱 移动适配</span>
-                          <span style={{ 
-                            padding: '0.5rem 1rem', 
-                            background: 'var(--bg-primary)', 
-                            borderRadius: '20px',
-                            fontSize: '0.9rem',
-                            color: 'var(--text-secondary)'
-                          }}>🆓 完全免费</span>
-                        </div>
-                      </div>
+                        </Typography>
+                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+                          {['🚀 即时处理', '🔒 隐私安全', '📱 移动适配', '🆓 完全免费'].map((feature) => (
+                            <Paper 
+                              key={feature}
+                              elevation={1}
+                              sx={{ 
+                                px: 2, 
+                                py: 1, 
+                                bgcolor: 'primary.main',
+                                color: 'primary.contrastText',
+                                borderRadius: 3,
+                                fontSize: '0.9rem'
+                              }}
+                            >
+                              {feature}
+                            </Paper>
+                          ))}
+                        </Box>
+                      </Paper>
 
                       {/* 内链优化：热门工具组合推荐 */}
-                      <div style={{
-                        textAlign: 'center',
-                        marginBottom: '2rem',
-                        padding: '1.5rem',
-                        background: 'var(--bg-primary)',
-                        borderRadius: '12px',
-                        border: '1px solid var(--border-color)'
-                      }}>
-                        <Title level={4} style={{ 
-                          color: 'var(--text-primary)',
-                          marginBottom: '1rem'
-                        }}>
+                      <Paper 
+                        elevation={1}
+                        sx={{ 
+                          textAlign: 'center',
+                          mb: 4,
+                          p: 3,
+                          bgcolor: 'background.paper',
+                          borderRadius: 2
+                        }}
+                      >
+                        <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
                           🔥 热门工具组合 | Popular Tool Combinations
-                        </Title>
-                        <div style={{
-                          display: 'flex',
-                          flexWrap: 'wrap',
-                          justifyContent: 'center',
-                          gap: '1rem'
-                        }}>
-                          <Link to="/base64" style={{
-                            padding: '0.5rem 1rem',
-                            background: 'rgba(22, 119, 255, 0.1)',
-                            borderRadius: '20px',
-                            textDecoration: 'none',
-                            color: '#1677ff',
-                            fontSize: '14px',
-                            fontWeight: '500'
-                          }}>
-                            Base64编码 → URL编码 → 哈希生成
+                        </Typography>
+                        <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
+                          <Link to="/base64" style={{ textDecoration: 'none' }}>
+                            <Paper 
+                              elevation={2}
+                              sx={{ 
+                                px: 2, py: 1, 
+                                bgcolor: 'rgba(22, 119, 255, 0.1)',
+                                color: 'primary.main',
+                                borderRadius: 3,
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                '&:hover': { bgcolor: 'rgba(22, 119, 255, 0.2)' }
+                              }}
+                            >
+                              Base64编码 → URL编码 → 哈希生成
+                            </Paper>
                           </Link>
-                          <Link to="/json-formatter" style={{
-                            padding: '0.5rem 1rem',
-                            background: 'rgba(82, 196, 26, 0.1)',
-                            borderRadius: '20px',
-                            textDecoration: 'none',
-                            color: '#52c41a',
-                            fontSize: '14px',
-                            fontWeight: '500'
-                          }}>
-                            JSON格式化 → CSV转换 → 文本对比
+                          <Link to="/json-formatter" style={{ textDecoration: 'none' }}>
+                            <Paper 
+                              elevation={2}
+                              sx={{ 
+                                px: 2, py: 1, 
+                                bgcolor: 'rgba(82, 196, 26, 0.1)',
+                                color: 'secondary.main',
+                                borderRadius: 3,
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                '&:hover': { bgcolor: 'rgba(82, 196, 26, 0.2)' }
+                              }}
+                            >
+                              JSON格式化 → CSV转换 → 文本对比
+                            </Paper>
                           </Link>
-                          <Link to="/regex-tester" style={{
-                            padding: '0.5rem 1rem',
-                            background: 'rgba(114, 46, 209, 0.1)',
-                            borderRadius: '20px',
-                            textDecoration: 'none',
-                            color: '#722ed1',
-                            fontSize: '14px',
-                            fontWeight: '500'
-                          }}>
-                            正则测试 → 文本分析 → 文本处理
+                          <Link to="/regex-tester" style={{ textDecoration: 'none' }}>
+                            <Paper 
+                              elevation={2}
+                              sx={{ 
+                                px: 2, py: 1, 
+                                bgcolor: 'rgba(114, 46, 209, 0.1)',
+                                color: '#722ed1',
+                                borderRadius: 3,
+                                fontSize: '14px',
+                                fontWeight: 500,
+                                '&:hover': { bgcolor: 'rgba(114, 46, 209, 0.2)' }
+                              }}
+                            >
+                              正则测试 → 文本分析 → 文本处理
+                            </Paper>
                           </Link>
-                        </div>
-                      </div>
+                        </Box>
+                      </Paper>
 
-
-                      {/* 分类快捷标签保留，仅用于切换分类 */}
-                      <div style={{ margin: '0 auto 24px', display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+                      {/* 分类快捷标签 */}
+                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', mb: 3 }}>
                         {['dev','text','data','security','design','all'].map(key => (
-                          <button
+                          <Paper
                             key={key}
+                            elevation={activeCategoryKey === key ? 2 : 1}
                             onClick={() => setActiveCategoryKey(key)}
-                            style={{
-                              padding: '6px 10px',
-                              borderRadius: 6,
-                              border: '1px solid var(--border-color)',
-                              background: activeCategoryKey === key ? '#1677ff' : 'var(--bg-tertiary)',
-                              color: activeCategoryKey === key ? '#fff' : 'var(--text-primary)',
-                              cursor: 'pointer'
+                            sx={{
+                              px: 2,
+                              py: 1,
+                              cursor: 'pointer',
+                              bgcolor: activeCategoryKey === key ? 'primary.main' : 'background.paper',
+                              color: activeCategoryKey === key ? 'primary.contrastText' : 'text.primary',
+                              '&:hover': {
+                                bgcolor: activeCategoryKey === key ? 'primary.dark' : 'action.hover'
+                              }
                             }}
                           >
-                            {key === 'all' ? t('All') : t(toolCategories.find(c => c.key === key)?.nameKey)}
-                          </button>
+                            <Typography variant="body2" fontWeight={500}>
+                              {key === 'all' ? t('All') : t(toolCategories.find(c => c.key === key)?.nameKey)}
+                            </Typography>
+                          </Paper>
                         ))}
-                      </div>
-
-                      {/* 移除收藏与最近使用区块 */}
+                      </Box>
                       
                       {categoriesToRender.map((category, index) => (
-                        <div key={category.key} id={`category-${category.key}`} style={{ marginBottom: '2rem' }}>
-                          <Title level={3} style={{ 
-                            marginBottom: '1.5rem', 
-                            color: 'var(--text-primary)',
-                            fontSize: 'clamp(1.3rem, 3vw, 1.8rem)',
-                            textAlign: 'center',
-                            width: '100%'
-                          }}>
-                            {t(category.nameKey)}
-                          </Title>
-                          <Row
-                            gutter={[16, 16]}
-                            justify="start"
-                            style={{ width: '100%' }}
+                        <Box key={category.key} id={`category-${category.key}`} sx={{ mb: 4 }}>
+                          <Typography 
+                            variant="h3" 
+                            sx={{ 
+                              mb: 3, 
+                              textAlign: 'center',
+                              fontSize: { xs: '1.5rem', sm: '2rem' },
+                              fontWeight: 600
+                            }}
                           >
+                            {t(category.nameKey)}
+                          </Typography>
+                          <Grid container spacing={3} justifyContent="center">
                             {categorizedTools[category.key]?.map(tool => (
-                              <Col 
-                                key={tool.path} 
-                                xs={24} 
-                                sm={12} 
-                                md={8} 
-                                lg={6} 
-                                xl={6}
-                                xxl={6}
-                                style={{ display: 'flex', justifyContent: 'center' }}
-                              >
+                              <Grid item key={tool.path} xs={12} sm={6} md={4} lg={3}>
                                 <ToolCard 
                                   path={tool.path}
                                   nameKey={tool.nameKey}
                                   descKey={tool.descKey}
                                   pageDescriptionKey={tool.pageDescriptionKey}
                                 />
-                              </Col>
+                              </Grid>
                             ))}
-                          </Row>
+                          </Grid>
                           {index < categoriesToRender.length - 1 && (
-                            <Divider style={{ margin: '3rem 0' }} />
+                            <Divider sx={{ my: 4 }} />
                           )}
-                        </div>
+                        </Box>
                       ))}
-                    </div>
-                      </>
-                  } />
-                  {tools.map(tool => (
-                    <Route 
-                      key={tool.path} 
-                      path={tool.path} 
-                      element={
-                        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 8px', width: '100%' }}>
-                          <Seo
-                            title={t(tool.pageTitleKey || tool.nameKey)}
-                            description={t(tool.pageDescriptionKey || tool.descKey)}
-                            canonical={typeof window !== 'undefined' ? window.location.href : `https://toolifyhub.top${tool.path}`}
-                            keywords={getToolKeywords(tool.path, t)}
-                          />
-                          <BreadcrumbNav currentToolName={t(tool.nameKey)} />
-                          <tool.Component />
-                          <ToolDetailDescription toolPath={tool.path} />
-                          <RelatedTools currentPath={tool.path} allTools={tools} />
-                        </div>
-                      } 
-                    />
-                  ))}
-                  
-                  
-                  
+                    </Container>
+                  </>
+                } />
+                {tools.map(tool => (
                   <Route 
-                    path="*" 
-                    element={<NotFound />} 
+                    key={tool.path} 
+                    path={tool.path} 
+                    element={
+                      <Container maxWidth="lg" sx={{ px: 2 }}>
+                        <Seo
+                          title={t(tool.pageTitleKey || tool.nameKey)}
+                          description={t(tool.pageDescriptionKey || tool.descKey)}
+                          canonical={typeof window !== 'undefined' ? window.location.href : `https://toolifyhub.top${tool.path}`}
+                          keywords={getToolKeywords(tool.path, t)}
+                        />
+                        <BreadcrumbNav currentToolName={t(tool.nameKey)} />
+                        <tool.Component />
+                        <ToolDetailDescription toolPath={tool.path} />
+                        <RelatedTools currentPath={tool.path} allTools={tools} />
+                      </Container>
+                    } 
                   />
-                  <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
-                  <Route path="/questionnaire/:id/results" element={<ViewResults />} />
-                  </Routes>
-                </Suspense>
-              </RouteTransitionWrapper>
-            </Content>
-            <Footer style={{ 
+                ))}
+                
+                <Route path="*" element={<NotFound />} />
+                <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
+                <Route path="/questionnaire/:id/results" element={<ViewResults />} />
+              </Routes>
+            </Suspense>
+          </Box>
+          
+          <Paper 
+            elevation={0}
+            sx={{ 
               textAlign: 'center', 
-              background: 'var(--footer-bg)', 
-              width: '100%',
-              borderTop: '1px solid var(--border-color)',
-              color: 'var(--text-secondary)'
-            }}>
+              bgcolor: 'background.paper',
+              borderTop: 1,
+              borderColor: 'divider',
+              py: 3
+            }}
+          >
+            <Typography variant="body2" color="text.secondary">
               {t('Multi-function Toolbox')} ©{new Date().getFullYear()}
-            </Footer>
-          </Layout>
-        </ThemeTransition>
+            </Typography>
+          </Paper>
+        </Box>
       </BrowserRouter>
-    </ConfigProvider>
+    </ThemeProvider>
   );
 }
 

@@ -1,32 +1,30 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card, Row, Col, Typography } from 'antd';
+import { Card, CardContent, Grid, Typography, Box } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { 
   CodeOutlined, 
-  FileTextOutlined, 
-  DatabaseOutlined, 
-  SafetyOutlined, 
-  BgColorsOutlined,
-  ToolOutlined 
-} from '@ant-design/icons';
-
-const { Title } = Typography;
+  ArticleOutlined, 
+  StorageOutlined, 
+  SecurityOutlined, 
+  PaletteOutlined,
+  BuildOutlined 
+} from '@mui/icons-material';
 
 // 工具图标映射 (复用ToolCard的逻辑)
 const getToolIcon = (path) => {
   if (path.includes('base64') || path.includes('json') || path.includes('url') || path.includes('timestamp') || path.includes('regex') || path.includes('jwt')) {
-    return <CodeOutlined style={{ fontSize: 20, color: '#1677ff' }} />;
+    return <CodeOutlined sx={{ fontSize: 20, color: '#1677ff' }} />;
   } else if (path.includes('diff') || path.includes('text') || path.includes('markdown')) {
-    return <FileTextOutlined style={{ fontSize: 20, color: '#52c41a' }} />;
+    return <ArticleOutlined sx={{ fontSize: 20, color: '#52c41a' }} />;
   } else if (path.includes('csv') || path.includes('data')) {
-    return <DatabaseOutlined style={{ fontSize: 20, color: '#722ed1' }} />;
+    return <StorageOutlined sx={{ fontSize: 20, color: '#722ed1' }} />;
   } else if (path.includes('hash') || path.includes('password')) {
-    return <SafetyOutlined style={{ fontSize: 20, color: '#fa8c16' }} />;
+    return <SecurityOutlined sx={{ fontSize: 20, color: '#fa8c16' }} />;
   } else if (path.includes('color') || path.includes('qr') || path.includes('image')) {
-    return <BgColorsOutlined style={{ fontSize: 20, color: '#eb2f96' }} />;
+    return <PaletteOutlined sx={{ fontSize: 20, color: '#eb2f96' }} />;
   } else {
-    return <ToolOutlined style={{ fontSize: 20, color: '#13c2c2' }} />;
+    return <BuildOutlined sx={{ fontSize: 20, color: '#13c2c2' }} />;
   }
 };
 
@@ -69,55 +67,66 @@ export default function RelatedTools({ currentPath, allTools }) {
   }
 
   return (
-    <div style={{ 
-      marginTop: '3rem',
-      padding: '2rem',
-      background: 'var(--bg-primary)',
-      borderRadius: '12px',
-      border: '1px solid var(--border-color)'
+    <Box sx={{ 
+      mt: 4,
+      p: 3,
+      bgcolor: 'background.paper',
+      borderRadius: 2,
+      border: 1,
+      borderColor: 'divider'
     }}>
-      <Title level={3} style={{ 
-        marginBottom: '1.5rem', 
-        color: 'var(--text-primary)',
-        textAlign: 'center'
-      }}>
+      <Typography 
+        variant="h4" 
+        sx={{ 
+          mb: 3, 
+          color: 'text.primary',
+          textAlign: 'center',
+          fontSize: { xs: '1.5rem', sm: '2rem' },
+          fontWeight: 600
+        }}
+      >
         相关推荐工具 | Related Tools
-      </Title>
+      </Typography>
       
-      <Row gutter={[16, 16]} justify="center">
+      <Grid container spacing={2} justifyContent="center">
         {relatedTools.map(tool => (
-          <Col key={tool.path} xs={12} sm={12} md={6} lg={6}>
+          <Grid item key={tool.path} xs={6} sm={6} md={3} lg={3}>
             <Link to={tool.path} style={{ textDecoration: 'none' }}>
               <Card 
-                hoverable
-                size="small"
-                style={{
+                sx={{
                   textAlign: 'center',
                   height: '100%',
-                  background: 'var(--bg-secondary)',
-                  border: '1px solid var(--border-color)'
+                  cursor: 'pointer',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                  },
+                  transition: 'all 0.2s ease-in-out'
                 }}
-                bodyStyle={{ padding: '12px 8px' }}
               >
-                <div style={{ marginBottom: '8px' }}>
-                  {getToolIcon(tool.path)}
-                </div>
-                <div style={{
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  color: 'var(--text-primary)',
-                  lineHeight: '1.3',
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
-                  {t(tool.nameKey)}
-                </div>
+                <CardContent sx={{ p: '12px 8px !important' }}>
+                  <Box sx={{ mb: 1 }}>
+                    {getToolIcon(tool.path)}
+                  </Box>
+                  <Typography 
+                    variant="body2" 
+                    sx={{
+                      fontSize: '13px',
+                      fontWeight: 500,
+                      color: 'text.primary',
+                      lineHeight: 1.3,
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }}
+                  >
+                    {t(tool.nameKey)}
+                  </Typography>
+                </CardContent>
               </Card>
             </Link>
-          </Col>
+          </Grid>
         ))}
-      </Row>
-    </div>
+      </Grid>
+    </Box>
   );
 }

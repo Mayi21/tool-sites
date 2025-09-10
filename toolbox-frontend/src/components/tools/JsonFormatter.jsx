@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Alert, Card } from 'antd';
-import { CopyOutlined, DownloadOutlined } from '@ant-design/icons';
+import { Card, Typography, TextField, Button, Stack, Alert, AlertTitle } from '@mui/material';
+import { ContentCopy, Download } from '@mui/icons-material';
 import CopySuccessAnimation from '../CopySuccessAnimation';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
-
-const { Title } = Typography;
-const { TextArea } = Input;
 
 export default function JsonFormatter() {
   const { t } = useTranslation();
@@ -59,55 +56,63 @@ export default function JsonFormatter() {
 
   return (
     <>
-      <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
-        <Title level={2}>{t('JSON Formatter')}</Title>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>
+          {t('JSON Formatter')}
+        </Typography>
         
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <TextArea 
+        <Stack spacing={2}>
+          <TextField 
             value={input} 
             onChange={e => setInput(e.target.value)} 
+            multiline
             rows={8} 
-            placeholder={t('Enter JSON to format')}
+            label={t('Enter JSON to format')}
+            variant="outlined"
+            fullWidth
           />
           
-          <Space>
-            <Button type="primary" onClick={formatJson}>
+          <Stack direction="row" spacing={1}>
+            <Button variant="contained" onClick={formatJson}>
               {t('Format')}
             </Button>
-            <Button onClick={minifyJson}>
+            <Button variant="outlined" onClick={minifyJson}>
               {t('Minify')}
             </Button>
-          </Space>
+          </Stack>
           
           {error && (
-            <Alert 
-              message={t('Error')} 
-              description={error} 
-              type="error" 
-              showIcon 
-            />
+            <Alert severity="error">
+              <AlertTitle>{t('Error')}</AlertTitle>
+              {error}
+            </Alert>
           )}
           
           {output && (
-            <>
-              <Space>
-                <Button icon={<CopyOutlined />} onClick={copyToClipboardHandler}>
+            <Stack spacing={1}>
+              <Stack direction="row" spacing={1}>
+                <Button variant="outlined" startIcon={<ContentCopy />} onClick={copyToClipboardHandler}>
                   {t('Copy')}
                 </Button>
-                <Button icon={<DownloadOutlined />} onClick={downloadJson}>
+                <Button variant="outlined" startIcon={<Download />} onClick={downloadJson}>
                   {t('Download')}
                 </Button>
-              </Space>
+              </Stack>
               
-              <TextArea 
+              <TextField 
                 value={output} 
-                readOnly 
+                InputProps={{
+                  readOnly: true,
+                  style: { fontFamily: 'monospace' }
+                }}
+                multiline
                 rows={12} 
-                style={{ fontFamily: 'monospace' }}
+                variant="filled"
+                fullWidth
               />
-            </>
+            </Stack>
           )}
-        </Space>
+        </Stack>
       </Card>
       
       <CopySuccessAnimation 

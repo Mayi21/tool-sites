@@ -1,60 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card, message, Row, Col, Statistic } from 'antd';
-import { CopyOutlined, ClockCircleOutlined } from '@ant-design/icons';
+import {
+  Card, Typography, TextField, Button, Stack, Grid, Paper, Box, InputAdornment, IconButton, Alert
+} from '@mui/material';
+import { ContentCopy, Schedule, Update } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
+import CopySuccessAnimation from '../CopySuccessAnimation';
 
-const { Title } = Typography;
+const StatisticDisplay = ({ title, value, icon }) => (
+  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
+    <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
+      {icon}
+      <Typography variant="h6" color="text.secondary">{title}</Typography>
+    </Stack>
+    <Typography variant="h5" sx={{ mt: 1, fontFamily: 'monospace' }}>{value}</Typography>
+  </Paper>
+);
 
 export default function TimestampConverter() {
   const { t } = useTranslation();
   const [timestamp, setTimestamp] = useState('');
   const [date, setDate] = useState('');
   const [currentTime, setCurrentTime] = useState(Date.now());
+  const [error, setError] = useState(null);
+  const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentTime(Date.now());
-    }, 1000);
+    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
   function convertTimestampToDate() {
     if (!timestamp) return;
-    
-    const ts = parseInt(timestamp);
+    const ts = parseInt(timestamp.length > 10 ? timestamp : timestamp + '000'); // Handle seconds and ms
     if (isNaN(ts)) {
-      message.error(t('Invalid timestamp'));
+      setError(t('Invalid timestamp'));
       return;
     }
-    
-    const dateObj = new Date(ts);
-    setDate(dateObj.toLocaleString());
+    setDate(new Date(ts).toLocaleString());
+    setError(null);
   }
 
   function convertDateToTimestamp() {
     if (!date) return;
-    
     const dateObj = new Date(date);
     if (isNaN(dateObj.getTime())) {
-      message.error(t('Invalid date'));
+      setError(t('Invalid date'));
       return;
     }
-    
     setTimestamp(dateObj.getTime().toString());
-  }
-
-  function copyTimestamp() {
-    if (timestamp) {
-      navigator.clipboard.writeText(timestamp);
-      message.success(t('Copied to clipboard'));
-    }
-  }
-
-  function copyDate() {
-    if (date) {
-      navigator.clipboard.writeText(date);
-      message.success(t('Copied to clipboard'));
-    }
+    setError(null);
   }
 
   function setCurrentTimestamp() {
@@ -62,67 +57,68 @@ export default function TimestampConverter() {
   }
 
   return (
-    <Card style={{ maxWidth: 800, margin: '0 auto' }}>
-      <Title level={2}>{t('Timestamp Converter')}</Title>
-      
-      <Row gutter={16} style={{ marginBottom: 24 }}>
-        <Col span={12}>
-          <Statistic 
-            title={t('Current Timestamp')} 
-            value={currentTime} 
-            prefix={<ClockCircleOutlined />}
-          />
-        </Col>
-        <Col span={12}>
-          <Statistic 
-            title={t('Current Date')} 
-            value={new Date(currentTime).toLocaleString()} 
-          />
-        </Col>
-      </Row>
-      
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Row gutter={16}>
-          <Col span={12}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Input 
-                value={timestamp} 
-                onChange={e => setTimestamp(e.target.value)} 
-                placeholder={t('Enter timestamp')}
-                addonAfter={
-                  <Button size="small" onClick={copyTimestamp} icon={<CopyOutlined />}>
-                    {t('Copy')}
-                  </Button>
-                }
-              />
-              <Button type="primary" onClick={convertTimestampToDate}>
-                {t('Convert to Date')}
-              </Button>
-            </Space>
-          </Col>
-          <Col span={12}>
-            <Space direction="vertical" style={{ width: '100%' }}>
-              <Input 
-                value={date} 
-                onChange={e => setDate(e.target.value)} 
-                placeholder={t('Enter date')}
-                addonAfter={
-                  <Button size="small" onClick={copyDate} icon={<CopyOutlined />}>
-                    {t('Copy')}
-                  </Button>
-                }
-              />
-              <Button onClick={convertDateToTimestamp}>
-                {t('Convert to Timestamp')}
-              </Button>
-            </Space>
-          </Col>
-        </Row>
+    <>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Timestamp Converter')}</Typography>
         
-        <Button onClick={setCurrentTimestamp}>
-          {t('Set Current Timestamp')}
-        </Button>
-      </Space>
-    </Card>
+        <Grid container spacing={2} sx={{ mb: 3 }}>
+          <Grid item xs={12} sm={6}>
+            <StatisticDisplay title={t('Current Timestamp')} value={currentTime} icon={<Schedule fontSize="small" />} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <StatisticDisplay title={t('Current Date')} value={new Date(currentTime).toLocaleString()} />
+          </Grid>
+        </Grid>
+        
+        <Stack spacing={2}>
+          {error && <Alert severity="error">{error}</Alert>}
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <Stack spacing={1}>
+                <TextField 
+                  label={t('Timestamp')}
+                  value={timestamp} 
+                  onChange={e => setTimestamp(e.target.value)} 
+                  placeholder={t('Enter timestamp')}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => copyToClipboard(timestamp)} edge="end">
+                          <ContentCopy />
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+                <Button variant="contained" onClick={convertTimestampToDate}>{t('Convert to Date')}</Button>
+              </Stack>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <Stack spacing={1}>
+                <TextField 
+                  label={t('Date')}
+                  value={date} 
+                  onChange={e => setDate(e.target.value)} 
+                  placeholder={t('Enter date')}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton onClick={() => copyToClipboard(date)} edge="end">
+                          <ContentCopy />
+                        </IconButton>
+                      </InputAdornment>
+                    )
+                  }}
+                />
+                <Button variant="outlined" onClick={convertDateToTimestamp}>{t('Convert to Timestamp')}</Button>
+              </Stack>
+            </Grid>
+          </Grid>
+          
+          <Button onClick={setCurrentTimestamp} startIcon={<Update />}>{t('Set Current Timestamp')}</Button>
+        </Stack>
+      </Card>
+      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+    </>
   );
 } 

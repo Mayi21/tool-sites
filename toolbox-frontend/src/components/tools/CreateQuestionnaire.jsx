@@ -1,126 +1,171 @@
 
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Form, Input, Button, Select, DatePicker, Checkbox, Space, message } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import { useForm, useFieldArray, Controller, useWatch } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider, DateTimePicker } from '@mui/x-date-pickers';
+import { 
+  Card, CardContent, Button, TextField, Select, MenuItem, Checkbox, FormControlLabel, 
+  IconButton, Stack, Grid, Typography, Alert, FormControl, InputLabel, Paper, Link, Box
+} from '@mui/material';
+import { AddCircleOutline, RemoveCircleOutline } from '@mui/icons-material';
+import { QRCodeCanvas } from 'qrcode.react';
 
+const questionSchema = yup.object().shape({
+  text: yup.string().required('Question text is required'),
+  type: yup.string().required('Question type is required'),
+  options: yup.array().when('type', {
+    is: (type) => ['single', 'multiple'].includes(type),
+    then: yup.array().of(yup.string().required('Option text is required')).min(1, 'At least one option is required'),
+    otherwise: yup.array(),
+  }),
+});
 
-const { Option } = Select;
+const schema = yup.object().shape({
+  title: yup.string().required('Title is required'),
+  questions: yup.array().of(questionSchema).min(1, 'At least one question is required'),
+  expires_at: yup.date().nullable(),
+  one_submission_per_person: yup.boolean(),
+});
+
+const QuestionOptions = ({ control, nestIndex }) => {
+  const { fields, remove, append } = useFieldArray({
+    control,
+    name: `questions.${nestIndex}.options`
+  });
+
+  return (
+    <Stack spacing={1} sx={{ mt: 2, pl: 2 }}>
+      {fields.map((item, k) => (
+        <Stack direction="row" spacing={1} key={item.id}>
+          <Controller
+            name={`questions.${nestIndex}.options.${k}`}
+            control={control}
+            defaultValue={item.value}
+            render={({ field }) => <TextField {...field} fullWidth label={`Option ${k + 1}`} size="small" />}
+          />
+          <IconButton onClick={() => remove(k)}><RemoveCircleOutline /></IconButton>
+        </Stack>
+      ))}
+      <Button onClick={() => append('')} startIcon={<AddCircleOutline />}>Add Option</Button>
+    </Stack>
+  );
+};
+
+const QuestionCard = ({ control, index, remove }) => {
+  const { t } = useTranslation();
+  const questionType = useWatch({
+    control,
+    name: `questions.${index}.type`,
+  });
+
+  return (
+    <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
+      <Stack spacing={2}>
+        <Typography variant="h6">{`${t('Question')} ${index + 1}`}</Typography>
+        <Controller
+          name={`questions.${index}.text`}
+          control={control}
+          render={({ field, fieldState: { error } }) => (
+            <TextField {...field} label={t('Question Text')} fullWidth error={!!error} helperText={error?.message} />
+          )}
+        />
+        <Controller
+          name={`questions.${index}.type`}
+          control={control}
+          render={({ field, fieldState: { error } }) => (
+            <FormControl fullWidth error={!!error}>
+              <InputLabel>{t('Type')}</InputLabel>
+              <Select {...field} label={t('Type')}>
+                <MenuItem value="single">{t('Single Choice')}</MenuItem>
+                <MenuItem value="multiple">{t('Multiple Choice')}</MenuItem>
+                <MenuItem value="text">{t('Short Answer')}</MenuItem>
+                <MenuItem value="rating">{t('Rating')}</MenuItem>
+              </Select>
+            </FormControl>
+          )}
+        />
+        {(questionType === 'single' || questionType === 'multiple') && <QuestionOptions nestIndex={index} {...{ control }} />}
+        <Button color="error" onClick={() => remove(index)} startIcon={<RemoveCircleOutline />}>{t('Remove Question')}</Button>
+      </Stack>
+    </Paper>
+  );
+};
 
 export default function CreateQuestionnaire() {
   const { t } = useTranslation();
-  const [form] = Form.useForm();
   const [result, setResult] = useState(null);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
 
-  const onFinish = async (values) => {
+  const { control, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: { title: '', questions: [{ text: '', type: 'single', options: [''] }], one_submission_per_person: false, expires_at: null },
+  });
+  const { fields, append, remove } = useFieldArray({ control, name: "questions" });
+
+  const onSubmit = async (values) => {
     try {
-      const response = await fetch('/api/questionnaires', {
+      const response = await fetch('/api/questionnaires', { // Replace with your actual API endpoint
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(values),
       });
-      if (!response.ok) {
-        throw new Error('Failed to create questionnaire');
-      }
+      if (!response.ok) throw new Error('Failed to create questionnaire');
       const data = await response.json();
       setResult(data);
-      message.success('Questionnaire created successfully');
+      setFeedback({ type: 'success', message: 'Questionnaire created successfully' });
     } catch (error) {
-      message.error(error.message);
+      setFeedback({ type: 'error', message: error.message });
     }
   };
 
   return (
-    <Card title={t('Create Questionnaire')}>
-      <Form form={form} layout="vertical" onFinish={onFinish}>
-        <Form.Item name="title" label={t('Title')} rules={[{ required: true }]}>
-          <Input />
-        </Form.Item>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <Card sx={{ maxWidth: 1000, margin: 'auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Create Questionnaire')}</Typography>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Stack spacing={2}>
+            <Controller
+              name="title"
+              control={control}
+              render={({ field }) => <TextField {...field} label={t('Title')} fullWidth error={!!errors.title} helperText={errors.title?.message} />}
+            />
+            
+            <Box>{fields.map((item, index) => <QuestionCard key={item.id} {...{ control, index, remove }} />)}</Box>
 
-        <Form.List name="questions">
-          {(fields, { add, remove }) => (
-            <>
-              {fields.map(({ key, name, ...restField }) => (
-                <Card key={key} style={{ marginBottom: 16 }}>
-                  <Form.Item {...restField} name={[name, 'text']} label={`${t('Question')} ${name + 1}`} rules={[{ required: true }]}>
-                    <Input />
-                  </Form.Item>
-                  <Form.Item {...restField} name={[name, 'type']} label={t('Type')} rules={[{ required: true }]}>
-                    <Select>
-                      <Option value="single">{t('Single Choice')}</Option>
-                      <Option value="multiple">{t('Multiple Choice')}</Option>
-                      <Option value="text">{t('Short Answer')}</Option>
-                      <Option value="rating">{t('Rating')}</Option>
-                    </Select>
-                  </Form.Item>
+            <Button onClick={() => append({ text: '', type: 'single', options: [''] })} startIcon={<AddCircleOutline />}>{t('Add Question')}</Button>
+            
+            <Controller
+              name="expires_at"
+              control={control}
+              render={({ field }) => <DateTimePicker {...field} label={t('Expiration Time')} renderInput={(params) => <TextField {...params} fullWidth />} />}
+            />
 
-                  <Form.Item
-                    noStyle
-                    shouldUpdate={(prevValues, currentValues) =>
-                      prevValues.questions[name]?.type !== currentValues.questions[name]?.type
-                    }
-                  >
-                    {({ getFieldValue }) =>
-                      getFieldValue(['questions', name, 'type']) === 'single' ||
-                      getFieldValue(['questions', name, 'type']) === 'multiple' ? (
-                        <Form.List name={[name, 'options']}>
-                          {(options, { add: addOption, remove: removeOption }) => (
-                            <>
-                              {options.map(({ key: optionKey, name: optionName, ...restOptionField }) => (
-                                <Space key={optionKey} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                                  <Form.Item {...restOptionField} name={[optionName]} rules={[{ required: true }]}>
-                                    <Input placeholder={t('Option')} />
-                                  </Form.Item>
-                                  <MinusCircleOutlined onClick={() => removeOption(optionName)} />
-                                </Space>
-                              ))}
-                              <Form.Item>
-                                <Button type="dashed" onClick={() => addOption()} block icon={<PlusOutlined />}>
-                                  {t('Add Option')}
-                                </Button>
-                              </Form.Item>
-                            </>
-                          )}
-                        </Form.List>
-                      ) : null
-                    }
-                  </Form.Item>
-                  <Button type="danger" onClick={() => remove(name)} block>
-                    {t('Remove Question')}
-                  </Button>
-                </Card>
-              ))}
-              <Form.Item>
-                <Button type="dashed" onClick={() => add()} block icon={<PlusOutlined />}>
-                  {t('Add Question')}
-                </Button>
-              </Form.Item>
-            </>
-          )}
-        </Form.List>
+            <Controller
+              name="one_submission_per_person"
+              control={control}
+              render={({ field }) => <FormControlLabel control={<Checkbox {...field} checked={field.value} />} label={t('One submission per person')} />}
+            />
 
-        <Form.Item name="expires_at" label={t('Expiration Time')}>
-          <DatePicker showTime />
-        </Form.Item>
+            {feedback.message && <Alert severity={feedback.type}>{feedback.message}</Alert>}
 
-        <Form.Item name="one_submission_per_person" valuePropName="checked">
-          <Checkbox>{t('One submission per person')}</Checkbox>
-        </Form.Item>
+            <Button type="submit" variant="contained" size="large">{t('Create Questionnaire')}</Button>
+          </Stack>
+        </form>
 
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            {t('Create Questionnaire')}
-          </Button>
-        </Form.Item>
-      </Form>
-
-      {result && (
-        <Card title={t('Questionnaire Created')}>
-          <p>{t('Shareable Link')}: <a href={`/questionnaire/${result.questionnaireId}`} target="_blank">{`/questionnaire/${result.questionnaireId}`}</a></p>
-          <p>{t('Admin Token')}: <code>{result.adminToken}</code></p>
-          <QRCode value={`${window.location.origin}/questionnaire/${result.questionnaireId}`} />
-        </Card>
-      )}
-    </Card>
+        {result && (
+          <Card variant="outlined" sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6">{t('Questionnaire Created')}</Typography>
+              <p>{t('Shareable Link')}: <Link href={`/questionnaire/${result.questionnaireId}`} target="_blank">{`/questionnaire/${result.questionnaireId}`}</Link></p>
+              <p>{t('Admin Token')}: <code>{result.adminToken}</code></p>
+              <QRCodeCanvas value={`${window.location.origin}/questionnaire/${result.questionnaireId}`} />
+            </CardContent>
+          </Card>
+        )}
+      </Card>
+    </LocalizationProvider>
   );
 }

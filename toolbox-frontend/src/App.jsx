@@ -397,8 +397,8 @@ function App() {
                           >
                             {t(category.nameKey)}
                           </Typography>
-                          <Grid container spacing={3} justifyContent="center">
-                            {categorizedTools[category.key]?.map(tool => (
+                          <Grid container spacing={3} justifyContent="center" alignItems="stretch">
+                            {categorizedTools[category.key]?.map((tool) => (
                               <Grid item key={tool.path} xs={12} sm={6} md={4} lg={3}>
                                 <ToolCard 
                                   path={tool.path}

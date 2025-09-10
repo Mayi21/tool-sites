@@ -1,12 +1,10 @@
-import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Result, Button, Space } from 'antd';
-import { HomeOutlined, ArrowLeftOutlined, ReloadOutlined } from '@ant-design/icons';
+import { Box, Button, Paper, Stack, Typography } from '@mui/material';
+import { Home, ArrowBack, Refresh } from '@mui/icons-material';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 export default function NotFound() {
   const navigate = useNavigate();
-
-  // 保留手动跳转，取消自动跳转，避免打断用户
 
   const handleGoHome = () => {
     navigate('/', { replace: true });
@@ -21,57 +19,59 @@ export default function NotFound() {
   };
 
   return (
-    <div style={{ 
-      minHeight: '100vh', 
-      display: 'flex', 
-      alignItems: 'center', 
-      justifyContent: 'center',
-      background: 'var(--bg-secondary)',
-      padding: '20px'
-    }}>
-      <Result
-        status="404"
-        title="404"
-        subTitle={
-          <div>
-            <p style={{ marginBottom: '8px' }}>
-              抱歉，您访问的页面不存在。
-            </p>
-            <p style={{ fontSize: '14px', color: '#666' }}>
-              您可以返回主页或上一页继续浏览。
-            </p>
-          </div>
-        }
-        extra={
-          <Space size="middle">
-            <Button 
-              type="primary" 
-              icon={<HomeOutlined />}
-              onClick={handleGoHome}
-            >
-              返回主页
-            </Button>
-            <Button 
-              icon={<ArrowLeftOutlined />}
-              onClick={handleGoBack}
-            >
-              返回上页
-            </Button>
-            <Button 
-              icon={<ReloadOutlined />}
-              onClick={handleRefresh}
-            >
-              刷新页面
-            </Button>
-          </Space>
-        }
-        style={{
-          background: 'white',
-          borderRadius: '8px',
-          padding: '40px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)'
+    <Box
+      sx={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        bgcolor: 'background.default',
+        p: 3,
+      }}
+    >
+      <Paper
+        elevation={3}
+        sx={{
+          p: 4,
+          textAlign: 'center',
+          maxWidth: '500px',
+          width: '100%',
         }}
-      />
-    </div>
+      >
+        <ErrorOutlineIcon sx={{ fontSize: 64, color: 'error.main' }} />
+        <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 2 }}>
+          404
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary">
+          抱歉，您访问的页面不存在。
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          您可以返回主页或上一页继续浏览。
+        </Typography>
+        <Stack direction="row" spacing={2} justifyContent="center">
+          <Button
+            variant="contained"
+            startIcon={<Home />}
+            onClick={handleGoHome}
+          >
+            返回主页
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            onClick={handleGoBack}
+          >
+            返回上页
+          </Button>
+          <Button
+            variant="outlined"
+            startIcon={<Refresh />}
+            onClick={handleRefresh}
+          >
+            刷新页面
+          </Button>
+        </Stack>
+      </Paper>
+    </Box>
   );
 } 

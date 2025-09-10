@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card } from 'antd';
-import { CopyOutlined } from '@ant-design/icons';
+import { Card, Typography, TextField, Button, Stack } from '@mui/material';
+import { ContentCopy } from '@mui/icons-material';
 import CopySuccessAnimation from '../CopySuccessAnimation';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
-
-const { Title } = Typography;
-const { TextArea } = Input;
 
 export default function UrlEncoder() {
   const { t } = useTranslation();
@@ -40,40 +37,50 @@ export default function UrlEncoder() {
 
   return (
     <>
-      <Card style={{ maxWidth: 800, margin: '0 auto' }}>
-        <Title level={2}>{t('URL Encoder/Decoder')}</Title>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>
+          {t('URL Encoder/Decoder')}
+        </Typography>
         
-        <Space direction="vertical" size="large" style={{ width: '100%' }}>
-          <TextArea 
+        <Stack spacing={2}>
+          <TextField 
             value={input} 
             onChange={e => setInput(e.target.value)} 
+            multiline
             rows={6} 
-            placeholder={t('Enter URL to encode or decode')}
+            label={t('Enter URL to encode or decode')}
+            variant="outlined"
+            fullWidth
           />
           
-          <Space>
-            <Button type="primary" onClick={encodeUrl}>
+          <Stack direction="row" spacing={1}>
+            <Button variant="contained" onClick={encodeUrl}>
               {t('Encode')}
             </Button>
-            <Button onClick={decodeUrl}>
+            <Button variant="outlined" onClick={decodeUrl}>
               {t('Decode')}
             </Button>
             {output && (
-              <Button icon={<CopyOutlined />} onClick={copyToClipboardHandler}>
+              <Button variant="outlined" startIcon={<ContentCopy />} onClick={copyToClipboardHandler}>
                 {t('Copy')}
               </Button>
             )}
-          </Space>
+          </Stack>
           
           {output && (
-            <TextArea 
+            <TextField 
               value={output} 
-              readOnly 
+              InputProps={{
+                readOnly: true,
+              }}
+              multiline
               rows={6} 
-              placeholder={t('Result will appear here')}
+              label={t('Result will appear here')}
+              variant="outlined"
+              fullWidth
             />
           )}
-        </Space>
+        </Stack>
       </Card>
       
       <CopySuccessAnimation 

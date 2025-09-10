@@ -1,120 +1,127 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Form, Button, Card, Row, Col, InputNumber, Spin, Empty, message, Input } from 'antd';
-import { CopyOutlined, ReloadOutlined } from '@ant-design/icons';
+import { 
+  Typography, Button, Card, Grid, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent 
+} from '@mui/material';
+import { ContentCopy, Refresh } from '@mui/icons-material';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
-
-const { Title, Text } = Typography;
-const { TextArea } = Input;
 
 export default function UUIDGenerator() {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
   const [generatedData, setGeneratedData] = useState('');
-  const [form] = Form.useForm();
+  const [count, setCount] = useState(10);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
 
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   const handleCopy = () => {
-    copyToClipboard(generatedData).then(success => {
-      if (success) {
-        message.success(t('Copied to clipboard'));
-      }
-    });
+    if (generatedData) {
+      copyToClipboard(generatedData);
+    }
   };
 
-  const onFinish = (values) => {
+  const handleSubmit = (event) => {
+    event.preventDefault();
     setLoading(true);
     setGeneratedData('');
+    setFeedback({ type: '', message: '' });
 
     setTimeout(() => {
-      const { count } = values;
       let data = [];
-      
       for (let i = 0; i < count; i++) {
         data.push(crypto.randomUUID());
       }
-      
       setGeneratedData(data.join('\n'));
       setLoading(false);
-      message.success(t('UUIDs generated successfully'));
+      setFeedback({ type: 'success', message: t('UUIDs generated successfully') });
     }, 500);
   };
 
   return (
-    <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <Title level={2}>{t('UUID Generator')}</Title>
-      <Text type="secondary" style={{ marginBottom: 24, display: 'block' }}>
-        {t('Generate universally unique identifiers (UUIDs).')}
-      </Text>
+    <>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1">{t('UUID Generator')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Generate universally unique identifiers (UUIDs).')}
+        </Typography>
 
-      <Form
-        form={form}
-        layout="vertical"
-        onFinish={onFinish}
-        initialValues={{ count: 10 }}
-      >
-        <Card type="inner" title={t('Generation Options')}>
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                name="count"
-                label={t('Count')}
-                rules={[{ required: true, message: t('Please enter a count') }]
-                }
-              >
-                <InputNumber
-                  min={1}
-                  max={5000}
-                  style={{ width: '100%' }}
-                  placeholder={t('Number of UUIDs to generate')}
+        <form onSubmit={handleSubmit}>
+          <Card variant="outlined" sx={{ mb: 2 }}>
+            <CardHeader title={t('Generation Options')} />
+            <CardContent>
+              <Stack spacing={2}>
+                <TextField
+                  name="count"
+                  label={t('Count')}
+                  type="number"
+                  value={count}
+                  onChange={(e) => setCount(parseInt(e.target.value, 10) || 1)}
+                  inputProps={{ min: 1, max: 5000 }}
+                  required
+                  fullWidth
                 />
-              </Form.Item>
-            </Col>
-          </Row>
-          <Form.Item>
-            <Button type="primary" htmlType="submit" icon={<ReloadOutlined />} loading={loading} block>
-              {loading ? t('Generating...') : t('Generate UUIDs')}
-            </Button>
-          </Form.Item>
-        </Card>
-      </Form>
-      
-      <Card 
-        type="inner" 
-        title={t('Generated UUIDs')} 
-        style={{ marginTop: 24 }}
-        extra={
-          generatedData && (
-            <Button size="small" onClick={handleCopy} icon={<CopyOutlined />}>
-              {t('Copy')}
-            </Button>
-          )
-        }
-      >
-        {loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-            <Spin tip={t('Generating UUIDs, please wait...')} />
-          </div>
-        ) : generatedData ? (
-          <TextArea 
-            value={generatedData} 
-            readOnly 
-            rows={12} 
-            style={{ fontFamily: 'monospace', fontSize: 12 }}
+                <Button 
+                  type="submit" 
+                  variant="contained" 
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Refresh />}
+                  disabled={loading}
+                  fullWidth
+                >
+                  {loading ? t('Generating...') : t('Generate UUIDs')}
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        </form>
+        
+        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+
+        <Card variant="outlined">
+          <CardHeader 
+            title={t('Generated UUIDs')} 
+            action={
+              generatedData && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
           />
-        ) : (
-          <div style={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Empty description={t('Generated UUIDs will appear here. Configure options and click generate.')} />
-          </div>
-        )}
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Generating UUIDs, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : generatedData ? (
+              <TextField 
+                value={generatedData} 
+                multiline
+                readOnly 
+                rows={12} 
+                fullWidth
+                variant="filled"
+                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: 12 } }}
+              />
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">
+                  {t('Generated UUIDs will appear here. Configure options and click generate.')}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Card>
 
       <CopySuccessAnimation 
         visible={showAnimation} 
         onAnimationEnd={handleAnimationEnd} 
       />
-    </Card>
+    </>
   );
 }

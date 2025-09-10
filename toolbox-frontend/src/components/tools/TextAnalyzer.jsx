@@ -108,7 +108,7 @@ ${getWordFrequency().map(({ word, count }) => `${word}: ${count}`).join('\n')}`;
   const wordFrequency = getWordFrequency();
 
   return (
-    <Card style={{ maxWidth: 1200, margin: '0 auto' }}>
+    <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
       <Title level={2}>{t('Text Analyzer')}</Title>
       
       <Row gutter={[24, 24]}>

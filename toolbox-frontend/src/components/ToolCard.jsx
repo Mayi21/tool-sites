@@ -29,13 +29,18 @@ const getToolIcon = (path) => {
 
 export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey }) {
   const { t } = useTranslation();
+  const cardMaxWidth = 320;
+  const titleFontSize = 16;
+  const descFontSize = 13;
+  const clampLines = 3;
   
   return (
     <Link to={path} style={{ textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }}>
       <Card 
         sx={{ 
           width: '100%',
-          maxWidth: 320,
+          maxWidth: cardMaxWidth,
+          height: '100%',
           cursor: 'pointer',
           overflow: 'hidden',
           position: 'relative',
@@ -55,6 +60,7 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
             textAlign: 'center',
             width: '100%',
             height: '100%',
+            minHeight: 180,
             overflow: 'hidden'
           }}
         >
@@ -65,7 +71,7 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
           <Typography 
             variant="h6" 
             sx={{ 
-              fontSize: 16, 
+              fontSize: titleFontSize, 
               fontWeight: 600, 
               color: 'text.primary',
               mb: 1,
@@ -81,11 +87,11 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
           <Typography 
             variant="body2" 
             sx={{ 
-              fontSize: 13, 
+              fontSize: descFontSize, 
               color: 'text.secondary',
               lineHeight: 1.4,
               display: '-webkit-box',
-              WebkitLineClamp: 3,
+              WebkitLineClamp: clampLines,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
               textOverflow: 'ellipsis',

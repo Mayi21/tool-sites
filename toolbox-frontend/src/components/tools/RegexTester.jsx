@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card, Alert, Row, Col, Checkbox } from 'antd';
-import { SearchOutlined, CopyOutlined } from '@ant-design/icons';
-
-const { Title } = Typography;
-const { TextArea } = Input;
+import {
+  Card, CardContent, Typography, TextField, Button, Stack, Grid, Alert, AlertTitle, 
+  Checkbox, FormControlLabel, FormGroup, Paper, InputAdornment, IconButton
+} from '@mui/material';
+import { Search, ContentCopy } from '@mui/icons-material';
 
 export default function RegexTester() {
   const { t } = useTranslation();
@@ -13,48 +13,38 @@ export default function RegexTester() {
   const [matches, setMatches] = useState([]);
   const [error, setError] = useState(null);
   const [flags, setFlags] = useState({
-    global: true,
-    ignoreCase: false,
-    multiline: false,
-    sticky: false,
-    unicode: false
+    g: true,  // global
+    i: false, // ignoreCase
+    m: false, // multiline
   });
+
+  const handleFlagChange = (event) => {
+    setFlags({
+      ...flags,
+      [event.target.name]: event.target.checked,
+    });
+  };
 
   function testRegex() {
     if (!pattern || !testText) return;
 
     try {
       setError(null);
-      let flagString = '';
-      if (flags.global) flagString += 'g';
-      if (flags.ignoreCase) flagString += 'i';
-      if (flags.multiline) flagString += 'm';
-      if (flags.sticky) flagString += 'y';
-      if (flags.unicode) flagString += 'u';
-
+      const flagString = Object.keys(flags).filter(key => flags[key]).join('');
       const regex = new RegExp(pattern, flagString);
       const results = [];
       let match;
 
-      if (flags.global) {
+      if (flags.g) {
         while ((match = regex.exec(testText)) !== null) {
-          results.push({
-            match: match[0],
-            index: match.index,
-            groups: match.slice(1)
-          });
+          results.push({ match: match[0], index: match.index, groups: match.slice(1) });
         }
       } else {
         match = regex.exec(testText);
         if (match) {
-          results.push({
-            match: match[0],
-            index: match.index,
-            groups: match.slice(1)
-          });
+          results.push({ match: match[0], index: match.index, groups: match.slice(1) });
         }
       }
-
       setMatches(results);
     } catch (e) {
       setError(e.message);
@@ -62,121 +52,74 @@ export default function RegexTester() {
     }
   }
 
-  function replaceText() {
-    if (!pattern || !testText) return;
-
-    try {
-      setError(null);
-      let flagString = '';
-      if (flags.global) flagString += 'g';
-      if (flags.ignoreCase) flagString += 'i';
-      if (flags.multiline) flagString += 'm';
-      if (flags.sticky) flagString += 'y';
-      if (flags.unicode) flagString += 'u';
-
-      const regex = new RegExp(pattern, flagString);
-      const replaced = testText.replace(regex, 'REPLACED');
-      setTestText(replaced);
-    } catch (e) {
-      setError(e.message);
-    }
-  }
-
-  function copyPattern() {
-    if (pattern) {
-      navigator.clipboard.writeText(pattern);
-    }
-  }
-
   return (
-    <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <Title level={2}>{t('Regex Tester')}</Title>
+    <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+      <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Regex Tester')}</Typography>
       
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Row gutter={16}>
-          <Col span={16}>
-            <Input 
+      <Stack spacing={2}>
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={12} md={8}>
+            <TextField 
               value={pattern} 
               onChange={e => setPattern(e.target.value)} 
-              placeholder={t('Enter regex pattern')}
-              prefix={<SearchOutlined />}
-              addonAfter={
-                <Button size="small" onClick={copyPattern} icon={<CopyOutlined />}>
-                  {t('Copy')}
-                </Button>
-              }
+              label={t('Enter regex pattern')}
+              fullWidth
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><Search /></InputAdornment>,
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton onClick={() => navigator.clipboard.writeText(pattern)} edge="end">
+                      <ContentCopy />
+                    </IconButton>
+                  </InputAdornment>
+                )
+              }}
             />
-          </Col>
-          <Col span={8}>
-            <Space>
-              <Checkbox 
-                checked={flags.global} 
-                onChange={e => setFlags({...flags, global: e.target.checked})}
-              >
-                g
-              </Checkbox>
-              <Checkbox 
-                checked={flags.ignoreCase} 
-                onChange={e => setFlags({...flags, ignoreCase: e.target.checked})}
-              >
-                i
-              </Checkbox>
-              <Checkbox 
-                checked={flags.multiline} 
-                onChange={e => setFlags({...flags, multiline: e.target.checked})}
-              >
-                m
-              </Checkbox>
-            </Space>
-          </Col>
-        </Row>
+          </Grid>
+          <Grid item xs={12} md={4}>
+            <FormGroup row>
+              <FormControlLabel control={<Checkbox checked={flags.g} onChange={handleFlagChange} name="g" />} label="Global (g)" />
+              <FormControlLabel control={<Checkbox checked={flags.i} onChange={handleFlagChange} name="i" />} label="Ignore Case (i)" />
+              <FormControlLabel control={<Checkbox checked={flags.m} onChange={handleFlagChange} name="m" />} label="Multiline (m)" />
+            </FormGroup>
+          </Grid>
+        </Grid>
         
-        <TextArea 
+        <TextField 
           value={testText} 
           onChange={e => setTestText(e.target.value)} 
+          multiline
           rows={6} 
-          placeholder={t('Enter text to test')}
+          label={t('Enter text to test')}
+          fullWidth
         />
         
-        <Space>
-          <Button type="primary" onClick={testRegex}>
-            {t('Test')}
-          </Button>
-          <Button onClick={replaceText}>
-            {t('Replace')}
-          </Button>
-        </Space>
+        <Button variant="contained" onClick={testRegex}>{t('Test')}</Button>
         
         {error && (
-          <Alert 
-            message={t('Error')} 
-            description={error} 
-            type="error" 
-            showIcon 
-          />
+          <Alert severity="error">
+            <AlertTitle>{t('Error')}</AlertTitle>
+            {error}
+          </Alert>
         )}
         
         {matches.length > 0 && (
-          <Card title={`${t('Matches')} (${matches.length})`}>
-            <Space direction="vertical" style={{ width: '100%' }}>
+          <Paper variant="outlined" sx={{ p: 2 }}>
+            <Typography variant="h6" gutterBottom>{`${t('Matches')} (${matches.length})`}</Typography>
+            <Stack spacing={1}>
               {matches.map((match, index) => (
-                <div key={index} style={{ 
-                  padding: 8, 
-                  backgroundColor: '#f5f5f5', 
-                  borderRadius: 4,
-                  border: '1px solid #d9d9d9'
-                }}>
-                  <div><strong>{t('Match')}:</strong> {match.match}</div>
-                  <div><strong>{t('Index')}:</strong> {match.index}</div>
+                <Paper key={index} variant="outlined" sx={{ p: 1, bgcolor: 'action.hover' }}>
+                  <Typography variant="body2"><strong>{t('Match')}:</strong> {match.match}</Typography>
+                  <Typography variant="body2"><strong>{t('Index')}:</strong> {match.index}</Typography>
                   {match.groups.length > 0 && (
-                    <div><strong>{t('Groups')}:</strong> {match.groups.join(', ')}</div>
+                    <Typography variant="body2"><strong>{t('Groups')}:</strong> {match.groups.join(', ')}</Typography>
                   )}
-                </div>
+                </Paper>
               ))}
-            </Space>
-          </Card>
+            </Stack>
+          </Paper>
         )}
-      </Space>
+      </Stack>
     </Card>
   );
 } 

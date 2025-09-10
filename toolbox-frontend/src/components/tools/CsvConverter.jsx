@@ -1,12 +1,21 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card, Row, Col, Select } from 'antd';
-import { CopyOutlined, ReloadOutlined } from '@ant-design/icons';
+import {
+  Card,
+  CardContent,
+  Typography,
+  TextField,
+  Button,
+  Stack,
+  Grid,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
+} from '@mui/material';
+import { ContentCopy, Sync, Clear } from '@mui/icons-material';
 import CopySuccessAnimation from '../CopySuccessAnimation';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
-
-const { Title } = Typography;
-const { TextArea } = Input;
 
 export default function CsvConverter() {
   const { t } = useTranslation();
@@ -24,43 +33,30 @@ export default function CsvConverter() {
         if (lines.length < 2) {
           throw new Error(t('CSV must have at least a header and one data row'));
         }
-
         const headers = lines[0].split(',').map(h => h.trim());
-        const data = [];
-
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.trim());
-          const row = {};
-          headers.forEach((header, index) => {
-            row[header] = values[index] || '';
-          });
-          data.push(row);
-        }
-
+        const data = lines.slice(1).map(line => {
+          const values = line.split(',').map(v => v.trim());
+          return headers.reduce((obj, header, index) => {
+            obj[header] = values[index] || '';
+            return obj;
+          }, {});
+        });
         setOutput(JSON.stringify(data, null, 2));
       } else {
         const jsonData = JSON.parse(input);
-        if (!Array.isArray(jsonData)) {
-          throw new Error(t('JSON must be an array of objects'));
+        if (!Array.isArray(jsonData) || jsonData.length === 0) {
+          throw new Error(t('JSON must be a non-empty array of objects'));
         }
-
-        if (jsonData.length === 0) {
-          setOutput('');
-          return;
-        }
-
         const headers = Object.keys(jsonData[0]);
         const csvLines = [headers.join(',')];
-
         jsonData.forEach(row => {
           const values = headers.map(header => row[header] || '');
           csvLines.push(values.join(','));
         });
-
         setOutput(csvLines.join('\n'));
       }
     } catch (error) {
-      setOutput(t('Invalid input format'));
+      setOutput(error.message || t('Invalid input format'));
     }
   }
 
@@ -77,67 +73,71 @@ export default function CsvConverter() {
 
   return (
     <>
-      <Card style={{ maxWidth: 1200, margin: '0 auto' }}>
-        <Title level={2}>{t('CSV ↔ JSON Converter')}</Title>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('CSV ↔ JSON Converter')}</Typography>
         
-        <Row gutter={[24, 24]}>
-          <Col span={12}>
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <Row gutter={16}>
-                <Col span={16}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <FormControl fullWidth>
+                  <InputLabel id="conversion-type-label">{t('Conversion')}</InputLabel>
                   <Select
+                    labelId="conversion-type-label"
                     value={conversionType}
-                    onChange={setConversionType}
-                    style={{ width: '100%' }}
-                    options={[
-                      { value: 'csv2json', label: t('CSV to JSON') },
-                      { value: 'json2csv', label: t('JSON to CSV') }
-                    ]}
-                  />
-                </Col>
-                <Col span={8}>
-                  <Space>
-                    <Button type="primary" onClick={convertData} icon={<ReloadOutlined />}>
-                      {t('Convert')}
-                    </Button>
-                    <Button onClick={clearAll}>
-                      {t('Clear')}
-                    </Button>
-                  </Space>
-                </Col>
-              </Row>
+                    label={t('Conversion')}
+                    onChange={(e) => setConversionType(e.target.value)}
+                  >
+                    <MenuItem value={'csv2json'}>{t('CSV to JSON')}</MenuItem>
+                    <MenuItem value={'json2csv'}>{t('JSON to CSV')}</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button variant="contained" onClick={convertData} startIcon={<Sync />}>
+                  {t('Convert')}
+                </Button>
+                <Button variant="outlined" onClick={clearAll} startIcon={<Clear />}>
+                  {t('Clear')}
+                </Button>
+              </Stack>
               
-              <TextArea 
+              <TextField 
                 value={input} 
                 onChange={e => setInput(e.target.value)} 
+                multiline
                 rows={12} 
+                label={conversionType === 'csv2json' ? t('Enter CSV data') : t('Enter JSON data')}
                 placeholder={conversionType === 'csv2json' ? t('Enter CSV data') : t('Enter JSON data')}
-                style={{ fontFamily: 'monospace' }}
+                variant="outlined"
+                fullWidth
+                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }}
               />
-            </Space>
-          </Col>
+            </Stack>
+          </Grid>
           
-          <Col span={12}>
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span>{t('Result')}</span>
+          <Grid item xs={12} md={6}>
+            <Stack spacing={2}>
+              <Stack direction="row" justifyContent="space-between" alignItems="center">
+                <Typography variant="h6">{t('Result')}</Typography>
                 {output && (
-                  <Button size="small" onClick={copyOutput} icon={<CopyOutlined />}>
+                  <Button size="small" onClick={copyOutput} startIcon={<ContentCopy />}>
                     {t('Copy')}
                   </Button>
                 )}
-              </div>
+              </Stack>
               
-              <TextArea 
+              <TextField 
                 value={output} 
-                readOnly 
+                InputProps={{ readOnly: true }}
+                multiline
                 rows={12} 
-                placeholder={t('Converted data will appear here')}
-                style={{ fontFamily: 'monospace' }}
+                label={t('Converted data will appear here')}
+                variant="filled"
+                fullWidth
+                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }}
               />
-            </Space>
-          </Col>
-        </Row>
+            </Stack>
+          </Grid>
+        </Grid>
       </Card>
       
       <CopySuccessAnimation 

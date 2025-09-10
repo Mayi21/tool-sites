@@ -719,34 +719,36 @@ export default function ToolDetailDescription({ toolPath }) {
   }
 
   return (
-    <Box sx={{ mt: 4, mb: 4 }}>
-      <Card elevation={2}>
-        <CardContent>
-          {/* 工具描述 */}
-          <Box sx={{ mb: 3 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-              <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
-              <Typography variant="h5" sx={{ m: 0, color: 'text.primary' }}>
-                工具介绍 | About This Tool
+    <Box sx={{ mt: 4, mb: 4, maxWidth: 1000, margin: '0 auto' }}>
+      <Grid container spacing={3}>
+        {/* 工具介绍 - 全宽卡片 */}
+        <Grid item xs={12}>
+          <Card elevation={2}>
+            <CardContent>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
+                <Typography variant="h5" sx={{ m: 0, color: 'text.primary' }}>
+                  工具介绍 | About This Tool
+                </Typography>
+              </Box>
+              <Typography 
+                variant="body1" 
+                sx={{ 
+                  color: 'text.secondary', 
+                  fontSize: '15px', 
+                  lineHeight: 1.6 
+                }}
+              >
+                {details.description}
               </Typography>
-            </Box>
-            <Typography 
-              variant="body1" 
-              sx={{ 
-                color: 'text.secondary', 
-                fontSize: '15px', 
-                lineHeight: 1.6 
-              }}
-            >
-              {details.description}
-            </Typography>
-          </Box>
+            </CardContent>
+          </Card>
+        </Grid>
 
-          <Divider sx={{ my: 2 }} />
-
-          <Grid container spacing={3}>
-            {/* 核心功能 */}
-            <Grid item xs={12} md={6}>
+        {/* 核心功能 */}
+        <Grid item xs={12} md={6}>
+          <Card elevation={2} sx={{ height: '100%' }}>
+            <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <CheckCircleOutlined sx={{ color: 'secondary.main', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
@@ -776,10 +778,14 @@ export default function ToolDetailDescription({ toolPath }) {
                   </ListItem>
                 ))}
               </List>
-            </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
 
-            {/* 使用场景 */}
-            <Grid item xs={12} md={6}>
+        {/* 使用场景 */}
+        <Grid item xs={12} md={6}>
+          <Card elevation={2} sx={{ height: '100%' }}>
+            <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <BuildOutlined sx={{ color: '#722ed1', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
@@ -809,14 +815,14 @@ export default function ToolDetailDescription({ toolPath }) {
                   </ListItem>
                 ))}
               </List>
-            </Grid>
-          </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
 
-          <Divider sx={{ my: 2 }} />
-
-          <Grid container spacing={3}>
-            {/* 使用技巧 */}
-            <Grid item xs={12} md={6}>
+        {/* 使用技巧 */}
+        <Grid item xs={12} md={6}>
+          <Card elevation={2} sx={{ height: '100%' }}>
+            <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <LightbulbOutlined sx={{ color: '#fa8c16', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
@@ -846,10 +852,14 @@ export default function ToolDetailDescription({ toolPath }) {
                   </ListItem>
                 ))}
               </List>
-            </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
 
-            {/* 常见问题 */}
-            <Grid item xs={12} md={6}>
+        {/* 常见问题 */}
+        <Grid item xs={12} md={6}>
+          <Card elevation={2} sx={{ height: '100%' }}>
+            <CardContent>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <HelpOutlineOutlined sx={{ color: '#eb2f96', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
@@ -881,10 +891,10 @@ export default function ToolDetailDescription({ toolPath }) {
                   </Typography>
                 </Box>
               ))}
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
     </Box>
   );
 }

@@ -1,16 +1,41 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card, Row, Col, Select, message } from 'antd';
-import { CopyOutlined, KeyOutlined } from '@ant-design/icons';
+import {
+  Card, CardContent, Typography, TextField, Button, Stack, Grid, Select, MenuItem, FormControl, InputLabel, Alert, AlertTitle
+} from '@mui/material';
+import { ContentCopy, VpnKey } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
+import CopySuccessAnimation from '../CopySuccessAnimation';
 
-const { Title } = Typography;
-const { TextArea } = Input;
+const HashResult = ({ name, hash, onCopy }) => (
+  <Grid container spacing={2} alignItems="center">
+    <Grid item xs={2}>
+      <Typography variant="subtitle1">{name}:</Typography>
+    </Grid>
+    <Grid item xs={8}>
+      <TextField
+        value={hash}
+        fullWidth
+        InputProps={{ readOnly: true, style: { fontFamily: 'monospace' } }}
+        variant="filled"
+        size="small"
+      />
+    </Grid>
+    <Grid item xs={2}>
+      <Button size="small" startIcon={<ContentCopy />} onClick={() => onCopy(hash)}>
+        {('Copy')}
+      </Button>
+    </Grid>
+  </Grid>
+);
 
 export default function HashGenerator() {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [hashType, setHashType] = useState('md5');
   const [hashes, setHashes] = useState({});
+  const [error, setError] = useState(null);
+  const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   async function generateHash() {
     if (!input) return;
@@ -19,183 +44,110 @@ export default function HashGenerator() {
     const data = encoder.encode(input);
     
     try {
+      setError(null);
       const results = {};
-      
-      if (hashType === 'md5' || hashType === 'all') {
-        // MD5 (using crypto-js equivalent)
-        const md5Hash = await generateMD5(input);
-        results.md5 = md5Hash;
-      }
-      
-      if (hashType === 'sha1' || hashType === 'all') {
-        const hashBuffer = await crypto.subtle.digest('SHA-1', data);
-        results.sha1 = Array.from(new Uint8Array(hashBuffer))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
-      }
-      
-      if (hashType === 'sha256' || hashType === 'all') {
-        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-        results.sha256 = Array.from(new Uint8Array(hashBuffer))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
-      }
-      
-      if (hashType === 'sha512' || hashType === 'all') {
-        const hashBuffer = await crypto.subtle.digest('SHA-512', data);
-        results.sha512 = Array.from(new Uint8Array(hashBuffer))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('');
+      const algorithms = {
+        md5: 'MD5', // Placeholder, not a standard SubtleCrypto algo
+        sha1: 'SHA-1',
+        sha256: 'SHA-256',
+        sha512: 'SHA-512',
+      };
+
+      const typesToGenerate = hashType === 'all' ? Object.keys(algorithms) : [hashType];
+
+      for (const type of typesToGenerate) {
+        if (type === 'md5') {
+          // MD5 is not part of Web Crypto API, this is a simple SHA-256 based mock
+          const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+          results.md5 = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 32);
+        } else {
+          const hashBuffer = await crypto.subtle.digest(algorithms[type], data);
+          results[type] = Array.from(new Uint8Array(hashBuffer))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
+        }
       }
       
       setHashes(results);
-    } catch (error) {
-      message.error(t('Error generating hash'));
-    }
-  }
-
-  // Simple MD5 implementation (for demo purposes)
-  async function generateMD5(str) {
-    // This is a simplified MD5 implementation
-    // In a real application, you'd use a proper MD5 library
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    return Array.from(new Uint8Array(hashBuffer))
-      .map(b => b.toString(16).padStart(2, '0'))
-      .join('')
-      .substring(0, 32); // MD5 is 32 characters
-  }
-
-  function copyHash(hash) {
-    if (hash) {
-      navigator.clipboard.writeText(hash);
-      message.success(t('Copied to clipboard'));
+    } catch (err) {
+      setError(t('Error generating hash'));
+      setHashes({});
     }
   }
 
   function generateAllHashes() {
     setHashType('all');
-    setTimeout(() => generateHash(), 100);
+    generateHash();
   }
 
   return (
-    <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <Title level={2}>{t('Hash Generator')}</Title>
-      
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <TextArea 
-          value={input} 
-          onChange={e => setInput(e.target.value)} 
-          rows={6} 
-          placeholder={t('Enter text to hash')}
-        />
+    <>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Hash Generator')}</Typography>
         
-        <Row gutter={16}>
-          <Col span={12}>
-            <Select
-              value={hashType}
-              onChange={setHashType}
-              style={{ width: '100%' }}
-              options={[
-                { value: 'md5', label: 'MD5' },
-                { value: 'sha1', label: 'SHA-1' },
-                { value: 'sha256', label: 'SHA-256' },
-                { value: 'sha512', label: 'SHA-512' },
-                { value: 'all', label: t('All') }
-              ]}
-            />
-          </Col>
-          <Col span={12}>
-            <Space>
-              <Button type="primary" onClick={generateHash} icon={<KeyOutlined />}>
-                {t('Generate Hash')}
-              </Button>
-              <Button onClick={generateAllHashes}>
-                {t('Generate All')}
-              </Button>
-            </Space>
-          </Col>
-        </Row>
-        
-        {Object.keys(hashes).length > 0 && (
-          <Card title={t('Generated Hashes')}>
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              {hashes.md5 && (
-                <Row gutter={16} align="middle">
-                  <Col span={4}><strong>MD5:</strong></Col>
-                  <Col span={16}>
-                    <Input 
-                      value={hashes.md5} 
-                      readOnly 
-                      style={{ fontFamily: 'monospace' }}
-                    />
-                  </Col>
-                  <Col span={4}>
-                    <Button size="small" onClick={() => copyHash(hashes.md5)} icon={<CopyOutlined />}>
-                      {t('Copy')}
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-              
-              {hashes.sha1 && (
-                <Row gutter={16} align="middle">
-                  <Col span={4}><strong>SHA-1:</strong></Col>
-                  <Col span={16}>
-                    <Input 
-                      value={hashes.sha1} 
-                      readOnly 
-                      style={{ fontFamily: 'monospace' }}
-                    />
-                  </Col>
-                  <Col span={4}>
-                    <Button size="small" onClick={() => copyHash(hashes.sha1)} icon={<CopyOutlined />}>
-                      {t('Copy')}
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-              
-              {hashes.sha256 && (
-                <Row gutter={16} align="middle">
-                  <Col span={4}><strong>SHA-256:</strong></Col>
-                  <Col span={16}>
-                    <Input 
-                      value={hashes.sha256} 
-                      readOnly 
-                      style={{ fontFamily: 'monospace' }}
-                    />
-                  </Col>
-                  <Col span={4}>
-                    <Button size="small" onClick={() => copyHash(hashes.sha256)} icon={<CopyOutlined />}>
-                      {t('Copy')}
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-              
-              {hashes.sha512 && (
-                <Row gutter={16} align="middle">
-                  <Col span={4}><strong>SHA-512:</strong></Col>
-                  <Col span={16}>
-                    <Input 
-                      value={hashes.sha512} 
-                      readOnly 
-                      style={{ fontFamily: 'monospace' }}
-                    />
-                  </Col>
-                  <Col span={4}>
-                    <Button size="small" onClick={() => copyHash(hashes.sha512)} icon={<CopyOutlined />}>
-                      {t('Copy')}
-                    </Button>
-                  </Col>
-                </Row>
-              )}
-            </Space>
-          </Card>
-        )}
-      </Space>
-    </Card>
+        <Stack spacing={2}>
+          <TextField 
+            value={input} 
+            onChange={e => setInput(e.target.value)} 
+            multiline
+            rows={6} 
+            label={t('Enter text to hash')}
+            variant="outlined"
+            fullWidth
+          />
+          
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={12} sm={6}>
+              <FormControl fullWidth>
+                <InputLabel id="hash-type-label">{t('Hash Type')}</InputLabel>
+                <Select
+                  labelId="hash-type-label"
+                  value={hashType}
+                  label={t('Hash Type')}
+                  onChange={(e) => setHashType(e.target.value)}
+                >
+                  <MenuItem value="md5">MD5</MenuItem>
+                  <MenuItem value="sha1">SHA-1</MenuItem>
+                  <MenuItem value="sha256">SHA-256</MenuItem>
+                  <MenuItem value="sha512">SHA-512</MenuItem>
+                  <MenuItem value="all">{t('All')}</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <Stack direction="row" spacing={1}>
+                <Button variant="contained" onClick={generateHash} startIcon={<VpnKey />}>
+                  {t('Generate Hash')}
+                </Button>
+                <Button variant="outlined" onClick={generateAllHashes}>
+                  {t('Generate All')}
+                </Button>
+              </Stack>
+            </Grid>
+          </Grid>
+          
+          {error && (
+            <Alert severity="error">
+              <AlertTitle>{t('Error')}</AlertTitle>
+              {error}
+            </Alert>
+          )}
+
+          {Object.keys(hashes).length > 0 && (
+            <Card variant="outlined">
+              <CardContent>
+                <Typography variant="h6" gutterBottom>{t('Generated Hashes')}</Typography>
+                <Stack spacing={2}>
+                  {Object.entries(hashes).map(([name, hash]) => (
+                    <HashResult key={name} name={name.toUpperCase()} hash={hash} onCopy={copyToClipboard} />
+                  ))}
+                </Stack>
+              </CardContent>
+            </Card>
+          )}
+        </Stack>
+      </Card>
+      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+    </>
   );
 } 

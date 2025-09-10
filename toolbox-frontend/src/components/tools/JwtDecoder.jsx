@@ -1,16 +1,40 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Button, Space, Card, Alert, message } from 'antd';
-import { CopyOutlined, EyeOutlined } from '@ant-design/icons';
+import { Card, CardContent, CardHeader, Typography, TextField, Button, Stack, Alert, AlertTitle, IconButton } from '@mui/material';
+import { ContentCopy, Visibility } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
+import CopySuccessAnimation from '../CopySuccessAnimation';
 
-const { Title } = Typography;
-const { TextArea } = Input;
+const DecodedPart = ({ title, content, onCopy }) => (
+  <Card variant="outlined">
+    <CardHeader
+      title={title}
+      action={
+        <Button size="small" startIcon={<ContentCopy />} onClick={onCopy}>
+          Copy
+        </Button>
+      }
+      titleTypographyProps={{ variant: 'subtitle2' }}
+    />
+    <CardContent>
+      <TextField
+        value={content}
+        multiline
+        rows={content.split('\n').length > 8 ? 8 : 4}
+        fullWidth
+        InputProps={{ readOnly: true, style: { fontFamily: 'monospace' } }}
+        variant="filled"
+      />
+    </CardContent>
+  </Card>
+);
 
 export default function JwtDecoder() {
   const { t } = useTranslation();
   const [jwt, setJwt] = useState('');
   const [decoded, setDecoded] = useState(null);
   const [error, setError] = useState(null);
+  const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   function decodeJwt() {
     if (!jwt) return;
@@ -22,8 +46,8 @@ export default function JwtDecoder() {
         throw new Error(t('Invalid JWT format'));
       }
 
-      const header = JSON.parse(atob(parts[0]));
-      const payload = JSON.parse(atob(parts[1]));
+      const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
 
       setDecoded({
         header: JSON.stringify(header, null, 2),
@@ -36,86 +60,62 @@ export default function JwtDecoder() {
     }
   }
 
-  function copyDecoded(type) {
-    if (decoded && decoded[type]) {
-      navigator.clipboard.writeText(decoded[type]);
-      message.success(t('Copied to clipboard'));
-    }
-  }
-
   return (
-    <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <Title level={2}>{t('JWT Decoder')}</Title>
-      
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <Input 
-          value={jwt} 
-          onChange={e => setJwt(e.target.value)} 
-          placeholder={t('Enter JWT token')}
-          size="large"
-        />
+    <>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>
+          {t('JWT Decoder')}
+        </Typography>
         
-        <Button type="primary" onClick={decodeJwt} icon={<EyeOutlined />}>
-          {t('Decode')}
-        </Button>
-        
-        {error && (
-          <Alert 
-            message={t('Error')} 
-            description={error} 
-            type="error" 
-            showIcon 
+        <Stack spacing={2}>
+          <TextField 
+            value={jwt} 
+            onChange={e => setJwt(e.target.value)} 
+            label={t('Enter JWT token')}
+            variant="outlined"
+            fullWidth
           />
-        )}
-        
-        {decoded && (
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Card title={t('Header')} size="small">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span>{t('JWT Header')}</span>
-                <Button size="small" onClick={() => copyDecoded('header')} icon={<CopyOutlined />}>
-                  {t('Copy')}
-                </Button>
-              </div>
-              <TextArea 
-                value={decoded.header} 
-                readOnly 
-                rows={4} 
-                style={{ fontFamily: 'monospace' }}
-              />
-            </Card>
-            
-            <Card title={t('Payload')} size="small">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span>{t('JWT Payload')}</span>
-                <Button size="small" onClick={() => copyDecoded('payload')} icon={<CopyOutlined />}>
-                  {t('Copy')}
-                </Button>
-              </div>
-              <TextArea 
-                value={decoded.payload} 
-                readOnly 
-                rows={8} 
-                style={{ fontFamily: 'monospace' }}
-              />
-            </Card>
-            
-            <Card title={t('Signature')} size="small">
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                <span>{t('JWT Signature')}</span>
-                <Button size="small" onClick={() => copyDecoded('signature')} icon={<CopyOutlined />}>
-                  {t('Copy')}
-                </Button>
-              </div>
-              <Input 
-                value={decoded.signature} 
-                readOnly 
-                style={{ fontFamily: 'monospace' }}
-              />
-            </Card>
-          </Space>
-        )}
-      </Space>
-    </Card>
+          
+          <Button variant="contained" onClick={decodeJwt} startIcon={<Visibility />}>
+            {t('Decode')}
+          </Button>
+          
+          {error && (
+            <Alert severity="error">
+              <AlertTitle>{t('Error')}</AlertTitle>
+              {error}
+            </Alert>
+          )}
+          
+          {decoded && (
+            <Stack spacing={2}>
+              <DecodedPart title={t('Header')} content={decoded.header} onCopy={() => copyToClipboard(decoded.header)} />
+              <DecodedPart title={t('Payload')} content={decoded.payload} onCopy={() => copyToClipboard(decoded.payload)} />
+              
+              <Card variant="outlined">
+                <CardHeader 
+                  title={t('Signature')} 
+                  action={
+                    <Button size="small" startIcon={<ContentCopy />} onClick={() => copyToClipboard(decoded.signature)}>
+                      Copy
+                    </Button>
+                  }
+                  titleTypographyProps={{ variant: 'subtitle2' }}
+                />
+                <CardContent>
+                  <TextField
+                    value={decoded.signature}
+                    fullWidth
+                    InputProps={{ readOnly: true, style: { fontFamily: 'monospace' } }}
+                    variant="filled"
+                  />
+                </CardContent>
+              </Card>
+            </Stack>
+          )}
+        </Stack>
+      </Card>
+      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+    </>
   );
 } 

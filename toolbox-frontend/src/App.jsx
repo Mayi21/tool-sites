@@ -28,6 +28,7 @@ import Seo from './components/Seo';
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
+const LayoutDemo = lazy(() => import('./components/LayoutDemo'));
 
 // 为每个工具生成SEO关键词
 const getToolKeywords = (path, t) => {
@@ -438,6 +439,11 @@ function App() {
                   />
                 ))}
                 
+                <Route path="/layout-demo" element={
+                  <Container maxWidth="lg" sx={{ px: 2 }}>
+                    <LayoutDemo />
+                  </Container>
+                } />
                 <Route path="*" element={<NotFound />} />
                 <Route path="/questionnaire/:id" element={<ViewQuestionnaire />} />
                 <Route path="/questionnaire/:id/results" element={<ViewResults />} />

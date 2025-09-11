@@ -71,7 +71,21 @@ export default function Base64Tool() {
                   <Typography variant="subtitle1">{t('Result')}</Typography>
                   <Button size="small" startIcon={<ContentCopy />} onClick={copyOutput}>{t('Copy')}</Button>
                 </Stack>
-                <TextField value={output} InputProps={{ readOnly: true }} multiline rows={6} variant="filled" fullWidth />
+                <TextField 
+                  value={output} 
+                  InputProps={{ readOnly: true }} 
+                  multiline 
+                  rows={6} 
+                  variant="filled" 
+                  fullWidth 
+                  sx={{ 
+                    '& .MuiInputBase-root': { 
+                      maxHeight: 200, 
+                      overflow: 'auto',
+                      fontFamily: 'monospace'
+                    } 
+                  }} 
+                />
               </Stack>
             )}
           </Stack>

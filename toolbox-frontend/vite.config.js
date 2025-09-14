@@ -1,6 +1,8 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { preloadPlugin } from './src/plugins/preloadPlugin.js';
+import viteCompression from 'vite-plugin-compression';
+import { constants } from 'zlib';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -8,7 +10,32 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '');
 
   return {
-    plugins: [react(), preloadPlugin()],
+    plugins: [
+      react(),
+      preloadPlugin(),
+      // Gzip压缩配置
+      viteCompression({
+        algorithm: 'gzip',
+        ext: '.gz',
+        threshold: 1024, // 只压缩大于1KB的文件
+        deleteOriginFile: false, // 保留原文件
+        compressionOptions: {
+          level: 9 // 最高压缩级别
+        }
+      }),
+      // Brotli压缩配置（更好的压缩率）
+      viteCompression({
+        algorithm: 'brotliCompress',
+        ext: '.br',
+        threshold: 1024,
+        deleteOriginFile: false,
+        compressionOptions: {
+          params: {
+            [constants.BROTLI_PARAM_QUALITY]: 11 // 最高质量
+          }
+        }
+      })
+    ],
     // Expose API_URL to client code via import.meta.env.API_URL
     define: {
       'import.meta.env.API_URL': JSON.stringify(env.API_URL || ''),

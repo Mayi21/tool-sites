@@ -1,22 +1,118 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { getToolDetails } from './ToolDetailDescription';
+import tools from '../tools';
+
+// 工具分类映射（从BreadcrumbNav中复用）
+const getToolCategory = (path) => {
+  const categoryMap = {
+    '/base64': 'Development Tools',
+    '/json-formatter': 'Development Tools',
+    '/regex-tester': 'Development Tools',
+    '/url-encoder': 'Development Tools',
+    '/timestamp': 'Development Tools',
+    '/jwt-decoder': 'Development Tools',
+    '/cron-parser': 'Development Tools',
+    '/diff': 'Text Processing',
+    '/text-analyzer': 'Text Processing',
+    '/text-processor': 'Text Processing',
+    '/markdown-preview': 'Text Processing',
+    '/unicode-converter': 'Text Processing',
+    '/csv-converter': 'Data Conversion',
+    '/uuid-generator': 'Data Conversion',
+    '/hash-generator': 'Security & Encryption',
+    '/password-generator': 'Security & Encryption',
+    '/color-converter': 'Design Tools',
+    '/qr-generator': 'Design Tools',
+    '/image-compressor': 'Design Tools',
+    '/image-watermark': 'Design Tools'
+  };
+
+  return categoryMap[path] || null;
+};
 
 // props: title, description, canonical, ogImage, lang, structuredData, keywords
-export default function Seo({ 
-  title, 
-  description, 
-  canonical, 
-  ogImage, 
-  lang = 'zh-CN', 
+export default function Seo({
+  title,
+  description,
+  canonical,
+  ogImage,
+  lang = 'zh-CN',
   structuredData,
   keywords,
   author = 'ToolifyHub',
-  robots = 'index,follow'
+  robots = 'index,follow',
+  toolPath = null
 }) {
   const safeTitle = title || 'Multi-function Toolbox';
   const safeDesc = description || 'Multi-function online toolbox';
   const safeCanonical = canonical || (typeof window !== 'undefined' ? window.location.href : '/') ;
   const safeOgImage = ogImage || '/toolbox-icon.svg';
+
+  // 生成面包屑结构化数据
+  const generateBreadcrumbStructuredData = (toolPath) => {
+    if (!toolPath || toolPath === '/') return null;
+
+    const category = getToolCategory(toolPath);
+    const tool = tools.find(t => t.path === toolPath);
+
+    if (!tool) return null;
+
+    const breadcrumbs = [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "首页",
+        "item": "https://toolifyhub.top/"
+      }
+    ];
+
+    if (category) {
+      breadcrumbs.push({
+        "@type": "ListItem",
+        "position": 2,
+        "name": category,
+        "item": `https://toolifyhub.top/#${category.toLowerCase().replace(/\s+/g, '-').replace('&', 'and')}`
+      });
+    }
+
+    // 获取工具名称（优先使用配置中的nameKey）
+    const toolName = tool.nameKey || tool.path.replace('/', '');
+
+    breadcrumbs.push({
+      "@type": "ListItem",
+      "position": category ? 3 : 2,
+      "name": toolName,
+      "item": `https://toolifyhub.top${toolPath}`
+    });
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": breadcrumbs
+    };
+  };
+
+  // 生成FAQ结构化数据
+  const generateFAQStructuredData = (toolPath) => {
+    if (!toolPath) return null;
+
+    const toolDetails = getToolDetails(toolPath);
+    if (!toolDetails || !toolDetails.faq || toolDetails.faq.length === 0) return null;
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": toolDetails.faq.map(faqItem => ({
+        "@type": "Question",
+        "name": faqItem.q,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": faqItem.a
+        }
+      }))
+    };
+  };
 
   // 生成工具页面的结构化数据
   const generateToolStructuredData = (toolName, toolDescription) => ({
@@ -64,11 +160,17 @@ export default function Seo({
   });
 
   // 自动生成结构化数据
-  const finalStructuredData = structuredData || 
-    (safeCanonical === 'https://toolifyhub.top/' ? 
-      generateWebsiteStructuredData() : 
+  const finalStructuredData = structuredData ||
+    (safeCanonical === 'https://toolifyhub.top/' ?
+      generateWebsiteStructuredData() :
       generateToolStructuredData(safeTitle, safeDesc)
     );
+
+  // 生成FAQ结构化数据
+  const faqStructuredData = generateFAQStructuredData(toolPath);
+
+  // 生成面包屑结构化数据
+  const breadcrumbStructuredData = generateBreadcrumbStructuredData(toolPath);
 
   return (
     <Helmet>
@@ -104,11 +206,25 @@ export default function Seo({
       {/* Additional SEO tags */}
       <meta name="theme-color" content="#1677ff" />
       <meta name="msapplication-TileColor" content="#1677ff" />
-      
-      {/* Structured Data */}
+
+      {/* Main Structured Data (SoftwareApplication/WebSite) */}
       {finalStructuredData && (
         <script type="application/ld+json">
           {JSON.stringify(finalStructuredData)}
+        </script>
+      )}
+
+      {/* FAQ Structured Data */}
+      {faqStructuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(faqStructuredData)}
+        </script>
+      )}
+
+      {/* Breadcrumb Structured Data */}
+      {breadcrumbStructuredData && (
+        <script type="application/ld+json">
+          {JSON.stringify(breadcrumbStructuredData)}
         </script>
       )}
     </Helmet>

@@ -22,7 +22,7 @@ import {
 import { useTranslation } from 'react-i18next';
 
 // 工具详细信息配置
-const getToolDetails = (path, t) => {
+export const getToolDetails = (path, t) => {
   const toolDetails = {
     '/base64': {
       description: 'Base64是一种基于64个可打印字符来表示二进制数据的编码方法。广泛用于在不支持二进制数据的系统中传输数据，如电子邮件、HTTP传输等场景。',

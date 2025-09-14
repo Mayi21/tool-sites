@@ -88,41 +88,62 @@ const toolCategories = [
   { nameKey: 'Design Tools', key: 'design', tools: ['color-converter', 'qr-generator', 'image-compressor', 'image-watermark'] }
 ];
 
-// 动态标题组件
+// 动态标题和Meta描述组件
 function DynamicTitle() {
   const { t } = useTranslation();
   const location = useLocation();
-  
+
+  // 更新meta描述的通用函数
+  const updateMetaDescription = (description) => {
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', description);
+    } else {
+      const newMeta = document.createElement('meta');
+      newMeta.name = 'description';
+      newMeta.content = description;
+      document.head.appendChild(newMeta);
+    }
+  };
+
   useEffect(() => {
-    const updateTitle = () => {
+    const updateTitleAndMeta = () => {
       const path = location.pathname;
-      
+
       if (path === '/') {
+        // 首页标题和描述
         document.title = `${t('Multi-function Toolbox')} - 多功能工具箱`;
-      } else if (path === '/base64') {
-        document.title = t('base64.pageTitle');
-        const metaDescription = document.querySelector('meta[name="description"]');
-        if (metaDescription) {
-          metaDescription.setAttribute('content', t('base64.pageDescription'));
-        } else {
-          const newMeta = document.createElement('meta');
-          newMeta.name = 'description';
-          newMeta.content = t('base64.pageDescription');
-          document.head.appendChild(newMeta);
-        }
+        updateMetaDescription('20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。');
       } else {
+        // 工具页面标题和描述
         const currentTool = tools.find(tool => path === tool.path);
         if (currentTool) {
-          document.title = `${t(currentTool.nameKey)} - ${t('Multi-function Toolbox')}`;
+          // 设置页面标题 - 优先使用pageTitleKey，否则使用通用格式
+          const pageTitle = currentTool.pageTitleKey ? t(currentTool.pageTitleKey) : `${t(currentTool.nameKey)} - ${t('Multi-function Toolbox')}`;
+          document.title = pageTitle;
+
+          // 设置meta描述 - 优先使用pageDescriptionKey，否则使用cardDescription
+          let pageDescription = '';
+          if (currentTool.pageDescriptionKey) {
+            pageDescription = t(currentTool.pageDescriptionKey);
+          } else if (currentTool.cardDescription) {
+            pageDescription = currentTool.cardDescription;
+          } else {
+            pageDescription = t(currentTool.descKey);
+          }
+
+          updateMetaDescription(pageDescription);
         } else {
+          // 404或其他页面
           document.title = `${t('Multi-function Toolbox')} - 多功能工具箱`;
+          updateMetaDescription('多功能在线工具箱 - 一站式开发者工具集合，包含Base64编解码、JSON格式化、正则测试、Cron解析等实用工具');
         }
       }
     };
-    
-    updateTitle();
+
+    updateTitleAndMeta();
   }, [location.pathname, t]);
-  
+
   return null;
 }
 
@@ -446,6 +467,7 @@ function App() {
                           description={t(tool.pageDescriptionKey || tool.descKey)}
                           canonical={typeof window !== 'undefined' ? window.location.href : `https://toolifyhub.top${tool.path}`}
                           keywords={getToolKeywords(tool.path, t)}
+                          toolPath={tool.path}
                         />
                         <BreadcrumbNav currentToolName={t(tool.nameKey)} />
                         <tool.Component />

@@ -10,6 +10,16 @@
     <meta name="keywords" content="在线工具,开发工具,Base64,JSON,正则表达式,Cron,工具箱" />
     <meta name="theme-color" content="#1677ff" />
 
+    <!-- 关键资源预加载优化 -->
+    <!-- 预加载关键图标 - 提升首屏渲染速度 -->
+    <link rel="preload" href="/toolbox-icon.svg" as="image" type="image/svg+xml">
+
+    <!-- 预加载PWA清单 - 提升离线体验 -->
+    <link rel="preload" href="/manifest.json" as="fetch" crossorigin="anonymous">
+
+    <!-- 预加载favicon以避免额外请求 -->
+    <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon">
+
     <!-- 字体优化：预加载系统字体和设置font-display -->
     <style>
       /* 系统字体优化 - 确保快速渲染 */

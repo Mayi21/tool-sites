@@ -26,6 +26,8 @@ import ToolDetailDescription from './components/ToolDetailDescription';
 import { Helmet } from 'react-helmet-async';
 import Seo from './components/Seo';
 import FontOptimization from './components/FontOptimization';
+import IntelligentPreloader from './components/IntelligentPreloader';
+import './utils/preloadTester'; // 自动启动性能测试
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
@@ -215,6 +217,7 @@ function App() {
       <CssBaseline />
       <FontOptimization />
       <BrowserRouter>
+        <IntelligentPreloader />
         <DynamicTitle />
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <NavigationBar theme={theme} setTheme={setTheme} />

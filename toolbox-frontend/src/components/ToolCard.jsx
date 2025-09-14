@@ -27,17 +27,20 @@ const getToolIcon = (path) => {
   }
 };
 
-export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey }) {
+export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey, cardDescription }) {
   const { t } = useTranslation();
   const cardMaxWidth = 320;
   const titleFontSize = 16;
   const descFontSize = 13;
   const clampLines = 3;
-  
+
+  // 优先使用 cardDescription，然后是翻译的描述，最后是 descKey
+  const displayDescription = cardDescription || t(pageDescriptionKey || descKey);
+
   return (
     <Link to={path} style={{ textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }}>
-      <Card 
-        sx={{ 
+      <Card
+        sx={{
           width: '100%',
           maxWidth: cardMaxWidth,
           height: '100%',
@@ -67,12 +70,12 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
           <Box sx={{ mb: 1, flexShrink: 0 }}>
             {getToolIcon(path)}
           </Box>
-          
-          <Typography 
-            variant="h6" 
-            sx={{ 
-              fontSize: titleFontSize, 
-              fontWeight: 600, 
+
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: titleFontSize,
+              fontWeight: 600,
               color: 'text.primary',
               mb: 1,
               lineHeight: 1.4,
@@ -83,11 +86,11 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
           >
             {t(nameKey)}
           </Typography>
-          
-          <Typography 
-            variant="body2" 
-            sx={{ 
-              fontSize: descFontSize, 
+
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: descFontSize,
               color: 'text.secondary',
               lineHeight: 1.4,
               display: '-webkit-box',
@@ -100,10 +103,10 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey })
               hyphens: 'auto'
             }}
           >
-            {t(pageDescriptionKey || descKey)}
+            {displayDescription}
           </Typography>
         </CardContent>
       </Card>
     </Link>
   );
-} 
+}

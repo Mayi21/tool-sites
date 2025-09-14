@@ -36,6 +36,13 @@ const ViewResults = lazy(() => import('./components/tools/ViewResults'));
 
 // 为每个工具生成SEO关键词
 const getToolKeywords = (path, t) => {
+  // 首先尝试从工具配置中获取关键词
+  const tool = tools.find(tool => tool.path === path);
+  if (tool && tool.keywords) {
+    return tool.keywords;
+  }
+
+  // 如果没有配置，使用默认关键词映射（向后兼容）
   const keywordMap = {
     '/base64': 'base64,encoder,decoder,online,free,base64 encode,base64 decode,编码,解码',
     '/json-formatter': 'json,formatter,validator,beautify,minify,json format,json validator,格式化',
@@ -52,7 +59,7 @@ const getToolKeywords = (path, t) => {
     '/cron-parser': 'cron,parser,expression,schedule,定时任务,cron表达式',
     '/unicode-converter': 'unicode,converter,chinese,unicode转换,中文编码'
   };
-  
+
   return keywordMap[path] || 'online tools,free tools,developer tools,在线工具,开发工具';
 };
 
@@ -414,6 +421,7 @@ function App() {
                                     nameKey={tool.nameKey}
                                     descKey={tool.descKey}
                                     pageDescriptionKey={tool.pageDescriptionKey}
+                                    cardDescription={tool.cardDescription}
                                   />
                                 </LazyToolCard>
                               </Grid>

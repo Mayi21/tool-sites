@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import { preloadPlugin } from './src/plugins/preloadPlugin.js';
+import { criticalCssPlugin } from './src/plugins/criticalCssPlugin.js';
 import viteCompression from 'vite-plugin-compression';
 import { constants } from 'zlib';
 
@@ -13,6 +14,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react(),
       preloadPlugin(),
+      criticalCssPlugin(), // 关键CSS内联优化
       // Gzip压缩配置
       viteCompression({
         algorithm: 'gzip',

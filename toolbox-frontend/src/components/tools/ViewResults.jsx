@@ -1,9 +1,10 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CircularProgress, Alert, Button, Grid, Box, Typography, Paper, Stack } from '@mui/material';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, PieChart, Pie, Cell } from 'recharts';
+
+// 动态导入图表组件
+const Charts = lazy(() => import('./Charts'));
 
 function useQuery() {
   return new URLSearchParams(useLocation().search);
@@ -18,6 +19,7 @@ export default function ViewResults() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [showCharts, setShowCharts] = useState(false);
 
   useEffect(() => {
     const fetchResults = async () => {
@@ -30,6 +32,8 @@ export default function ViewResults() {
         }
         const data = await response.json();
         setResults(data);
+        // 延迟加载图表，给用户时间阅读内容
+        setTimeout(() => setShowCharts(true), 500);
       } catch (err) {
         setError(err.message);
       } finally {
@@ -88,7 +92,7 @@ export default function ViewResults() {
     <Paper sx={{ maxWidth: 1000, margin: 'auto', p: 2 }}>
       <Stack spacing={2}>
         <Typography variant="h4" component="h1">{t('Questionnaire Results')}</Typography>
-        
+
         {feedback.message && <Alert severity={feedback.type}>{feedback.message}</Alert>}
 
         <Stack direction="row" spacing={2}>
@@ -101,23 +105,27 @@ export default function ViewResults() {
             <CardHeader title={result.text} />
             <CardContent>
               {result.type === 'single' || result.type === 'multiple' ? (
-                <BarChart width={500} height={300} data={result.options}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="text" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="count" fill="#8884d8" />
-                </BarChart>
+                showCharts ? (
+                  <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}><CircularProgress size={24} /></Box>}>
+                    <Charts.ResultBarChart data={result.options} />
+                  </Suspense>
+                ) : (
+                  <Box sx={{ height: 300, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress size={24} />
+                    <Typography sx={{ ml: 1 }}>Loading chart...</Typography>
+                  </Box>
+                )
               ) : result.type === 'rating' ? (
-                <PieChart width={400} height={400}>
-                  <Pie data={result.options} cx={200} cy={200} labelLine={false} label={(entry) => entry.name} outerRadius={80} fill="#8884d8" dataKey="count">
-                    {result.options.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
+                showCharts ? (
+                  <Suspense fallback={<Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}><CircularProgress size={24} /></Box>}>
+                    <Charts.ResultPieChart data={result.options} colors={COLORS} />
+                  </Suspense>
+                ) : (
+                  <Box sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <CircularProgress size={24} />
+                    <Typography sx={{ ml: 1 }}>Loading chart...</Typography>
+                  </Box>
+                )
               ) : (
                 <ul>
                   {result.submissions.map((text, i) => <li key={i}>{text}</li>)}

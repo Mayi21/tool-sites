@@ -45,6 +45,32 @@ export const lightTheme = createTheme({
     },
   },
   components: {
+    // 全局CSS基础样式配置
+    MuiCssBaseline: {
+      styleOverrides: `
+        /* 字体显示优化 - 确保所有字体使用swap策略 */
+        @font-face {
+          font-family: 'SystemOptimized';
+          src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
+          font-display: swap;
+          font-weight: 100 900;
+          font-stretch: 75% 125%;
+        }
+
+        /* 全局字体渲染优化 */
+        * {
+          font-display: swap !important;
+        }
+
+        /* Web字体加载优化 */
+        body {
+          font-synthesis: none;
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+      `,
+    },
     MuiCard: {
       styleOverrides: {
         root: {
@@ -115,6 +141,32 @@ export const darkTheme = createTheme({
     },
   },
   components: {
+    // 全局CSS基础样式配置
+    MuiCssBaseline: {
+      styleOverrides: `
+        /* 字体显示优化 - 确保所有字体使用swap策略 */
+        @font-face {
+          font-family: 'SystemOptimized';
+          src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
+          font-display: swap;
+          font-weight: 100 900;
+          font-stretch: 75% 125%;
+        }
+
+        /* 全局字体渲染优化 */
+        * {
+          font-display: swap !important;
+        }
+
+        /* Web字体加载优化 */
+        body {
+          font-synthesis: none;
+          text-rendering: optimizeLegibility;
+          -webkit-font-smoothing: antialiased;
+          -moz-osx-font-smoothing: grayscale;
+        }
+      `,
+    },
     MuiCard: {
       styleOverrides: {
         root: {

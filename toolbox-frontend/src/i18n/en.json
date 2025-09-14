@@ -463,5 +463,310 @@
   "image-compressor.pageDescription": "Compress images online while maintaining quality. Reduce file sizes for faster website loading and bandwidth optimization.",
   "image-watermark.pageTitle": "Image Watermark — Add Text Watermarks to Images | ToolifyHub",
   "image-watermark.pageDescription": "Add custom text watermarks to images online. Protect your photos with customizable opacity, position, and styling options.",
-  "Copy": "Copy"
+  "Copy": "Copy",
+  "homepage.subtitle": "Free Online Developer Tools Collection",
+  "homepage.description": "20+ carefully crafted online tools for developers, covering encoding/decoding, format conversion, text processing, data generation and more core functions. Completely free, privacy-safe, ready to use, helping to improve development efficiency.",
+  "homepage.features.instant": "🚀 Instant Processing",
+  "homepage.features.privacy": "🔒 Privacy Safe",
+  "homepage.features.mobile": "📱 Mobile Friendly",
+  "homepage.features.free": "🆓 Completely Free",
+  "homepage.popular.title": "🔥 Popular Tool Combinations | Popular Tool Combinations",
+  "homepage.popular.base64": "Base64 Encode → URL Encode → Hash Generate",
+  "homepage.popular.json": "JSON Format → CSV Convert → Text Compare",
+  "homepage.popular.regex": "Regex Test → Text Analyze → Text Process",
+  "related.tools": "Related Tools | Related Tools",
+  "diff.name": "Text Compare",
+  "json-formatter.name": "JSON Formatter",
+  "url-encoder.name": "URL Encoder/Decoder",
+  "timestamp.name": "Timestamp Converter",
+  "color-converter.name": "Color Converter",
+  "regex-tester.name": "Regex Tester",
+  "text-analyzer.name": "Text Analyzer",
+  "hash-generator.name": "Hash Generator",
+  "text-processor.name": "Text Processor",
+  "uuid-generator.name": "UUID Generator",
+  "markdown-preview.name": "Markdown Preview",
+  "csv-converter.name": "CSV ↔ JSON Converter",
+  "jwt-decoder.name": "JWT Decoder",
+  "qr-generator.name": "QR Code Generator",
+  "image-compressor.name": "Image Compressor",
+  "unicode-converter.name": "Unicode Converter",
+  "cron-parser.name": "Cron Expression Parser",
+  "image-watermark.name": "Image Watermark",
+  "password-generator.name": "Password Generator",
+  "base64.name": "Base64 Encoder/Decoder",
+  "base64.pageDescription": "Free online Base64 encoder/decoder tool, supports text, Chinese, URL, JSON encoding and decoding with one click. Ad-free, fast, clipboard support - essential tool for developers and operations.",
+  "toolDetails": {
+    "base64": {
+      "description": "Base64 is an encoding method based on 64 printable characters to represent binary data. Widely used for transmitting data in systems that do not support binary data, such as email and HTTP transmission scenarios.",
+      "features": {
+        "0": "Support text and file Base64 encoding and decoding",
+        "1": "Automatically detect Base64 format validity",
+        "2": "Support UTF-8 character encoding",
+        "3": "One-click copy results to clipboard",
+        "4": "Real-time encoding and decoding, no button clicking required"
+      },
+      "useCases": {
+        "0": "Image data URI encoding in web development",
+        "1": "Binary data transmission in API interfaces",
+        "2": "Email attachment encoding transmission",
+        "3": "JWT Token payload encoding",
+        "4": "Simple encoding of sensitive information in configuration files"
+      },
+      "tips": {
+        "0": "Base64 encoded data size will increase by about 33%",
+        "1": "The '=' at the end of the encoding result is a padding character for alignment",
+        "2": "Base64 is not an encryption method, just encoding conversion",
+        "3": "Suitable for small file processing, large files are recommended to be processed in blocks"
+      },
+      "faq": {
+        "0": {
+          "q": "Is Base64 encoding secure?",
+          "a": "Base64 is just encoding conversion and does not provide encryption functionality. Anyone can easily decode it, do not use it for sensitive information protection."
+        },
+        "1": {
+          "q": "Why does the string become longer after encoding?",
+          "a": "Base64 encodes every 3 bytes into 4 characters, so the encoded length will increase by about 33%."
+        }
+      }
+    },
+    "json-formatter": {
+      "description": "JSON (JavaScript Object Notation) formatting tool that helps developers beautify, validate and compress JSON data. Supports syntax highlighting, error detection and format conversion.",
+      "features": {
+        "0": "Smart JSON formatting and beautification",
+        "1": "Syntax error detection and prompts",
+        "2": "JSON data compression (Minify)",
+        "3": "Support large JSON file processing",
+        "4": "Syntax highlighting display",
+        "5": "One-click copy and download results"
+      },
+      "useCases": {
+        "0": "API response data formatting view",
+        "1": "Configuration file formatting editing",
+        "2": "JSON data structure analysis",
+        "3": "Frontend development data debugging",
+        "4": "JSON format validation and correction"
+      },
+      "tips": {
+        "0": "JSON strings must use double quotes, not single quotes",
+        "1": "Object key names must be surrounded by quotes",
+        "2": "Does not support comments and trailing commas",
+        "3": "Numbers cannot start with 0 (except 0 itself)"
+      },
+      "faq": {
+        "0": {
+          "q": "What is the use of JSON formatting?",
+          "a": "Formatted JSON is easier to read, convenient for debugging and understanding data structures, especially suitable for API development and debugging."
+        },
+        "1": {
+          "q": "What does Minify do?",
+          "a": "Compressing JSON can reduce file size and improve network transmission efficiency, commonly used for API responses in production environments."
+        }
+      }
+    },
+    "regex-tester": {
+      "description": "Regular expression testing tool that helps developers write, test and debug regular expressions. Supports real-time match preview, capture group display and replacement functionality.",
+      "features": {
+        "0": "Real-time regular expression match testing",
+        "1": "Highlight match results",
+        "2": "Capture group and named group display",
+        "3": "Support global, case-insensitive and other modifiers",
+        "4": "Regular replacement function testing",
+        "5": "Common regular expression template library"
+      },
+      "useCases": {
+        "0": "Form validation rule writing and testing",
+        "1": "Text processing and data cleaning",
+        "2": "Log file pattern matching",
+        "3": "Batch replacement in code refactoring",
+        "4": "URL routing rule testing"
+      },
+      "tips": {
+        "0": "Using non-greedy matching (?) can avoid over-matching",
+        "1": "Complex regex should be tested step by step and gradually improved",
+        "2": "Pay attention to the use of escape characters, especially in strings",
+        "3": "Make good use of character classes [\\d\\w\\s] to simplify expressions"
+      },
+      "faq": {
+        "0": {
+          "q": "How to optimize regular expression performance?",
+          "a": "Avoid excessive use of quantifiers, use anchors (^$) reasonably, simplify character classes, and avoid deep nesting."
+        },
+        "1": {
+          "q": "How to test complex regular expressions?",
+          "a": "It is recommended to break them down into small parts and test them separately, then combine them. Use online tools to visualize regex structure."
+        }
+      }
+    },
+    "url-encoder": {
+      "description": "URL encoding/decoding tool for handling special characters in URLs. When URLs contain spaces, Chinese characters, or special symbols, encoding is needed to ensure proper transmission.",
+      "features": {
+        "0": "Support complete URL and query parameter encoding",
+        "1": "Automatic detection and processing of Chinese characters",
+        "2": "Support batch text URL encoding",
+        "3": "Real-time encoding/decoding preview",
+        "4": "Compatible with RFC 3986 standard",
+        "5": "Support custom character set encoding"
+      },
+      "useCases": {
+        "0": "URL query parameter encoding processing",
+        "1": "API interface Chinese parameter passing",
+        "2": "Form data URL safe transmission",
+        "3": "Search engine query string processing",
+        "4": "RESTful API path parameter encoding"
+      },
+      "tips": {
+        "0": "URL encoding uses % followed by two hexadecimal digits to represent characters",
+        "1": "Spaces can be encoded as %20 or + (in query parameters)",
+        "2": "Chinese characters usually use UTF-8 encoding",
+        "3": "Don't encode the entire URL, only encode parameter parts"
+      },
+      "faq": {
+        "0": {
+          "q": "What's the difference between URL encoding and Base64 encoding?",
+          "a": "URL encoding mainly handles special characters in URLs, while Base64 converts binary data to text format."
+        },
+        "1": {
+          "q": "When do you need URL encoding?",
+          "a": "When URLs contain spaces, Chinese characters, special symbols, or reserved characters, encoding is needed to ensure correct URL format."
+        }
+      }
+    },
+    "timestamp": {
+      "description": "Unix timestamp conversion tool that supports bidirectional conversion between timestamps and human-readable time formats. Widely used in server development, database storage, and API interfaces.",
+      "features": {
+        "0": "Support second and millisecond level timestamps",
+        "1": "Multiple date format output",
+        "2": "Automatic timezone recognition and conversion",
+        "3": "Batch timestamp conversion",
+        "4": "Relative time calculation",
+        "5": "One-click current timestamp retrieval"
+      },
+      "useCases": {
+        "0": "Database time field debugging",
+        "1": "API interface time parameter processing",
+        "2": "Log file time analysis",
+        "3": "Scheduled task time setting",
+        "4": "Frontend time display formatting"
+      },
+      "tips": {
+        "0": "Unix timestamp starts counting from January 1, 1970",
+        "1": "JavaScript uses millisecond timestamps, backends often use seconds",
+        "2": "Pay attention to timezone differences, recommend using UTC time",
+        "3": "Larger timestamps represent later times"
+      },
+      "faq": {
+        "0": {
+          "q": "Why do timestamps start from 1970?",
+          "a": "This is a Unix system convention, called 'Unix Epoch', which facilitates computer time processing."
+        },
+        "1": {
+          "q": "How to handle timezone issues?",
+          "a": "It's recommended to use UTC timestamps for storage and convert based on user timezone for display."
+        }
+      }
+    },
+    "jwt-decoder": {
+      "description": "JWT (JSON Web Token) decoding tool for parsing and validating JWT token structure and content. Helps developers debug authentication and authorization systems.",
+      "features": {
+        "0": "Complete JWT structure parsing (Header.Payload.Signature)",
+        "1": "Base64 decoding and JSON formatting",
+        "2": "Token expiration time checking",
+        "3": "Signature algorithm identification",
+        "4": "Detailed claims display",
+        "5": "Basic token validity verification"
+      },
+      "useCases": {
+        "0": "User identity authentication debugging",
+        "1": "API access permission verification",
+        "2": "SSO single sign-on system development",
+        "3": "OAuth2.0 token analysis",
+        "4": "Mobile application login state management"
+      },
+      "tips": {
+        "0": "JWT contains three parts: header, payload, signature",
+        "1": "Payload contains user information and permission claims",
+        "2": "JWT is stateless, server doesn't store sessions",
+        "3": "Pay attention to token expiration time and refresh mechanism"
+      },
+      "faq": {
+        "0": {
+          "q": "Is JWT secure?",
+          "a": "JWT itself is secure, but requires proper implementation of signature verification and expiration checking."
+        },
+        "1": {
+          "q": "How to verify JWT signature?",
+          "a": "Need to use the same key and algorithm as when issued to verify signature validity."
+        }
+      }
+    },
+    "hash-generator": {
+      "description": "Hash generation tool that supports MD5, SHA-1, SHA-256 and other hash algorithms. Used for data integrity verification, password storage, and digital signature scenarios.",
+      "features": {
+        "0": "Support MD5, SHA-1, SHA-256, SHA-512 algorithms",
+        "1": "Text and file hash calculation",
+        "2": "Batch hash generation",
+        "3": "Hash value comparison and verification",
+        "4": "Uppercase and lowercase output options",
+        "5": "Real-time calculation with instant results"
+      },
+      "useCases": {
+        "0": "File integrity verification",
+        "1": "Secure password storage",
+        "2": "Data deduplication detection",
+        "3": "Commit IDs in version control systems",
+        "4": "Blockchain and cryptocurrency applications"
+      },
+      "tips": {
+        "0": "MD5 is no longer suitable for security scenarios, recommend using SHA-256",
+        "1": "Same input always produces the same hash value",
+        "2": "Minor input changes lead to completely different hashes",
+        "3": "Hash is a one-way function, cannot restore original text from hash value"
+      },
+      "faq": {
+        "0": {
+          "q": "Which hash algorithm is the most secure?",
+          "a": "Currently SHA-256 and SHA-512 are considered secure, while MD5 and SHA-1 are considered insufficiently secure."
+        },
+        "1": {
+          "q": "What is hash collision?",
+          "a": "When different inputs produce the same hash value. Excellent hash algorithms should make collisions extremely difficult to occur."
+        }
+      }
+    },
+    "color-converter": {
+      "description": "Color format conversion tool that supports mutual conversion between RGB, HEX, HSL, HSV and other color formats. Provides convenient color processing functions for designers and frontend developers.",
+      "features": {
+        "0": "Support RGB, HEX, HSL, HSV, CMYK formats",
+        "1": "Real-time color preview",
+        "2": "Integrated color picker",
+        "3": "Color palette generation",
+        "4": "Contrast detection",
+        "5": "Accessibility color suggestions"
+      },
+      "useCases": {
+        "0": "Web design color scheme development",
+        "1": "CSS stylesheet color debugging",
+        "2": "UI design specification establishment",
+        "3": "Brand color standardization",
+        "4": "Print design CMYK conversion"
+      },
+      "tips": {
+        "0": "HEX format starts with #, like #FF0000 represents red",
+        "1": "RGB values range from 0-255, HSL H range is 0-360",
+        "2": "HSL is better for adjusting color brightness and saturation",
+        "3": "Note color display differences on different screens"
+      },
+      "faq": {
+        "0": {
+          "q": "Which is better to use, RGB or HSL?",
+          "a": "RGB is intuitive and easy to understand, HSL is better for color adjustment and creating color variations."
+        },
+        "1": {
+          "q": "How to choose accessibility-friendly colors?",
+          "a": "Ensure sufficient contrast, avoid using only color to convey information, consider colorblind users' needs."
+        }
+      }
+    }
+  }
 }

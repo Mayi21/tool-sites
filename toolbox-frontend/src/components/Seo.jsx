@@ -1,5 +1,6 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 import { getToolDetails } from './ToolDetailDescription';
 import tools from '../tools';
 
@@ -44,6 +45,7 @@ export default function Seo({
   robots = 'index,follow',
   toolPath = null
 }) {
+  const { t } = useTranslation();
   const safeTitle = title || 'Multi-function Toolbox';
   const safeDesc = description || 'Multi-function online toolbox';
   const safeCanonical = canonical || (typeof window !== 'undefined' ? window.location.href : '/') ;
@@ -97,7 +99,7 @@ export default function Seo({
   const generateFAQStructuredData = (toolPath) => {
     if (!toolPath) return null;
 
-    const toolDetails = getToolDetails(toolPath);
+    const toolDetails = getToolDetails(toolPath, t);
     if (!toolDetails || !toolDetails.faq || toolDetails.faq.length === 0) return null;
 
     return {

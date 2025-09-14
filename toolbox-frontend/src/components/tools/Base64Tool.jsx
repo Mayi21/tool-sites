@@ -46,7 +46,7 @@ export default function Base64Tool() {
     <>
       <Card sx={{ maxWidth: 1000, margin: '0 auto' }}>
         <CardContent>
-          <Typography variant="h5" component="h1" gutterBottom>{t('base64.mainTitle')}</Typography>
+          <Typography variant="h5" component="h1" gutterBottom>{t('base64.name')}</Typography>
           <Stack spacing={2}>
             <TextField 
               value={input} 

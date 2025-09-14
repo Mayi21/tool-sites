@@ -34,8 +34,10 @@ export default function ToolCard({ path, nameKey, descKey, pageDescriptionKey, c
   const descFontSize = 13;
   const clampLines = 3;
 
-  // 优先使用 cardDescription，然后是翻译的描述，最后是 descKey
-  const displayDescription = cardDescription || t(pageDescriptionKey || descKey);
+  // 优先使用翻译的描述，如果没有翻译则使用 cardDescription 作为回退
+  const displayDescription = t(pageDescriptionKey || descKey) !== (pageDescriptionKey || descKey)
+    ? t(pageDescriptionKey || descKey)
+    : (cardDescription || t(descKey));
 
   return (
     <Link to={path} style={{ textDecoration: 'none', width: '100%', display: 'flex', justifyContent: 'center' }}>

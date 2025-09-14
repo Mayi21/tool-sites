@@ -208,8 +208,21 @@ function NavigationBar({ theme, setTheme }) {
 }
 
 function App() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [theme, setTheme] = useState(localStorage.getItem('theme') || 'light');
+
+  // 获取当前语言并转换为HTML lang标准格式
+  const getCurrentLanguage = () => {
+    const currentLng = i18n.language || i18n.options.fallbackLng[0] || 'zh';
+    // 将i18n语言代码转换为HTML lang标准格式
+    const langMap = {
+      'zh': 'zh-CN',
+      'en': 'en-US'
+    };
+    return langMap[currentLng] || 'zh-CN';
+  };
+
+  const currentLang = getCurrentLanguage();
   
   // Listen for theme changes
   useEffect(() => {
@@ -267,6 +280,7 @@ function App() {
                       description="20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。"
                       canonical="https://toolifyhub.top/"
                       keywords="online tools,developer tools,base64,json formatter,regex tester,free tools,web tools,programming tools,在线工具,开发工具,免费工具,程序员工具"
+                      lang={currentLang}
                     />
                     <Container maxWidth="lg" sx={{ px: 2 }}>
                       {/* SEO内容区块 */}
@@ -293,7 +307,7 @@ function App() {
                             WebkitTextFillColor: 'transparent'
                           }}
                         >
-                          {t('Multi-function Toolbox')} - 免费在线开发工具集合
+                          {t('Multi-function Toolbox')} - {t('homepage.subtitle')}
                         </Typography>
                         <Typography 
                           variant="body1" 
@@ -306,11 +320,15 @@ function App() {
                             lineHeight: 1.6
                           }}
                         >
-                          为开发者精心打造的20+款实用在线工具，涵盖编码解码、格式转换、文本处理、数据生成等核心功能。
-                          完全免费，隐私安全，即开即用，助力提升开发效率。
+                          {t('homepage.description')}
                         </Typography>
                         <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
-                          {['🚀 即时处理', '🔒 隐私安全', '📱 移动适配', '🆓 完全免费'].map((feature) => (
+                          {[
+                            t('homepage.features.instant'),
+                            t('homepage.features.privacy'),
+                            t('homepage.features.mobile'),
+                            t('homepage.features.free')
+                          ].map((feature) => (
                             <Paper 
                               key={feature}
                               elevation={1}
@@ -341,7 +359,7 @@ function App() {
                         }}
                       >
                         <Typography variant="h4" sx={{ mb: 2, fontWeight: 600 }}>
-                          🔥 热门工具组合 | Popular Tool Combinations
+                          {t('homepage.popular.title')}
                         </Typography>
                         <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2 }}>
                           <Link to="/base64" style={{ textDecoration: 'none' }}>
@@ -357,7 +375,7 @@ function App() {
                                 '&:hover': { bgcolor: 'rgba(22, 119, 255, 0.2)' }
                               }}
                             >
-                              Base64编码 → URL编码 → 哈希生成
+                              {t('homepage.popular.base64')}
                             </Paper>
                           </Link>
                           <Link to="/json-formatter" style={{ textDecoration: 'none' }}>
@@ -373,7 +391,7 @@ function App() {
                                 '&:hover': { bgcolor: 'rgba(82, 196, 26, 0.2)' }
                               }}
                             >
-                              JSON格式化 → CSV转换 → 文本对比
+                              {t('homepage.popular.json')}
                             </Paper>
                           </Link>
                           <Link to="/regex-tester" style={{ textDecoration: 'none' }}>
@@ -389,7 +407,7 @@ function App() {
                                 '&:hover': { bgcolor: 'rgba(114, 46, 209, 0.2)' }
                               }}
                             >
-                              正则测试 → 文本分析 → 文本处理
+                              {t('homepage.popular.regex')}
                             </Paper>
                           </Link>
                         </Box>
@@ -468,6 +486,7 @@ function App() {
                           canonical={typeof window !== 'undefined' ? window.location.href : `https://toolifyhub.top${tool.path}`}
                           keywords={getToolKeywords(tool.path, t)}
                           toolPath={tool.path}
+                          lang={currentLang}
                         />
                         <BreadcrumbNav currentToolName={t(tool.nameKey)} />
                         <tool.Component />

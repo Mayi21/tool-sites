@@ -85,7 +85,7 @@ export default function RelatedTools({ currentPath, allTools }) {
           fontWeight: 600
         }}
       >
-        相关推荐工具 | Related Tools
+        {t('related.tools')}
       </Typography>
       
       <Grid container spacing={2} justifyContent="center">

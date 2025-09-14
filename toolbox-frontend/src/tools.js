@@ -3,8 +3,8 @@ import { lazy } from 'react';
 export default [
   {
     path: '/base64',
-    nameKey: 'base64.mainTitle',
-    descKey: 'base64.cardDescription',
+    nameKey: 'base64.name',
+    descKey: 'Base64 Encode/Decode Tool',
     cardDescription: '支持文本和文件的Base64编码解码，广泛用于数据传输、API接口和邮件附件处理',
     keywords: 'base64,encoder,decoder,online,free,base64 encode,base64 decode,编码,解码,数据传输',
     pageTitleKey: 'base64.pageTitle',
@@ -13,8 +13,8 @@ export default [
   },
   {
     path: '/diff',
-    nameKey: 'Diff',
-    descKey: 'Text Comparison Tool',
+    nameKey: 'diff.name',
+    descKey: 'diff.cardDescription',
     cardDescription: '强大的文本对比工具，逐行高亮显示差异，支持代码审查和版本管理',
     keywords: 'text,diff,comparison,compare,文本对比,差异比较,代码审查,版本管理',
     pageTitleKey: 'diff.pageTitle',
@@ -23,7 +23,7 @@ export default [
   },
   {
     path: '/json-formatter',
-    nameKey: 'JSON Formatter',
+    nameKey: 'json-formatter.name',
     descKey: 'JSON Format/Minify Tool',
     cardDescription: '智能JSON格式化和压缩工具，支持语法高亮、错误检测和大文件处理',
     keywords: 'json,formatter,validator,beautify,minify,json format,json validator,格式化,压缩',
@@ -33,7 +33,7 @@ export default [
   },
   {
     path: '/url-encoder',
-    nameKey: 'URL Encoder/Decoder',
+    nameKey: 'url-encoder.name',
     descKey: 'URL Encode/Decode Tool',
     cardDescription: '处理URL特殊字符编码，支持中文和查询参数，确保URL传输安全',
     keywords: 'url,encoder,decoder,encode,decode,query string,网址编码,解码,中文URL',
@@ -43,7 +43,7 @@ export default [
   },
   {
     path: '/timestamp',
-    nameKey: 'Timestamp Converter',
+    nameKey: 'timestamp.name',
     descKey: 'Unix Timestamp Converter',
     cardDescription: 'Unix时间戳与日期格式双向转换，支持毫秒级精度和时区处理',
     keywords: 'timestamp,unix,converter,datetime,时间戳,转换器,unix时间,日期转换',
@@ -53,7 +53,7 @@ export default [
   },
   {
     path: '/color-converter',
-    nameKey: 'Color Converter',
+    nameKey: 'color-converter.name',
     descKey: 'RGB/HEX/HSL Converter',
     cardDescription: '多格式颜色转换器，支持RGB、HEX、HSL、HSV互转，含颜色预览功能',
     keywords: 'color,converter,hex,rgb,hsl,hsv,颜色转换器,颜色代码,调色板',
@@ -63,7 +63,7 @@ export default [
   },
   {
     path: '/regex-tester',
-    nameKey: 'Regex Tester',
+    nameKey: 'regex-tester.name',
     descKey: 'Regex Testing Tool',
     cardDescription: '实时正则表达式测试工具，高亮匹配结果，支持捕获组和替换功能',
     keywords: 'regex,regular expression,tester,pattern,match,正则表达式,测试,模式匹配',
@@ -73,7 +73,7 @@ export default [
   },
   {
     path: '/text-analyzer',
-    nameKey: 'Text Analyzer',
+    nameKey: 'text-analyzer.name',
     descKey: 'Text Statistics Tool',
     cardDescription: '全面的文本分析工具，提供字词统计、阅读时间估算和词频分析',
     keywords: 'text,analyzer,word count,character count,文本分析,字数统计,词频分析',
@@ -83,7 +83,7 @@ export default [
   },
   {
     path: '/hash-generator',
-    nameKey: 'Hash Generator',
+    nameKey: 'hash-generator.name',
     descKey: 'MD5/SHA Hash Generator',
     cardDescription: '安全哈希生成工具，支持MD5、SHA-256等算法，用于数据完整性验证',
     keywords: 'hash,md5,sha1,sha256,generator,哈希,加密,生成器,数据完整性',
@@ -93,7 +93,7 @@ export default [
   },
   {
     path: '/text-processor',
-    nameKey: 'Text Processor',
+    nameKey: 'text-processor.name',
     descKey: 'Text Processing Tool',
     cardDescription: '批量文本处理工具，支持大小写转换、去重排序和空格清理',
     keywords: 'text,processor,batch,大小写转换,去重,排序,文本处理,批量操作',
@@ -103,7 +103,7 @@ export default [
   },
   {
     path: '/uuid-generator',
-    nameKey: 'UUID Generator',
+    nameKey: 'uuid-generator.name',
     descKey: 'UUID Generator Tool',
     cardDescription: '标准UUID生成器，支持批量生成和多种格式，适用于数据库和API',
     keywords: 'uuid,generator,unique id,batch,数据库主键,API令牌,唯一标识符',
@@ -113,7 +113,7 @@ export default [
   },
   {
     path: '/markdown-preview',
-    nameKey: 'Markdown Preview',
+    nameKey: 'markdown-preview.name',
     descKey: 'Markdown Preview Tool',
     cardDescription: '实时Markdown预览工具，支持语法高亮和多种主题样式',
     keywords: 'markdown,preview,editor,实时预览,语法高亮,文档编写,README',
@@ -123,7 +123,7 @@ export default [
   },
   {
     path: '/csv-converter',
-    nameKey: 'CSV ↔ JSON Converter',
+    nameKey: 'csv-converter.name',
     descKey: 'CSV to JSON Converter',
     cardDescription: 'CSV与JSON双向转换工具，智能识别分隔符，支持大数据文件处理',
     keywords: 'csv,json,converter,convert,数据转换,csv转json,表格数据,数据格式',
@@ -133,7 +133,7 @@ export default [
   },
   {
     path: '/jwt-decoder',
-    nameKey: 'JWT Decoder',
+    nameKey: 'jwt-decoder.name',
     descKey: 'JWT Token Decoder',
     cardDescription: 'JWT令牌解码工具，解析Header、Payload和Signature，调试身份认证',
     keywords: 'jwt,json web token,decoder,decode,jwt解码,token解析,身份认证',
@@ -143,7 +143,7 @@ export default [
   },
   {
     path: '/qr-generator',
-    nameKey: 'QR Code Generator',
+    nameKey: 'qr-generator.name',
     descKey: 'QR Code Generator Tool',
     cardDescription: '高质量二维码生成器，支持文本、URL、WiFi信息，可自定义尺寸样式',
     keywords: 'qr,qr code,generator,二维码,生成器,qrcode,扫码,URL分享',
@@ -153,7 +153,7 @@ export default [
   },
   {
     path: '/image-compressor',
-    nameKey: 'Image Compressor',
+    nameKey: 'image-compressor.name',
     descKey: 'Online Image Compressor',
     cardDescription: '智能图片压缩工具，保持视觉质量同时减小文件大小，支持批量处理',
     keywords: 'image,compressor,optimization,图片压缩,优化,减小文件,批量处理',
@@ -163,7 +163,7 @@ export default [
   },
   {
     path: '/unicode-converter',
-    nameKey: 'Unicode Converter',
+    nameKey: 'unicode-converter.name',
     descKey: 'Chinese Unicode Converter',
     cardDescription: '中文Unicode编码转换器，解决字符编码问题，支持多种Unicode格式',
     keywords: 'unicode,converter,chinese,unicode转换,中文编码,字符编码,乱码修复',
@@ -173,7 +173,7 @@ export default [
   },
   {
     path: '/cron-parser',
-    nameKey: 'Cron Expression Converter',
+    nameKey: 'cron-parser.name',
     descKey: 'Cron Expression Linux/Spring Converter Tool',
     cardDescription: 'Cron表达式解析器，支持Linux和Spring格式，预测执行时间和规则说明',
     keywords: 'cron,parser,expression,schedule,定时任务,cron表达式,调度,Linux',
@@ -183,7 +183,7 @@ export default [
   },
   {
     path: '/image-watermark',
-    nameKey: 'Image Watermark',
+    nameKey: 'image-watermark.name',
     descKey: 'Add watermark to image',
     cardDescription: '图片水印工具，支持文字和图像水印，保护版权和品牌标识',
     keywords: 'image,watermark,copyright,版权保护,水印,图片处理,品牌标识',
@@ -193,7 +193,7 @@ export default [
   },
   {
     path: '/password-generator',
-    nameKey: 'Password Generator',
+    nameKey: 'password-generator.name',
     descKey: 'Secure Password Generator',
     cardDescription: '安全密码生成器，可自定义长度和字符集，提供强度评估和安全建议',
     keywords: 'password,generator,security,密码生成,安全,强度评估,随机密码',

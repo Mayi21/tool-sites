@@ -31,34 +31,69 @@ export class LazyLoadingMonitor {
   }
 
   observeComponentCounts() {
+    // 初始扫描现有的懒加载组件
+    this.scanExistingComponents();
+
     // 使用 MutationObserver 监控DOM变化
     const observer = new MutationObserver((mutations) => {
       mutations.forEach(mutation => {
         if (mutation.type === 'childList') {
           mutation.addedNodes.forEach(node => {
             if (node.nodeType === Node.ELEMENT_NODE) {
-              // 统计懒加载组件
-              if (node.hasAttribute && node.hasAttribute('data-lazy-component')) {
-                this.metrics.lazyComponents++;
-              }
-
-              // 统计总组件数（简化统计）
-              if (node.tagName && ['DIV', 'SECTION', 'ARTICLE'].includes(node.tagName)) {
-                this.metrics.totalComponents++;
-              }
+              this.scanNodeForComponents(node);
             }
           });
+        } else if (mutation.type === 'attributes' && mutation.attributeName === 'data-lazy-component') {
+          // 监控属性变化
+          if (mutation.target.hasAttribute('data-lazy-component')) {
+            this.metrics.lazyComponents++;
+          }
         }
       });
     });
 
     observer.observe(document.body, {
       childList: true,
-      subtree: true
+      subtree: true,
+      attributes: true,
+      attributeFilter: ['data-lazy-component']
     });
+
+    // 定期重新扫描以确保准确性
+    setInterval(() => {
+      this.scanExistingComponents();
+    }, 5000);
 
     // 清理函数
     this.cleanup = () => observer.disconnect();
+  }
+
+  scanExistingComponents() {
+    // 重新计算懒加载组件数量
+    const lazyComponents = document.querySelectorAll('[data-lazy-component]');
+    this.metrics.lazyComponents = lazyComponents.length;
+
+    // 重新计算总组件数
+    const totalComponents = document.querySelectorAll('div, section, article, main, aside').length;
+    this.metrics.totalComponents = totalComponents;
+  }
+
+  scanNodeForComponents(node) {
+    // 检查节点本身
+    if (node.hasAttribute && node.hasAttribute('data-lazy-component')) {
+      this.metrics.lazyComponents++;
+    }
+
+    // 检查子节点
+    const lazyChildren = node.querySelectorAll ? node.querySelectorAll('[data-lazy-component]') : [];
+    this.metrics.lazyComponents += lazyChildren.length;
+
+    // 统计总组件数
+    if (node.tagName && ['DIV', 'SECTION', 'ARTICLE', 'MAIN', 'ASIDE'].includes(node.tagName)) {
+      this.metrics.totalComponents++;
+    }
+    const componentChildren = node.querySelectorAll ? node.querySelectorAll('div, section, article, main, aside') : [];
+    this.metrics.totalComponents += componentChildren.length;
   }
 
   recordComponentLoad(componentName, loadTime) {
@@ -103,22 +138,24 @@ export class LazyLoadingMonitor {
     const originalIntersectionObserver = window.IntersectionObserver;
     let observerCount = 0;
 
-    window.IntersectionObserver = function(...args) {
-      observerCount++;
-      this.metrics.intersectionObservers = observerCount;
+    window.IntersectionObserver = ((self) => {
+      return function(...args) {
+        observerCount++;
+        self.metrics.intersectionObservers = observerCount;
 
-      const observer = new originalIntersectionObserver(...args);
+        const observer = new originalIntersectionObserver(...args);
 
-      // 重写disconnect方法来跟踪清理
-      const originalDisconnect = observer.disconnect;
-      observer.disconnect = function() {
-        observerCount--;
-        this.metrics.intersectionObservers = observerCount;
-        return originalDisconnect.call(this);
-      }.bind(this);
+        // 重写disconnect方法来跟踪清理
+        const originalDisconnect = observer.disconnect;
+        observer.disconnect = function() {
+          observerCount--;
+          self.metrics.intersectionObservers = observerCount;
+          return originalDisconnect.call(this);
+        };
 
-      return observer;
-    }.bind(this);
+        return observer;
+      };
+    })(this);
   }
 
   setupDevTools() {
@@ -157,7 +194,10 @@ export class LazyLoadingMonitor {
     panel.innerHTML = `
       <div style="margin-bottom: 8px; font-weight: bold;">🔄 懒加载监控面板</div>
       <div id="lazy-stats"></div>
-      <button onclick="this.parentElement.style.display='none'" style="margin-top: 5px; padding: 2px 6px;">关闭</button>
+      <button onclick="window.lazyLoadingMonitor?.scanExistingComponents?.(); window.lazyLoadingMonitor?.updatePanelContent?.()"
+              style="margin-top: 5px; padding: 2px 6px; margin-right: 5px;">刷新</button>
+      <button onclick="this.parentElement.style.display='none'"
+              style="margin-top: 5px; padding: 2px 6px;">关闭</button>
     `;
 
     document.body.appendChild(panel);
@@ -166,6 +206,7 @@ export class LazyLoadingMonitor {
     document.addEventListener('keydown', (e) => {
       if (e.ctrlKey && e.shiftKey && e.key === 'L') {
         panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        this.scanExistingComponents(); // 显示时刷新数据
         this.updatePanelContent();
       }
     });
@@ -179,15 +220,28 @@ export class LazyLoadingMonitor {
       ? Math.round((this.metrics.lazyComponents / this.metrics.totalComponents) * 100)
       : 0;
 
+    // 调试信息：查找实际的懒加载组件
+    const actualLazyComponents = document.querySelectorAll('[data-lazy-component]');
+    const debugInfo = Array.from(actualLazyComponents).map(el => ({
+      tag: el.tagName.toLowerCase(),
+      type: el.getAttribute('data-lazy-component'),
+      id: el.id || 'no-id',
+      class: el.className || 'no-class'
+    }));
+
     statsDiv.innerHTML = `
       <div>总组件: ${this.metrics.totalComponents}</div>
       <div>懒加载组件: ${this.metrics.lazyComponents} (${lazyLoadRatio}%)</div>
+      <div>实际DOM查询: ${actualLazyComponents.length}</div>
       <div>已加载: ${this.metrics.loadedComponents}</div>
       <div>平均加载时间: ${Math.round(this.metrics.averageLoadTime)}ms</div>
       <div>Observer数量: ${this.metrics.intersectionObservers}</div>
       ${this.metrics.memoryUsage ? `
         <div>内存使用: ${this.metrics.memoryUsage.used}MB / ${this.metrics.memoryUsage.total}MB</div>
       ` : ''}
+      <div style="margin-top: 5px; font-size: 10px; color: #aaa;">
+        调试: ${debugInfo.length > 0 ? debugInfo.map(c => c.type).join(', ') : '无懒加载组件'}
+      </div>
       <div style="margin-top: 5px; font-size: 10px; color: #aaa;">
         按 Ctrl+Shift+L 切换显示
       </div>

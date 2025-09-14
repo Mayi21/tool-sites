@@ -22,8 +22,18 @@ export function LazyComponent({
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          const loadStartTime = performance.now();
           setIsVisible(true);
           observer.unobserve(entry.target);
+
+          // 记录加载时间到监控系统
+          setTimeout(() => {
+            if (window.lazyLoadingMonitor) {
+              const loadEndTime = performance.now();
+              const loadTime = loadEndTime - loadStartTime;
+              window.lazyLoadingMonitor.recordComponentLoad('LazyComponent', loadTime);
+            }
+          }, 100);
         }
       },
       {
@@ -69,7 +79,7 @@ export function LazyComponent({
   );
 
   return (
-    <Box ref={ref} sx={{ minHeight: height }}>
+    <Box ref={ref} sx={{ minHeight: height }} data-lazy-component="true">
       {isVisible ? (
         <Suspense fallback={fallback || defaultFallback}>
           {Component ? <Component onLoad={() => setIsLoaded(true)} /> : children}
@@ -173,6 +183,7 @@ export function LazyImage({
         alignItems: 'center',
         justifyContent: 'center'
       }}
+      data-lazy-component="image"
     >
       {isVisible ? (
         <img
@@ -265,7 +276,7 @@ export function LazySection({
   );
 
   return (
-    <Box ref={ref} sx={{ minHeight: height }}>
+    <Box ref={ref} sx={{ minHeight: height }} data-lazy-component="section">
       {isVisible ? children : (fallback || defaultFallback)}
     </Box>
   );

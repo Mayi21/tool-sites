@@ -79,10 +79,16 @@ export default function QrGenerator() {
             <CardContent>
               <Typography variant="h6" gutterBottom>{t('Generated QR Code')}</Typography>
               <Box sx={{ textAlign: 'center', my: 2 }}>
-                <img 
-                  src={qrCodeUrl} 
-                  alt="QR Code" 
-                  style={{ border: '1px solid #d9d9d9', borderRadius: 8 }}
+                <img
+                  src={qrCodeUrl}
+                  alt="QR Code"
+                  loading="lazy" // 添加懒加载优化
+                  style={{
+                    border: '1px solid #d9d9d9',
+                    borderRadius: 8,
+                    maxWidth: '100%',
+                    height: 'auto'
+                  }}
                 />
               </Box>
               

@@ -127,7 +127,16 @@ export default function WatermarkTool() {
       </Card>
       <Modal open={previewOpen} onClose={() => setPreviewOpen(false)}>
         <Box sx={modalStyle}>
-          <img src={previewUrl} alt="preview" style={{ width: '100%', maxHeight: '80vh', objectFit: 'contain' }} />
+          <img
+            src={previewUrl}
+            alt="preview"
+            loading="lazy" // 添加懒加载优化
+            style={{
+              width: '100%',
+              maxHeight: '80vh',
+              objectFit: 'contain'
+            }}
+          />
         </Box>
       </Modal>
     </>

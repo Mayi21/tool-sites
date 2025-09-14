@@ -27,7 +27,9 @@ import { Helmet } from 'react-helmet-async';
 import Seo from './components/Seo';
 import FontOptimization from './components/FontOptimization';
 import IntelligentPreloader from './components/IntelligentPreloader';
+import { LazyToolCard } from './components/LazyComponents';
 import './utils/preloadTester'; // 自动启动性能测试
+import './utils/lazyLoadingMonitor'; // 自动启动懒加载监控
 
 const ViewQuestionnaire = lazy(() => import('./components/tools/ViewQuestionnaire'));
 const ViewResults = lazy(() => import('./components/tools/ViewResults'));
@@ -149,6 +151,7 @@ function NavigationBar({ theme, setTheme }) {
             component="img"
             src="/toolbox-icon.svg"
             alt="Toolbox Icon"
+            loading="lazy" // 添加懒加载优化
             sx={{ width: 22, height: 22, mr: 1 }}
           />
           <Typography
@@ -403,14 +406,16 @@ function App() {
                             {t(category.nameKey)}
                           </Typography>
                           <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-                            {categorizedTools[category.key]?.map((tool) => (
+                            {categorizedTools[category.key]?.map((tool, toolIndex) => (
                               <Grid item key={tool.path} xs={12} sm={6} md={4} lg={3}>
-                                <ToolCard 
-                                  path={tool.path}
-                                  nameKey={tool.nameKey}
-                                  descKey={tool.descKey}
-                                  pageDescriptionKey={tool.pageDescriptionKey}
-                                />
+                                <LazyToolCard index={toolIndex}>
+                                  <ToolCard
+                                    path={tool.path}
+                                    nameKey={tool.nameKey}
+                                    descKey={tool.descKey}
+                                    pageDescriptionKey={tool.pageDescriptionKey}
+                                  />
+                                </LazyToolCard>
                               </Grid>
                             ))}
                           </Grid>

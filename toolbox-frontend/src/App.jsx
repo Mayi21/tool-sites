@@ -1,4 +1,4 @@
-import { useState, useEffect, Suspense, lazy } from 'react';
+import { useState, useEffect, Suspense, lazy, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { 
@@ -147,13 +147,167 @@ function DynamicTitle() {
   return null;
 }
 
-// 导航栏组件
-function NavigationBar({ theme, setTheme }) {
+// 处理URL参数的组件
+function HomePageWithParams({ activeCategoryKey, handleCategoryChange, handleCategoryChangeInternal, categoriesToRender, categorizedTools, t, currentLang }) {
+  const location = useLocation();
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const categoryFromUrl = urlParams.get('category');
+    const targetCategory = categoryFromUrl || 'all';
+
+    // 只有在真正需要更新时才执行
+    if (targetCategory !== activeCategoryKey) {
+      handleCategoryChangeInternal(targetCategory);
+    }
+  }, [location.search]); // 只依赖URL变化
+
+  return (
+    <>
+      <Seo
+        title="ToolifyHub - Free Online Developer Tools Collection | 多功能在线工具箱"
+        description="20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。"
+        canonical="https://toolifyhub.top/"
+        keywords="online tools,developer tools,base64,json formatter,regex tester,free tools,web tools,programming tools,在线工具,开发工具,免费工具,程序员工具"
+        lang={currentLang}
+      />
+      <Container maxWidth="lg" sx={{ px: 2 }}>
+        {/* SEO内容区块 */}
+        <Paper
+          elevation={0}
+          sx={{
+            textAlign: 'center',
+            mb: 4,
+            p: 3,
+            bgcolor: 'background.paper',
+            borderRadius: 2
+          }}
+        >
+          <Typography
+            variant="h1"
+            sx={{
+              fontSize: { xs: '1.8rem', sm: '2.5rem' },
+              fontWeight: 700,
+              mb: 2,
+              background: 'linear-gradient(45deg, #1677ff 30%, #52c41a 90%)',
+              backgroundClip: 'text',
+              textFillColor: 'transparent',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+          >
+            {t('Multi-function Toolbox')} - {t('homepage.subtitle')}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              fontSize: { xs: '1rem', sm: '1.2rem' },
+              color: 'text.secondary',
+              maxWidth: '800px',
+              mx: 'auto',
+              mb: 3,
+              lineHeight: 1.6
+            }}
+          >
+            {t('homepage.description')}
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+            {[
+              t('homepage.features.instant'),
+              t('homepage.features.privacy'),
+              t('homepage.features.mobile'),
+              t('homepage.features.free')
+            ].map((feature) => (
+              <Paper
+                key={feature}
+                elevation={1}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  borderRadius: 3,
+                  fontSize: '0.9rem'
+                }}
+              >
+                {feature}
+              </Paper>
+            ))}
+          </Box>
+        </Paper>
+
+        {/* 分类快捷标签 */}
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', mb: 3 }}>
+          {['dev','text','data','security','design','all'].map(key => (
+            <Paper
+              key={key}
+              elevation={activeCategoryKey === key ? 2 : 1}
+              onClick={() => handleCategoryChange(key)}
+              sx={{
+                px: 2,
+                py: 1,
+                cursor: 'pointer',
+                bgcolor: activeCategoryKey === key ? 'primary.main' : 'background.paper',
+                color: activeCategoryKey === key ? 'primary.contrastText' : 'text.primary',
+                '&:hover': {
+                  bgcolor: activeCategoryKey === key ? 'primary.dark' : 'action.hover'
+                }
+              }}
+            >
+              <Typography variant="body2" fontWeight={500}>
+                {key === 'all' ? t('All') : t(toolCategories.find(c => c.key === key)?.nameKey)}
+              </Typography>
+            </Paper>
+          ))}
+        </Box>
+
+        {categoriesToRender.map((category, index) => (
+          <Box key={category.key} id={`category-${category.key}`} sx={{ mb: 4 }}>
+            <Typography
+              variant="h3"
+              sx={{
+                mb: 3,
+                textAlign: 'center',
+                fontSize: { xs: '1.5rem', sm: '2rem' },
+                fontWeight: 600
+              }}
+            >
+              {t(category.nameKey)}
+            </Typography>
+            <Grid container spacing={3} justifyContent="center" alignItems="stretch">
+              {categorizedTools[category.key]?.map((tool, toolIndex) => (
+                <Grid item key={tool.path} xs={12} sm={6} md={4} lg={3}>
+                  <LazyToolCard index={toolIndex}>
+                    <ToolCard
+                      path={tool.path}
+                      nameKey={tool.nameKey}
+                      descKey={tool.descKey}
+                      pageDescriptionKey={tool.pageDescriptionKey}
+                      cardDescription={tool.cardDescription}
+                    />
+                  </LazyToolCard>
+                </Grid>
+              ))}
+            </Grid>
+            {index < categoriesToRender.length - 1 && (
+              <Divider sx={{ my: 4 }} />
+            )}
+          </Box>
+        ))}
+      </Container>
+    </>
+  );
+}
+function NavigationBar({ theme, setTheme, handleCategoryChange }) {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
-  
-  const goHome = () => navigate('/');
+
+  const goHome = () => {
+    // 重置分类为全部并导航到主页
+    handleCategoryChange('all');
+    navigate('/');
+  };
 
   return (
     <AppBar 
@@ -228,13 +382,37 @@ function App() {
   useEffect(() => {
     const handleStorageChange = () => {
       setTheme(localStorage.getItem('theme') || 'light');
+      setActiveCategoryKey(localStorage.getItem('activeCategoryKey') || 'all');
     };
-    
+
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const [activeCategoryKey, setActiveCategoryKey] = useState('all');
+  const [activeCategoryKey, setActiveCategoryKey] = useState(
+    localStorage.getItem('activeCategoryKey') || 'all'
+  );
+
+  // 更新分类选择并保存到localStorage，同时更新URL
+  const handleCategoryChange = useCallback((categoryKey) => {
+    setActiveCategoryKey(categoryKey);
+    localStorage.setItem('activeCategoryKey', categoryKey);
+
+    // 更新URL参数，但不触发页面重新加载
+    const url = new URL(window.location);
+    if (categoryKey === 'all') {
+      url.searchParams.delete('category');
+    } else {
+      url.searchParams.set('category', categoryKey);
+    }
+    window.history.replaceState({}, '', url);
+  }, []);
+
+  // 仅更新状态和localStorage，不更新URL（用于URL驱动的状态变化）
+  const handleCategoryChangeInternal = useCallback((categoryKey) => {
+    setActiveCategoryKey(categoryKey);
+    localStorage.setItem('activeCategoryKey', categoryKey);
+  }, []);
 
   // 按分类组织工具
   const getToolsByCategory = () => {
@@ -264,7 +442,7 @@ function App() {
         <IntelligentPreloader />
         <DynamicTitle />
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <NavigationBar theme={theme} setTheme={setTheme} />
+          <NavigationBar theme={theme} setTheme={setTheme} handleCategoryChange={handleCategoryChange} />
           
           <Box component="main" sx={{ flexGrow: 1, py: 3 }}>
             <Suspense fallback={
@@ -274,139 +452,15 @@ function App() {
             }>
               <Routes>
                 <Route path="/" element={
-                  <>
-                    <Seo
-                      title="ToolifyHub - Free Online Developer Tools Collection | 多功能在线工具箱"
-                      description="20+ free online developer tools: Base64 encoder, JSON formatter, regex tester, timestamp converter, URL encoder, QR generator, and more. Privacy-friendly, fast, mobile-optimized. 免费在线开发工具集合，提升编程效率。"
-                      canonical="https://toolifyhub.top/"
-                      keywords="online tools,developer tools,base64,json formatter,regex tester,free tools,web tools,programming tools,在线工具,开发工具,免费工具,程序员工具"
-                      lang={currentLang}
-                    />
-                    <Container maxWidth="lg" sx={{ px: 2 }}>
-                      {/* SEO内容区块 */}
-                      <Paper 
-                        elevation={0}
-                        sx={{ 
-                          textAlign: 'center', 
-                          mb: 4,
-                          p: 3,
-                          bgcolor: 'background.paper',
-                          borderRadius: 2
-                        }}
-                      >
-                        <Typography 
-                          variant="h1" 
-                          sx={{ 
-                            fontSize: { xs: '1.8rem', sm: '2.5rem' },
-                            fontWeight: 700,
-                            mb: 2,
-                            background: 'linear-gradient(45deg, #1677ff 30%, #52c41a 90%)',
-                            backgroundClip: 'text',
-                            textFillColor: 'transparent',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent'
-                          }}
-                        >
-                          {t('Multi-function Toolbox')} - {t('homepage.subtitle')}
-                        </Typography>
-                        <Typography 
-                          variant="body1" 
-                          sx={{ 
-                            fontSize: { xs: '1rem', sm: '1.2rem' },
-                            color: 'text.secondary',
-                            maxWidth: '800px',
-                            mx: 'auto',
-                            mb: 3,
-                            lineHeight: 1.6
-                          }}
-                        >
-                          {t('homepage.description')}
-                        </Typography>
-                        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
-                          {[
-                            t('homepage.features.instant'),
-                            t('homepage.features.privacy'),
-                            t('homepage.features.mobile'),
-                            t('homepage.features.free')
-                          ].map((feature) => (
-                            <Paper 
-                              key={feature}
-                              elevation={1}
-                              sx={{ 
-                                px: 2, 
-                                py: 1, 
-                                bgcolor: 'primary.main',
-                                color: 'primary.contrastText',
-                                borderRadius: 3,
-                                fontSize: '0.9rem'
-                              }}
-                            >
-                              {feature}
-                            </Paper>
-                          ))}
-                        </Box>
-                      </Paper>
-
-                      {/* 分类快捷标签 */}
-                      <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center', mb: 3 }}>
-                        {['dev','text','data','security','design','all'].map(key => (
-                          <Paper
-                            key={key}
-                            elevation={activeCategoryKey === key ? 2 : 1}
-                            onClick={() => setActiveCategoryKey(key)}
-                            sx={{
-                              px: 2,
-                              py: 1,
-                              cursor: 'pointer',
-                              bgcolor: activeCategoryKey === key ? 'primary.main' : 'background.paper',
-                              color: activeCategoryKey === key ? 'primary.contrastText' : 'text.primary',
-                              '&:hover': {
-                                bgcolor: activeCategoryKey === key ? 'primary.dark' : 'action.hover'
-                              }
-                            }}
-                          >
-                            <Typography variant="body2" fontWeight={500}>
-                              {key === 'all' ? t('All') : t(toolCategories.find(c => c.key === key)?.nameKey)}
-                            </Typography>
-                          </Paper>
-                        ))}
-                      </Box>
-                      
-                      {categoriesToRender.map((category, index) => (
-                        <Box key={category.key} id={`category-${category.key}`} sx={{ mb: 4 }}>
-                          <Typography 
-                            variant="h3" 
-                            sx={{ 
-                              mb: 3, 
-                              textAlign: 'center',
-                              fontSize: { xs: '1.5rem', sm: '2rem' },
-                              fontWeight: 600
-                            }}
-                          >
-                            {t(category.nameKey)}
-                          </Typography>
-                          <Grid container spacing={3} justifyContent="center" alignItems="stretch">
-                            {categorizedTools[category.key]?.map((tool, toolIndex) => (
-                              <Grid item key={tool.path} xs={12} sm={6} md={4} lg={3}>
-                                <LazyToolCard index={toolIndex}>
-                                  <ToolCard
-                                    path={tool.path}
-                                    nameKey={tool.nameKey}
-                                    descKey={tool.descKey}
-                                    pageDescriptionKey={tool.pageDescriptionKey}
-                                    cardDescription={tool.cardDescription}
-                                  />
-                                </LazyToolCard>
-                              </Grid>
-                            ))}
-                          </Grid>
-                          {index < categoriesToRender.length - 1 && (
-                            <Divider sx={{ my: 4 }} />
-                          )}
-                        </Box>
-                      ))}
-                    </Container>
-                  </>
+                  <HomePageWithParams
+                    activeCategoryKey={activeCategoryKey}
+                    handleCategoryChange={handleCategoryChange}
+                    handleCategoryChangeInternal={handleCategoryChangeInternal}
+                    categoriesToRender={categoriesToRender}
+                    categorizedTools={categorizedTools}
+                    t={t}
+                    currentLang={currentLang}
+                  />
                 } />
                 {tools.map(tool => (
                   <Route 

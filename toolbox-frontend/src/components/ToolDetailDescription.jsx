@@ -14,8 +14,7 @@ import {
   Container,
   Stack
 } from '@mui/material';
-import { 
-  InfoOutlined,
+import {
   LightbulbOutlined,
   BuildOutlined,
   HelpOutlineOutlined,
@@ -754,6 +753,20 @@ export default function ToolDetailDescription({ toolPath, children }) {
         {/* 中间操作区域 */}
         <Grid item xs={12} lg={6}>
           <Box sx={{ minHeight: '600px' }}>
+            {/* 工具介绍文字 */}
+            <Box sx={{ mb: 3, px: 3 }}>
+              <Typography
+                variant="body1"
+                sx={{
+                  color: 'text.secondary',
+                  fontSize: '16px',
+                  lineHeight: 1.6,
+                  textAlign: 'center'
+                }}
+              >
+                {details.description}
+              </Typography>
+            </Box>
             {children}
           </Box>
         </Grid>
@@ -833,28 +846,6 @@ export default function ToolDetailDescription({ toolPath, children }) {
                       </Box>
                     ))}
                   </Box>
-                </CardContent>
-              </Card>
-
-              {/* 工具介绍卡片 */}
-              <Card elevation={2}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                    <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
-                    <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                      {t('toolDescription.aboutTitle')}
-                    </Typography>
-                  </Box>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      color: 'text.secondary',
-                      fontSize: '14px',
-                      lineHeight: 1.6
-                    }}
-                  >
-                    {details.description}
-                  </Typography>
                 </CardContent>
               </Card>
             </Stack>

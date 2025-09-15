@@ -7,52 +7,66 @@ import { useTranslation } from 'react-i18next';
 // 工具分类映射
 const getToolCategory = (path) => {
   const categoryMap = {
-    '/base64': 'Development Tools',
-    '/json-formatter': 'Development Tools', 
-    '/regex-tester': 'Development Tools',
-    '/url-encoder': 'Development Tools',
-    '/timestamp': 'Development Tools',
-    '/jwt-decoder': 'Development Tools',
-    '/cron-parser': 'Development Tools',
-    '/diff': 'Text Processing',
-    '/text-analyzer': 'Text Processing',
-    '/text-processor': 'Text Processing', 
-    '/markdown-preview': 'Text Processing',
-    '/unicode-converter': 'Text Processing',
-    '/csv-converter': 'Data Conversion',
-    '/uuid-generator': 'Data Conversion',
-    '/hash-generator': 'Security & Encryption',
-    '/password-generator': 'Security & Encryption',
-    '/color-converter': 'Design Tools',
-    '/qr-generator': 'Design Tools',
-    '/image-compressor': 'Design Tools',
-    '/image-watermark': 'Design Tools'
+    '/base64': 'dev',
+    '/json-formatter': 'dev',
+    '/regex-tester': 'dev',
+    '/url-encoder': 'dev',
+    '/timestamp': 'dev',
+    '/jwt-decoder': 'dev',
+    '/cron-parser': 'dev',
+    '/diff': 'text',
+    '/text-analyzer': 'text',
+    '/text-processor': 'text',
+    '/markdown-preview': 'text',
+    '/unicode-converter': 'text',
+    '/csv-converter': 'data',
+    '/uuid-generator': 'data',
+    '/hash-generator': 'security',
+    '/password-generator': 'security',
+    '/color-converter': 'design',
+    '/qr-generator': 'design',
+    '/image-compressor': 'design',
+    '/image-watermark': 'design'
   };
-  
+
   return categoryMap[path] || null;
+};
+
+// 分类显示名称映射
+const getCategoryDisplayName = (categoryKey) => {
+  const displayMap = {
+    'dev': 'Development Tools',
+    'text': 'Text Processing',
+    'data': 'Data Conversion',
+    'security': 'Security & Encryption',
+    'design': 'Design Tools'
+  };
+
+  return displayMap[categoryKey] || categoryKey;
 };
 
 export default function BreadcrumbNav({ currentToolName }) {
   const { t } = useTranslation();
   const location = useLocation();
-  const category = getToolCategory(location.pathname);
-  
+  const categoryKey = getToolCategory(location.pathname);
+  const categoryDisplayName = categoryKey ? getCategoryDisplayName(categoryKey) : null;
+
   if (location.pathname === '/') {
     return null;
   }
 
   return (
     <Box sx={{ mb: 2 }}>
-      <Breadcrumbs 
+      <Breadcrumbs
         aria-label="breadcrumb"
         sx={{
           fontSize: '14px',
           color: 'text.secondary'
         }}
       >
-        <Link 
-          to="/" 
-          style={{ 
+        <Link
+          to="/"
+          style={{
             textDecoration: 'none',
             color: 'inherit',
             display: 'flex',
@@ -62,21 +76,21 @@ export default function BreadcrumbNav({ currentToolName }) {
           <Home sx={{ mr: 0.5, fontSize: 16 }} />
           {t('Home')}
         </Link>
-        
-        {category && (
-          <Link 
-            to="/" 
-            style={{ 
+
+        {categoryKey && (
+          <Link
+            to={`/?category=${categoryKey}`}
+            style={{
               textDecoration: 'none',
               color: 'inherit'
             }}
           >
-            {t(category)}
+            {t(categoryDisplayName)}
           </Link>
         )}
-        
-        <Typography 
-          color="text.primary" 
+
+        <Typography
+          color="text.primary"
           sx={{ fontWeight: 500 }}
         >
           {currentToolName || 'Current Tool'}

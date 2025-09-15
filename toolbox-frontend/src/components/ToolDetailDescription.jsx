@@ -500,206 +500,206 @@ export const getToolDetails = (path, t) => {
       ]
     },
     '/uuid-generator': {
-      description: 'UUID生成工具，创建全球唯一标识符。支持UUID v4标准，广泛用于数据库主键、API令牌和分布式系统中。',
+      description: t('toolDetails.uuid-generator.description', 'UUID生成工具，创建全球唯一标识符。支持UUID v4标准，广泛用于数据库主键、API令牌和分布式系统中。'),
       features: [
-        '标准UUID v4生成',
-        '批量UUID生成',
-        '大小写格式选择',
-        '带连字符或不带连字符',
-        '一键复制所有结果',
-        '生成数量自定义'
+        t('toolDetails.uuid-generator.features.0', '标准UUID v4生成'),
+        t('toolDetails.uuid-generator.features.1', '批量UUID生成'),
+        t('toolDetails.uuid-generator.features.2', '大小写格式选择'),
+        t('toolDetails.uuid-generator.features.3', '带连字符或不带连字符'),
+        t('toolDetails.uuid-generator.features.4', '一键复制所有结果'),
+        t('toolDetails.uuid-generator.features.5', '生成数量自定义')
       ],
       useCases: [
-        '数据库表主键',
-        'API请求追踪ID',
-        '文件唯一命名',
-        '分布式系统节点ID',
-        '临时令牌生成'
+        t('toolDetails.uuid-generator.useCases.0', '数据库表主键'),
+        t('toolDetails.uuid-generator.useCases.1', 'API请求追踪ID'),
+        t('toolDetails.uuid-generator.useCases.2', '文件唯一命名'),
+        t('toolDetails.uuid-generator.useCases.3', '分布式系统节点ID'),
+        t('toolDetails.uuid-generator.useCases.4', '临时令牌生成')
       ],
       tips: [
-        'UUID v4基于随机数生成，安全性较高',
-        'UUID长度固定为36个字符（含连字符）',
-        '在分布式环境中UUID几乎不会重复',
-        '用作数据库主键时考虑性能影响'
+        t('toolDetails.uuid-generator.tips.0', 'UUID v4基于随机数生成，安全性较高'),
+        t('toolDetails.uuid-generator.tips.1', 'UUID长度固定为36个字符（含连字符）'),
+        t('toolDetails.uuid-generator.tips.2', '在分布式环境中UUID几乎不会重复'),
+        t('toolDetails.uuid-generator.tips.3', '用作数据库主键时考虑性能影响')
       ],
       faq: [
         {
-          q: 'UUID会重复吗？',
-          a: 'UUID v4基于随机算法，重复概率极低，可以认为是唯一的。'
+          q: t('toolDetails.uuid-generator.faq.0.q', 'UUID会重复吗？'),
+          a: t('toolDetails.uuid-generator.faq.0.a', 'UUID v4基于随机算法，重复概率极低，可以认为是唯一的。')
         },
         {
-          q: 'UUID适合做数据库主键吗？',
-          a: '适合，但UUID较长，可能影响索引性能，需要权衡使用。'
+          q: t('toolDetails.uuid-generator.faq.1.q', 'UUID适合做数据库主键吗？'),
+          a: t('toolDetails.uuid-generator.faq.1.a', '适合，但UUID较长，可能影响索引性能，需要权衡使用。')
         }
       ]
     },
     '/password-generator': {
-      description: '密码生成工具，创建高强度随机密码。支持自定义长度和字符集，提供密码强度评估，保障账户安全。',
+      description: t('toolDetails.password-generator.description', '密码生成工具，创建高强度随机密码。支持自定义长度和字符集，提供密码强度评估，保障账户安全。'),
       features: [
-        '自定义密码长度',
-        '字符集选择（大小写、数字、符号）',
-        '密码强度实时评估',
-        '批量密码生成',
-        '排除易混淆字符选项',
-        '密码安全建议'
+        t('toolDetails.password-generator.features.0', '自定义密码长度'),
+        t('toolDetails.password-generator.features.1', '字符集选择（大小写、数字、符号）'),
+        t('toolDetails.password-generator.features.2', '密码强度实时评估'),
+        t('toolDetails.password-generator.features.3', '批量密码生成'),
+        t('toolDetails.password-generator.features.4', '排除易混淆字符选项'),
+        t('toolDetails.password-generator.features.5', '密码安全建议')
       ],
       useCases: [
-        '用户账户密码创建',
-        '系统管理员账户',
-        'API密钥生成',
-        '临时密码分发',
-        '密码策略测试'
+        t('toolDetails.password-generator.useCases.0', '用户账户密码创建'),
+        t('toolDetails.password-generator.useCases.1', '系统管理员账户'),
+        t('toolDetails.password-generator.useCases.2', 'API密钥生成'),
+        t('toolDetails.password-generator.useCases.3', '临时密码分发'),
+        t('toolDetails.password-generator.useCases.4', '密码策略测试')
       ],
       tips: [
-        '密码长度至少12位以上',
-        '包含大小写字母、数字和特殊符号',
-        '定期更换重要账户密码',
-        '不同网站使用不同密码'
+        t('toolDetails.password-generator.tips.0', '密码长度至少12位以上'),
+        t('toolDetails.password-generator.tips.1', '包含大小写字母、数字和特殊符号'),
+        t('toolDetails.password-generator.tips.2', '定期更换重要账户密码'),
+        t('toolDetails.password-generator.tips.3', '不同网站使用不同密码')
       ],
       faq: [
         {
-          q: '什么样的密码最安全？',
-          a: '长度12位以上，包含大小写字母、数字、特殊符号的随机组合最安全。'
+          q: t('toolDetails.password-generator.faq.0.q', '什么样的密码最安全？'),
+          a: t('toolDetails.password-generator.faq.0.a', '长度12位以上，包含大小写字母、数字、特殊符号的随机组合最安全。')
         },
         {
-          q: '密码强度如何评估？',
-          a: '根据长度、字符种类、随机性等因素综合评估，避免使用常见模式。'
+          q: t('toolDetails.password-generator.faq.1.q', '密码强度如何评估？'),
+          a: t('toolDetails.password-generator.faq.1.a', '根据长度、字符种类、随机性等因素综合评估，避免使用常见模式。')
         }
       ]
     },
     '/image-compressor': {
-      description: '图片压缩工具，在保持视觉质量的同时减少图片文件大小。支持JPEG、PNG等格式，优化网站加载速度。',
+      description: t('toolDetails.image-compressor.description', '图片压缩工具，在保持视觉质量的同时减少图片文件大小。支持JPEG、PNG等格式，优化网站加载速度。'),
       features: [
-        '智能压缩算法',
-        '质量可调节',
-        '支持多种图片格式',
-        '批量图片处理',
-        '压缩前后对比',
-        '文件大小优化建议'
+        t('toolDetails.image-compressor.features.0', '智能压缩算法'),
+        t('toolDetails.image-compressor.features.1', '质量可调节'),
+        t('toolDetails.image-compressor.features.2', '支持多种图片格式'),
+        t('toolDetails.image-compressor.features.3', '批量图片处理'),
+        t('toolDetails.image-compressor.features.4', '压缩前后对比'),
+        t('toolDetails.image-compressor.features.5', '文件大小优化建议')
       ],
       useCases: [
-        '网站图片优化',
-        '移动应用资源压缩',
-        '邮件附件大小控制',
-        '存储空间节省',
-        '网页加载速度优化'
+        t('toolDetails.image-compressor.useCases.0', '网站图片优化'),
+        t('toolDetails.image-compressor.useCases.1', '移动应用资源压缩'),
+        t('toolDetails.image-compressor.useCases.2', '邮件附件大小控制'),
+        t('toolDetails.image-compressor.useCases.3', '存储空间节省'),
+        t('toolDetails.image-compressor.useCases.4', '网页加载速度优化')
       ],
       tips: [
-        'JPEG适合照片，PNG适合图标和透明图像',
-        '网页图片建议压缩到100KB以下',
-        '压缩前备份原图',
-        '根据用途选择合适的压缩级别'
+        t('toolDetails.image-compressor.tips.0', 'JPEG适合照片，PNG适合图标和透明图像'),
+        t('toolDetails.image-compressor.tips.1', '网页图片建议压缩到100KB以下'),
+        t('toolDetails.image-compressor.tips.2', '压缩前备份原图'),
+        t('toolDetails.image-compressor.tips.3', '根据用途选择合适的压缩级别')
       ],
       faq: [
         {
-          q: '压缩会损失图片质量吗？',
-          a: '有损压缩会减少细节，但合理设置下视觉效果仍然良好。'
+          q: t('toolDetails.image-compressor.faq.0.q', '压缩会损失图片质量吗？'),
+          a: t('toolDetails.image-compressor.faq.0.a', '有损压缩会减少细节，但合理设置下视觉效果仍然良好。')
         },
         {
-          q: '如何选择压缩级别？',
-          a: '根据使用场景平衡文件大小和质量，网页用途可以适度压缩。'
+          q: t('toolDetails.image-compressor.faq.1.q', '如何选择压缩级别？'),
+          a: t('toolDetails.image-compressor.faq.1.a', '根据使用场景平衡文件大小和质量，网页用途可以适度压缩。')
         }
       ]
     },
     '/image-watermark': {
-      description: '图片水印工具，为图片添加文字或图像水印。保护图片版权，防止未授权使用，支持多种水印样式设置。',
+      description: t('toolDetails.image-watermark.description', '图片水印工具，为图片添加文字或图像水印。保护图片版权，防止未授权使用，支持多种水印样式设置。'),
       features: [
-        '文字水印添加',
-        '水印位置自定义',
-        '透明度调节',
-        '字体大小颜色设置',
-        '批量水印处理',
-        '水印预览功能'
+        t('toolDetails.image-watermark.features.0', '文字水印添加'),
+        t('toolDetails.image-watermark.features.1', '水印位置自定义'),
+        t('toolDetails.image-watermark.features.2', '透明度调节'),
+        t('toolDetails.image-watermark.features.3', '字体大小颜色设置'),
+        t('toolDetails.image-watermark.features.4', '批量水印处理'),
+        t('toolDetails.image-watermark.features.5', '水印预览功能')
       ],
       useCases: [
-        '摄影作品版权保护',
-        '企业宣传图片标识',
-        '产品图片品牌标记',
-        '社交媒体内容保护',
-        '设计作品署名'
+        t('toolDetails.image-watermark.useCases.0', '摄影作品版权保护'),
+        t('toolDetails.image-watermark.useCases.1', '企业宣传图片标识'),
+        t('toolDetails.image-watermark.useCases.2', '产品图片品牌标记'),
+        t('toolDetails.image-watermark.useCases.3', '社交媒体内容保护'),
+        t('toolDetails.image-watermark.useCases.4', '设计作品署名')
       ],
       tips: [
-        '水印位置选择不要遮挡重要内容',
-        '透明度设置要平衡可见性和美观性',
-        '文字水印建议使用对比色',
-        '考虑不同尺寸图片的水印适配'
+        t('toolDetails.image-watermark.tips.0', '水印位置选择不要遮挡重要内容'),
+        t('toolDetails.image-watermark.tips.1', '透明度设置要平衡可见性和美观性'),
+        t('toolDetails.image-watermark.tips.2', '文字水印建议使用对比色'),
+        t('toolDetails.image-watermark.tips.3', '考虑不同尺寸图片的水印适配')
       ],
       faq: [
         {
-          q: '水印能完全防止盗图吗？',
-          a: '水印可以起到震慑作用，但无法完全防止，配合其他保护措施更有效。'
+          q: t('toolDetails.image-watermark.faq.0.q', '水印能完全防止盗图吗？'),
+          a: t('toolDetails.image-watermark.faq.0.a', '水印可以起到震慑作用，但无法完全防止，配合其他保护措施更有效。')
         },
         {
-          q: '如何选择水印位置？',
-          a: '建议选择不影响主体内容的区域，同时确保水印不易被裁剪。'
+          q: t('toolDetails.image-watermark.faq.1.q', '如何选择水印位置？'),
+          a: t('toolDetails.image-watermark.faq.1.a', '建议选择不影响主体内容的区域，同时确保水印不易被裁剪。')
         }
       ]
     },
     '/unicode-converter': {
-      description: 'Unicode编码转换工具，处理中文与Unicode之间的编码转换。解决字符编码问题，支持多种Unicode表示格式。',
+      description: t('toolDetails.unicode-converter.description', 'Unicode编码转换工具，处理中文与Unicode之间的编码转换。解决字符编码问题，支持多种Unicode表示格式。'),
       features: [
-        '中文与Unicode互转',
-        '支持Unicode实体编码',
-        '批量文本转换',
-        '编码格式检测',
-        '错误编码修复',
-        '字符编码分析'
+        t('toolDetails.unicode-converter.features.0', '中文与Unicode互转'),
+        t('toolDetails.unicode-converter.features.1', '支持Unicode实体编码'),
+        t('toolDetails.unicode-converter.features.2', '批量文本转换'),
+        t('toolDetails.unicode-converter.features.3', '编码格式检测'),
+        t('toolDetails.unicode-converter.features.4', '错误编码修复'),
+        t('toolDetails.unicode-converter.features.5', '字符编码分析')
       ],
       useCases: [
-        '网页中文显示问题修复',
-        '数据库字符编码处理',
-        'JSON中文数据处理',
-        '跨系统中文传输',
-        '编码问题调试'
+        t('toolDetails.unicode-converter.useCases.0', '网页中文显示问题修复'),
+        t('toolDetails.unicode-converter.useCases.1', '数据库字符编码处理'),
+        t('toolDetails.unicode-converter.useCases.2', 'JSON中文数据处理'),
+        t('toolDetails.unicode-converter.useCases.3', '跨系统中文传输'),
+        t('toolDetails.unicode-converter.useCases.4', '编码问题调试')
       ],
       tips: [
-        'Unicode是国际标准字符编码',
-        '\\u开头的是JavaScript Unicode表示',
-        '&#x开头的是HTML Unicode实体',
-        'UTF-8是Unicode的一种实现方式'
+        t('toolDetails.unicode-converter.tips.0', 'Unicode是国际标准字符编码'),
+        t('toolDetails.unicode-converter.tips.1', '\\u开头的是JavaScript Unicode表示'),
+        t('toolDetails.unicode-converter.tips.2', '&#x开头的是HTML Unicode实体'),
+        t('toolDetails.unicode-converter.tips.3', 'UTF-8是Unicode的一种实现方式')
       ],
       faq: [
         {
-          q: 'Unicode和UTF-8有什么区别？',
-          a: 'Unicode是字符集标准，UTF-8是Unicode的编码实现方式之一。'
+          q: t('toolDetails.unicode-converter.faq.0.q', 'Unicode和UTF-8有什么区别？'),
+          a: t('toolDetails.unicode-converter.faq.0.a', 'Unicode是字符集标准，UTF-8是Unicode的编码实现方式之一。')
         },
         {
-          q: '为什么会出现乱码？',
-          a: '通常是编码和解码使用了不同的字符集，或者字符集不支持相应字符。'
+          q: t('toolDetails.unicode-converter.faq.1.q', '为什么会出现乱码？'),
+          a: t('toolDetails.unicode-converter.faq.1.a', '通常是编码和解码使用了不同的字符集，或者字符集不支持相应字符。')
         }
       ]
     },
     '/cron-parser': {
-      description: 'Cron表达式解析工具，用于解析和验证定时任务的Cron表达式。支持Linux和Spring格式，显示执行时间和规则说明。',
+      description: t('toolDetails.cron-parser.description', 'Cron表达式解析工具，用于解析和验证定时任务的Cron表达式。支持Linux和Spring格式，显示执行时间和规则说明。'),
       features: [
-        'Linux和Spring Cron格式支持',
-        '表达式语法验证',
-        '下次执行时间预测',
-        '人类可读的规则描述',
-        '常用表达式模板',
-        '执行频率分析'
+        t('toolDetails.cron-parser.features.0', 'Linux和Spring Cron格式支持'),
+        t('toolDetails.cron-parser.features.1', '表达式语法验证'),
+        t('toolDetails.cron-parser.features.2', '下次执行时间预测'),
+        t('toolDetails.cron-parser.features.3', '人类可读的规则描述'),
+        t('toolDetails.cron-parser.features.4', '常用表达式模板'),
+        t('toolDetails.cron-parser.features.5', '执行频率分析')
       ],
       useCases: [
-        '定时任务配置',
-        '系统维护脚本调度',
-        '数据备份计划设定',
-        '报表生成时间安排',
-        '自动化流程触发'
+        t('toolDetails.cron-parser.useCases.0', '定时任务配置'),
+        t('toolDetails.cron-parser.useCases.1', '系统维护脚本调度'),
+        t('toolDetails.cron-parser.useCases.2', '数据备份计划设定'),
+        t('toolDetails.cron-parser.useCases.3', '报表生成时间安排'),
+        t('toolDetails.cron-parser.useCases.4', '自动化流程触发')
       ],
       tips: [
-        'Linux Cron有5个字段，Spring Cron有6个字段',
-        '星号(*)表示匹配所有值',
-        '逗号(,)用于列举多个值',
-        '连字符(-)表示范围，斜杠(/)表示间隔'
+        t('toolDetails.cron-parser.tips.0', 'Linux Cron有5个字段，Spring Cron有6个字段'),
+        t('toolDetails.cron-parser.tips.1', '星号(*)表示匹配所有值'),
+        t('toolDetails.cron-parser.tips.2', '逗号(,)用于列举多个值'),
+        t('toolDetails.cron-parser.tips.3', '连字符(-)表示范围，斜杠(/)表示间隔')
       ],
       faq: [
         {
-          q: 'Cron表达式如何表示每5分钟执行？',
-          a: 'Linux格式：*/5 * * * *，Spring格式：0 */5 * * * *'
+          q: t('toolDetails.cron-parser.faq.0.q', 'Cron表达式如何表示每5分钟执行？'),
+          a: t('toolDetails.cron-parser.faq.0.a', 'Linux格式：*/5 * * * *，Spring格式：0 */5 * * * *')
         },
         {
-          q: '如何避免Cron任务重叠执行？',
-          a: '合理设置执行间隔，使用锁机制防止同一任务并发执行。'
+          q: t('toolDetails.cron-parser.faq.1.q', '如何避免Cron任务重叠执行？'),
+          a: t('toolDetails.cron-parser.faq.1.a', '合理设置执行间隔，使用锁机制防止同一任务并发执行。')
         }
       ]
     }
@@ -728,7 +728,7 @@ export default function ToolDetailDescription({ toolPath }) {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
                 <Typography variant="h5" sx={{ m: 0, color: 'text.primary' }}>
-                  工具介绍 | About This Tool
+                  {t('toolDescription.aboutTitle')}
                 </Typography>
               </Box>
               <Typography 
@@ -752,7 +752,7 @@ export default function ToolDetailDescription({ toolPath }) {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <CheckCircleOutlined sx={{ color: 'secondary.main', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  核心功能 | Key Features
+                  {t('toolDescription.featuresTitle')}
                 </Typography>
               </Box>
               <List dense>
@@ -789,7 +789,7 @@ export default function ToolDetailDescription({ toolPath }) {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <BuildOutlined sx={{ color: '#722ed1', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  使用场景 | Use Cases
+                  {t('toolDescription.useCasesTitle')}
                 </Typography>
               </Box>
               <List dense>
@@ -826,7 +826,7 @@ export default function ToolDetailDescription({ toolPath }) {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <LightbulbOutlined sx={{ color: '#fa8c16', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  使用技巧 | Tips & Tricks
+                  {t('toolDescription.tipsTitle')}
                 </Typography>
               </Box>
               <List dense>
@@ -863,7 +863,7 @@ export default function ToolDetailDescription({ toolPath }) {
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <HelpOutlineOutlined sx={{ color: '#eb2f96', mr: 1 }} />
                 <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  常见问题 | FAQ
+                  {t('toolDescription.faqTitle')}
                 </Typography>
               </Box>
               {details.faq.map((faq, index) => (

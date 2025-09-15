@@ -1,16 +1,18 @@
 import React from 'react';
-import { 
-  Typography, 
-  Card, 
+import {
+  Typography,
+  Card,
   CardContent,
-  Grid, 
-  Divider, 
+  Grid,
+  Divider,
   Box,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
-  useTheme
+  useTheme,
+  Container,
+  Stack
 } from '@mui/material';
 import { 
   InfoOutlined,
@@ -660,192 +662,205 @@ export const getToolDetails = (path, t) => {
   return toolDetails[path] || null;
 };
 
-export default function ToolDetailDescription({ toolPath }) {
+export default function ToolDetailDescription({ toolPath, children }) {
   const { t, i18n } = useTranslation();
   const theme = useTheme();
   const details = getToolDetails(toolPath, t);
 
   if (!details) {
-    return null;
+    return children || null;
   }
 
   return (
-    <Box sx={{ mt: 4, mb: 4, maxWidth: 1000, margin: '0 auto' }}>
-      <Grid container spacing={3}>
-        {/* 工具介绍 - 全宽卡片 */}
-        <Grid item xs={12}>
-          <Card elevation={2}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
-                <Typography variant="h5" sx={{ m: 0, color: 'text.primary' }}>
-                  {t('toolDescription.aboutTitle')}
-                </Typography>
-              </Box>
-              <Typography 
-                variant="body1" 
-                sx={{ 
-                  color: 'text.secondary', 
-                  fontSize: '15px', 
-                  lineHeight: 1.6 
-                }}
-              >
-                {details.description}
-              </Typography>
-            </CardContent>
-          </Card>
+    <Container maxWidth="xl" sx={{ px: { xs: 2, md: 4 }, py: 4 }}>
+      <Grid container spacing={4}>
+        {/* 左侧信息栏 */}
+        <Grid item xs={12} lg={3}>
+          <Box sx={{ position: 'sticky', top: 24 }}>
+            <Stack spacing={3}>
+              {/* 核心功能卡片 */}
+              <Card elevation={2}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <CheckCircleOutlined sx={{ color: 'secondary.main', mr: 1 }} />
+                    <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                      {t('toolDescription.featuresTitle')}
+                    </Typography>
+                  </Box>
+                  <List dense>
+                    {details.features.map((feature, index) => (
+                      <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 20 }}>
+                          <Box
+                            sx={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              backgroundColor: 'secondary.main'
+                            }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={feature}
+                          primaryTypographyProps={{
+                            fontSize: '14px',
+                            color: 'text.secondary'
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </CardContent>
+              </Card>
+
+              {/* 使用技巧卡片 */}
+              <Card elevation={2}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <LightbulbOutlined sx={{ color: '#fa8c16', mr: 1 }} />
+                    <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                      {t('toolDescription.tipsTitle')}
+                    </Typography>
+                  </Box>
+                  <List dense>
+                    {details.tips.map((tip, index) => (
+                      <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 20 }}>
+                          <Box
+                            sx={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              backgroundColor: '#fa8c16'
+                            }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={tip}
+                          primaryTypographyProps={{
+                            fontSize: '14px',
+                            color: 'text.secondary'
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </CardContent>
+              </Card>
+            </Stack>
+          </Box>
         </Grid>
 
-        {/* 核心功能 */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <CheckCircleOutlined sx={{ color: 'secondary.main', mr: 1 }} />
-                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  {t('toolDescription.featuresTitle')}
-                </Typography>
-              </Box>
-              <List dense>
-                {details.features.map((feature, index) => (
-                  <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 20 }}>
-                      <Box 
-                        sx={{ 
-                          width: 6, 
-                          height: 6, 
-                          borderRadius: '50%', 
-                          backgroundColor: 'secondary.main' 
-                        }} 
-                      />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={feature} 
-                      primaryTypographyProps={{ 
-                        fontSize: '14px', 
-                        color: 'text.secondary' 
-                      }} 
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
+        {/* 中间操作区域 */}
+        <Grid item xs={12} lg={6}>
+          <Box sx={{ minHeight: '600px' }}>
+            {children}
+          </Box>
         </Grid>
 
-        {/* 使用场景 */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <BuildOutlined sx={{ color: '#722ed1', mr: 1 }} />
-                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  {t('toolDescription.useCasesTitle')}
-                </Typography>
-              </Box>
-              <List dense>
-                {details.useCases.map((useCase, index) => (
-                  <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 20 }}>
-                      <Box 
-                        sx={{ 
-                          width: 6, 
-                          height: 6, 
-                          borderRadius: '50%', 
-                          backgroundColor: '#722ed1' 
-                        }} 
-                      />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={useCase} 
-                      primaryTypographyProps={{ 
-                        fontSize: '14px', 
-                        color: 'text.secondary' 
-                      }} 
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
+        {/* 右侧信息栏 */}
+        <Grid item xs={12} lg={3}>
+          <Box sx={{ position: 'sticky', top: 24 }}>
+            <Stack spacing={3}>
+              {/* 使用场景卡片 */}
+              <Card elevation={2}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <BuildOutlined sx={{ color: '#722ed1', mr: 1 }} />
+                    <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                      {t('toolDescription.useCasesTitle')}
+                    </Typography>
+                  </Box>
+                  <List dense>
+                    {details.useCases.map((useCase, index) => (
+                      <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
+                        <ListItemIcon sx={{ minWidth: 20 }}>
+                          <Box
+                            sx={{
+                              width: 6,
+                              height: 6,
+                              borderRadius: '50%',
+                              backgroundColor: '#722ed1'
+                            }}
+                          />
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={useCase}
+                          primaryTypographyProps={{
+                            fontSize: '14px',
+                            color: 'text.secondary'
+                          }}
+                        />
+                      </ListItem>
+                    ))}
+                  </List>
+                </CardContent>
+              </Card>
 
-        {/* 使用技巧 */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <LightbulbOutlined sx={{ color: '#fa8c16', mr: 1 }} />
-                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  {t('toolDescription.tipsTitle')}
-                </Typography>
-              </Box>
-              <List dense>
-                {details.tips.map((tip, index) => (
-                  <ListItem key={index} sx={{ py: 0.5, px: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 20 }}>
-                      <Box 
-                        sx={{ 
-                          width: 6, 
-                          height: 6, 
-                          borderRadius: '50%', 
-                          backgroundColor: '#fa8c16' 
-                        }} 
-                      />
-                    </ListItemIcon>
-                    <ListItemText 
-                      primary={tip} 
-                      primaryTypographyProps={{ 
-                        fontSize: '14px', 
-                        color: 'text.secondary' 
-                      }} 
-                    />
-                  </ListItem>
-                ))}
-              </List>
-            </CardContent>
-          </Card>
-        </Grid>
+              {/* 常见问题卡片 */}
+              <Card elevation={2}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <HelpOutlineOutlined sx={{ color: '#eb2f96', mr: 1 }} />
+                    <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                      {t('toolDescription.faqTitle')}
+                    </Typography>
+                  </Box>
+                  <Box>
+                    {details.faq.map((faq, index) => (
+                      <Box key={index} sx={{ mb: 2 }}>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.primary',
+                            fontWeight: 600,
+                            display: 'block',
+                            mb: 0.5
+                          }}
+                        >
+                          Q: {faq.q}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            color: 'text.secondary',
+                            fontSize: '14px',
+                            pl: 1
+                          }}
+                        >
+                          A: {faq.a}
+                        </Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
 
-        {/* 常见问题 */}
-        <Grid item xs={12} md={6}>
-          <Card elevation={2} sx={{ height: '100%' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <HelpOutlineOutlined sx={{ color: '#eb2f96', mr: 1 }} />
-                <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
-                  {t('toolDescription.faqTitle')}
-                </Typography>
-              </Box>
-              {details.faq.map((faq, index) => (
-                <Box key={index} sx={{ mb: 2 }}>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: 'text.primary', 
-                      fontWeight: 600, 
-                      display: 'block',
-                      mb: 0.5
-                    }}
-                  >
-                    Q: {faq.q}
-                  </Typography>
-                  <Typography 
-                    variant="body2" 
-                    sx={{ 
-                      color: 'text.secondary', 
+              {/* 工具介绍卡片 */}
+              <Card elevation={2}>
+                <CardContent>
+                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                    <InfoOutlined sx={{ color: 'primary.main', mr: 1 }} />
+                    <Typography variant="h6" sx={{ m: 0, color: 'text.primary' }}>
+                      {t('toolDescription.aboutTitle')}
+                    </Typography>
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: 'text.secondary',
                       fontSize: '14px',
-                      pl: 1
+                      lineHeight: 1.6
                     }}
                   >
-                    A: {faq.a}
+                    {details.description}
                   </Typography>
-                </Box>
-              ))}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            </Stack>
+          </Box>
         </Grid>
       </Grid>
-    </Box>
+    </Container>
   );
 }

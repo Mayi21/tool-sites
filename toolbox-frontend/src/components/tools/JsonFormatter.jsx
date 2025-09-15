@@ -56,41 +56,42 @@ export default function JsonFormatter() {
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>
+      <Card sx={{ p: 3 }}>
+        <Typography variant="h4" component="h1" sx={{ mb: 3, textAlign: 'center' }}>
           {t('JSON Formatter')}
         </Typography>
-        
-        <Stack spacing={2}>
-          <TextField 
-            value={input} 
-            onChange={e => setInput(e.target.value)} 
+
+        <Stack spacing={3}>
+          <TextField
+            value={input}
+            onChange={e => setInput(e.target.value)}
             multiline
-            rows={8} 
+            rows={8}
             label={t('Enter JSON to format')}
             variant="outlined"
             fullWidth
+            sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }}
           />
-          
-          <Stack direction="row" spacing={1}>
-            <Button variant="contained" onClick={formatJson}>
+
+          <Stack direction="row" spacing={2} justifyContent="center">
+            <Button variant="contained" size="large" onClick={formatJson}>
               {t('Format')}
             </Button>
-            <Button variant="outlined" onClick={minifyJson}>
+            <Button variant="outlined" size="large" onClick={minifyJson}>
               {t('Minify')}
             </Button>
           </Stack>
-          
+
           {error && (
             <Alert severity="error">
               <AlertTitle>{t('Error')}</AlertTitle>
               {error}
             </Alert>
           )}
-          
+
           {output && (
-            <Stack spacing={1}>
-              <Stack direction="row" spacing={1}>
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2} justifyContent="center">
                 <Button variant="outlined" startIcon={<ContentCopy />} onClick={copyToClipboardHandler}>
                   {t('Copy')}
                 </Button>
@@ -98,15 +99,15 @@ export default function JsonFormatter() {
                   {t('Download')}
                 </Button>
               </Stack>
-              
-              <TextField 
-                value={output} 
+
+              <TextField
+                value={output}
                 InputProps={{
                   readOnly: true,
                   style: { fontFamily: 'monospace' }
                 }}
                 multiline
-                rows={12} 
+                rows={12}
                 variant="filled"
                 fullWidth
               />
@@ -114,10 +115,10 @@ export default function JsonFormatter() {
           )}
         </Stack>
       </Card>
-      
-      <CopySuccessAnimation 
-        visible={showAnimation} 
-        onAnimationEnd={handleAnimationEnd} 
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
       />
     </>
   );

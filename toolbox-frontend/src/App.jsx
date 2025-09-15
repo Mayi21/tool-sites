@@ -477,9 +477,9 @@ function App() {
                 {tools.map(tool => (
                   <Route 
                     key={tool.path} 
-                    path={tool.path} 
+                    path={tool.path}
                     element={
-                      <Container maxWidth="lg" sx={{ px: 2 }}>
+                      <>
                         <Seo
                           title={t(tool.pageTitleKey || tool.nameKey)}
                           description={t(tool.pageDescriptionKey || tool.descKey)}
@@ -488,12 +488,17 @@ function App() {
                           toolPath={tool.path}
                           lang={currentLang}
                         />
-                        <BreadcrumbNav currentToolName={t(tool.nameKey)} />
-                        <tool.Component />
-                        <ToolDetailDescription toolPath={tool.path} />
-                        <RelatedTools currentPath={tool.path} allTools={tools} />
-                      </Container>
-                    } 
+                        <Container maxWidth="lg" sx={{ px: 2, py: 2 }}>
+                          <BreadcrumbNav currentToolName={t(tool.nameKey)} />
+                        </Container>
+                        <ToolDetailDescription toolPath={tool.path}>
+                          <tool.Component />
+                        </ToolDetailDescription>
+                        <Container maxWidth="lg" sx={{ px: 2, py: 2 }}>
+                          <RelatedTools currentPath={tool.path} allTools={tools} />
+                        </Container>
+                      </>
+                    }
                   />
                 ))}
                 

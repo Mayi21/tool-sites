@@ -1,5 +1,5 @@
 # 多功能工具箱
-![Snipaste_2025-08-14_00-47-58.png](pages.png)
+![img.png](img.png)
 ## 📁 项目结构
 ```
 tool-sites/
@@ -30,7 +30,6 @@ tool-sites/
 - **10+在线工具**：Base64编解码、Cron解析、图片压缩、水印等
 - **前后端分离**：Pages部署前端，Workers部署后端 API
 - **持久化存储**：D1数据库存储数据
-- **响应式适配**：自动适应不同屏幕尺寸
 - **0成本上线**：全部运行在Cloudflare免费额度内
 - **开源透明**：方便查看源码
 
@@ -46,7 +45,7 @@ tool-sites/
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request 来帮助改进 在线工具箱
+欢迎提交 Issue 和 Pull Request 来帮助改进 [多功能工具箱](https://toolifyhub.top/)
 
 你可以通过以下方式参与项目：
 - 提交bug报告和功能建议

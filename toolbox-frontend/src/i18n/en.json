@@ -745,11 +745,10 @@
     "base64": {
       "description": "Base64 is an encoding method based on 64 printable characters to represent binary data. Widely used for transmitting data in systems that do not support binary data, such as email and HTTP transmission scenarios.",
       "features": {
-        "0": "Support text and file Base64 encoding and decoding",
-        "1": "Automatically detect Base64 format validity",
-        "2": "Support UTF-8 character encoding",
-        "3": "One-click copy results to clipboard",
-        "4": "Real-time encoding and decoding, no button clicking required"
+        "0": "Support text Base64 encoding and decoding",
+        "1": "Support UTF-8 character encoding",
+        "2": "One-click copy results to clipboard",
+        "3": "Encode/decode mode switching"
       },
       "useCases": {
         "0": "Image data URI encoding in web development",
@@ -779,11 +778,9 @@
       "description": "JSON (JavaScript Object Notation) formatting tool that helps developers beautify, validate and compress JSON data. Supports syntax highlighting, error detection and format conversion.",
       "features": {
         "0": "Smart JSON formatting and beautification",
-        "1": "Syntax error detection and prompts",
-        "2": "JSON data compression (Minify)",
-        "3": "Support large JSON file processing",
-        "4": "Syntax highlighting display",
-        "5": "One-click copy and download results"
+        "1": "JSON data compression (Minify)",
+        "2": "Basic syntax error detection",
+        "3": "One-click copy results"
       },
       "useCases": {
         "0": "API response data formatting view",
@@ -814,10 +811,7 @@
       "features": {
         "0": "Real-time regular expression match testing",
         "1": "Highlight match results",
-        "2": "Capture group and named group display",
-        "3": "Support global, case-insensitive and other modifiers",
-        "4": "Regular replacement function testing",
-        "5": "Common regular expression template library"
+        "2": "Support global, case-insensitive and other modifiers"
       },
       "useCases": {
         "0": "Form validation rule writing and testing",
@@ -846,12 +840,9 @@
     "url-encoder": {
       "description": "URL encoding/decoding tool for handling special characters in URLs. When URLs contain spaces, Chinese characters, or special symbols, encoding is needed to ensure proper transmission.",
       "features": {
-        "0": "Support complete URL and query parameter encoding",
-        "1": "Automatic detection and processing of Chinese characters",
-        "2": "Support batch text URL encoding",
-        "3": "Real-time encoding/decoding preview",
-        "4": "Compatible with RFC 3986 standard",
-        "5": "Support custom character set encoding"
+        "0": "Support URL and query parameter encoding",
+        "1": "Encode/decode mode switching",
+        "2": "One-click copy results"
       },
       "useCases": {
         "0": "URL query parameter encoding processing",
@@ -881,11 +872,8 @@
       "description": "Unix timestamp conversion tool that supports bidirectional conversion between timestamps and human-readable time formats. Widely used in server development, database storage, and API interfaces.",
       "features": {
         "0": "Support second and millisecond level timestamps",
-        "1": "Multiple date format output",
-        "2": "Automatic timezone recognition and conversion",
-        "3": "Batch timestamp conversion",
-        "4": "Relative time calculation",
-        "5": "One-click current timestamp retrieval"
+        "1": "One-click current timestamp retrieval",
+        "2": "Timestamp and date bidirectional conversion"
       },
       "useCases": {
         "0": "Database time field debugging",
@@ -916,10 +904,7 @@
       "features": {
         "0": "Complete JWT structure parsing (Header.Payload.Signature)",
         "1": "Base64 decoding and JSON formatting",
-        "2": "Token expiration time checking",
-        "3": "Signature algorithm identification",
-        "4": "Detailed claims display",
-        "5": "Basic token validity verification"
+        "2": "Basic token parsing display"
       },
       "useCases": {
         "0": "User identity authentication debugging",
@@ -949,11 +934,8 @@
       "description": "Hash generation tool that supports MD5, SHA-1, SHA-256 and other hash algorithms. Used for data integrity verification, password storage, and digital signature scenarios.",
       "features": {
         "0": "Support MD5, SHA-1, SHA-256, SHA-512 algorithms",
-        "1": "Text and file hash calculation",
-        "2": "Batch hash generation",
-        "3": "Hash value comparison and verification",
-        "4": "Uppercase and lowercase output options",
-        "5": "Real-time calculation with instant results"
+        "1": "Text hash calculation",
+        "2": "Real-time calculation with instant results"
       },
       "useCases": {
         "0": "File integrity verification",
@@ -982,12 +964,9 @@
     "color-converter": {
       "description": "Color format conversion tool that supports mutual conversion between RGB, HEX, HSL, HSV and other color formats. Provides convenient color processing functions for designers and frontend developers.",
       "features": {
-        "0": "Support RGB, HEX, HSL, HSV, CMYK formats",
+        "0": "Support RGB, HEX, HSL format conversion",
         "1": "Real-time color preview",
-        "2": "Integrated color picker",
-        "3": "Color palette generation",
-        "4": "Contrast detection",
-        "5": "Accessibility color suggestions"
+        "2": "Basic color picker"
       },
       "useCases": {
         "0": "Web design color scheme development",

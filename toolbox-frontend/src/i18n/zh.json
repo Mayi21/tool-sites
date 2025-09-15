@@ -484,10 +484,7 @@
   "toolDetails.uuid-generator.description": "UUID生成工具，创建全球唯一标识符。支持UUID v4标准，广泛用于数据库主键、API令牌和分布式系统中。",
   "toolDetails.uuid-generator.features.0": "标准UUID v4生成",
   "toolDetails.uuid-generator.features.1": "批量UUID生成",
-  "toolDetails.uuid-generator.features.2": "大小写格式选择",
-  "toolDetails.uuid-generator.features.3": "带连字符或不带连字符",
-  "toolDetails.uuid-generator.features.4": "一键复制所有结果",
-  "toolDetails.uuid-generator.features.5": "生成数量自定义",
+  "toolDetails.uuid-generator.features.2": "一键复制所有结果",
   "toolDetails.uuid-generator.useCases.0": "数据库表主键",
   "toolDetails.uuid-generator.useCases.1": "API请求追踪ID",
   "toolDetails.uuid-generator.useCases.2": "文件唯一命名",
@@ -504,10 +501,8 @@
   "toolDetails.password-generator.description": "密码生成工具，创建高强度随机密码。支持自定义长度和字符集，提供密码强度评估，保障账户安全。",
   "toolDetails.password-generator.features.0": "自定义密码长度",
   "toolDetails.password-generator.features.1": "字符集选择（大小写、数字、符号）",
-  "toolDetails.password-generator.features.2": "密码强度实时评估",
+  "toolDetails.password-generator.features.2": "实时密码强度评估",
   "toolDetails.password-generator.features.3": "批量密码生成",
-  "toolDetails.password-generator.features.4": "排除易混淆字符选项",
-  "toolDetails.password-generator.features.5": "密码安全建议",
   "toolDetails.password-generator.useCases.0": "用户账户密码创建",
   "toolDetails.password-generator.useCases.1": "系统管理员账户",
   "toolDetails.password-generator.useCases.2": "API密钥生成",
@@ -522,12 +517,9 @@
   "toolDetails.password-generator.faq.1.q": "密码强度如何评估？",
   "toolDetails.password-generator.faq.1.a": "根据长度、字符种类、随机性等因素综合评估，避免使用常见模式。",
   "toolDetails.image-compressor.description": "图片压缩工具，在保持视觉质量的同时减少图片文件大小。支持JPEG、PNG等格式，优化网站加载速度。",
-  "toolDetails.image-compressor.features.0": "智能压缩算法",
+  "toolDetails.image-compressor.features.0": "基础压缩功能",
   "toolDetails.image-compressor.features.1": "质量可调节",
-  "toolDetails.image-compressor.features.2": "支持多种图片格式",
-  "toolDetails.image-compressor.features.3": "批量图片处理",
-  "toolDetails.image-compressor.features.4": "压缩前后对比",
-  "toolDetails.image-compressor.features.5": "文件大小优化建议",
+  "toolDetails.image-compressor.features.2": "支持JPEG、PNG格式",
   "toolDetails.image-compressor.useCases.0": "网站图片优化",
   "toolDetails.image-compressor.useCases.1": "移动应用资源压缩",
   "toolDetails.image-compressor.useCases.2": "邮件附件大小控制",
@@ -543,11 +535,9 @@
   "toolDetails.image-compressor.faq.1.a": "根据使用场景平衡文件大小和质量，网页用途可以适度压缩。",
   "toolDetails.image-watermark.description": "图片水印工具，为图片添加文字或图像水印。保护图片版权，防止未授权使用，支持多种水印样式设置。",
   "toolDetails.image-watermark.features.0": "文字水印添加",
-  "toolDetails.image-watermark.features.1": "水印位置自定义",
+  "toolDetails.image-watermark.features.1": "水印位置选择",
   "toolDetails.image-watermark.features.2": "透明度调节",
   "toolDetails.image-watermark.features.3": "字体大小颜色设置",
-  "toolDetails.image-watermark.features.4": "批量水印处理",
-  "toolDetails.image-watermark.features.5": "水印预览功能",
   "toolDetails.image-watermark.useCases.0": "摄影作品版权保护",
   "toolDetails.image-watermark.useCases.1": "企业宣传图片标识",
   "toolDetails.image-watermark.useCases.2": "产品图片品牌标记",
@@ -564,10 +554,7 @@
   "toolDetails.unicode-converter.description": "Unicode编码转换工具，处理中文与Unicode之间的编码转换。解决字符编码问题，支持多种Unicode表示格式。",
   "toolDetails.unicode-converter.features.0": "中文与Unicode互转",
   "toolDetails.unicode-converter.features.1": "支持Unicode实体编码",
-  "toolDetails.unicode-converter.features.2": "批量文本转换",
-  "toolDetails.unicode-converter.features.3": "编码格式检测",
-  "toolDetails.unicode-converter.features.4": "错误编码修复",
-  "toolDetails.unicode-converter.features.5": "字符编码分析",
+  "toolDetails.unicode-converter.features.2": "基础文本转换",
   "toolDetails.unicode-converter.useCases.0": "网页中文显示问题修复",
   "toolDetails.unicode-converter.useCases.1": "数据库字符编码处理",
   "toolDetails.unicode-converter.useCases.2": "JSON中文数据处理",
@@ -585,9 +572,6 @@
   "toolDetails.cron-parser.features.0": "Linux和Spring Cron格式支持",
   "toolDetails.cron-parser.features.1": "表达式语法验证",
   "toolDetails.cron-parser.features.2": "下次执行时间预测",
-  "toolDetails.cron-parser.features.3": "人类可读的规则描述",
-  "toolDetails.cron-parser.features.4": "常用表达式模板",
-  "toolDetails.cron-parser.features.5": "执行频率分析",
   "toolDetails.cron-parser.useCases.0": "定时任务配置",
   "toolDetails.cron-parser.useCases.1": "系统维护脚本调度",
   "toolDetails.cron-parser.useCases.2": "数据备份计划设定",
@@ -634,18 +618,17 @@
   "base64.name": "Base64编解码",
   "toolDetails": {
     "base64": {
-      "description": "Base64是一种基于64个可打印字符来表示二进制数据的编码方法。广泛用于在不支持二进制数据的系统中传输数据，如电子邮件、HTTP传输等场景。",
+      "description": "Base64是一种基于64个可打印字符来表示二进制数据的编码方法。支持文本内容的编码和解码，广泛用于数据传输场景。",
       "features": {
-        "0": "支持文本和文件的Base64编码解码",
-        "1": "自动检测Base64格式的有效性",
-        "2": "支持UTF-8字符编码",
-        "3": "一键复制结果到剪贴板",
-        "4": "实时编码解码，无需点击按钮"
+        "0": "支持文本的Base64编码解码",
+        "1": "支持UTF-8字符编码",
+        "2": "一键复制结果到剪贴板",
+        "3": "编码解码切换功能"
       },
       "useCases": {
-        "0": "网页开发中的图片数据URI编码",
-        "1": "API接口中的二进制数据传输",
-        "2": "电子邮件附件的编码传输",
+        "0": "网页开发中的数据URI编码",
+        "1": "API接口中的数据传输",
+        "2": "电子邮件中的文本编码",
         "3": "JWT Token的载荷编码",
         "4": "配置文件中敏感信息的简单编码"
       },
@@ -653,7 +636,7 @@
         "0": "Base64编码后的数据大小会增加约33%",
         "1": "编码结果末尾的\"=\"是填充字符，用于对齐",
         "2": "Base64不是加密方法，只是编码转换",
-        "3": "适合小文件处理，大文件建议分块处理"
+        "3": "适合文本内容的快速编码转换"
       },
       "faq": {
         "0": {
@@ -667,14 +650,12 @@
       }
     },
     "json-formatter": {
-      "description": "JSON（JavaScript Object Notation）格式化工具，帮助开发者美化、验证和压缩JSON数据。支持语法高亮、错误检测和格式转换。",
+      "description": "JSON格式化工具，帮助开发者美化、验证和压缩JSON数据。支持基本的格式化和语法检查功能。",
       "features": {
         "0": "智能JSON格式化和美化",
-        "1": "语法错误检测和提示",
-        "2": "JSON数据压缩（Minify）",
-        "3": "支持大文件JSON处理",
-        "4": "语法高亮显示",
-        "5": "一键复制和下载结果"
+        "1": "JSON数据压缩（Minify）",
+        "2": "基本语法错误检测",
+        "3": "一键复制结果"
       },
       "useCases": {
         "0": "API响应数据的格式化查看",
@@ -701,20 +682,17 @@
       }
     },
     "regex-tester": {
-      "description": "正则表达式测试工具，帮助开发者编写、测试和调试正则表达式。支持实时匹配预览、捕获组显示和替换功能。",
+      "description": "正则表达式测试工具，帮助开发者编写、测试和调试正则表达式。支持实时匹配预览和结果高亮显示。",
       "features": {
         "0": "实时正则表达式匹配测试",
         "1": "高亮显示匹配结果",
-        "2": "捕获组和命名组显示",
-        "3": "支持全局、忽略大小写等修饰符",
-        "4": "正则替换功能测试",
-        "5": "常用正则表达式模板库"
+        "2": "支持全局、忽略大小写等修饰符"
       },
       "useCases": {
         "0": "表单验证规则的编写和测试",
         "1": "文本处理和数据清洗",
         "2": "日志文件的模式匹配",
-        "3": "代码重构中的批量替换",
+        "3": "正则表达式的语法验证",
         "4": "URL路由规则的测试"
       },
       "tips": {
@@ -737,12 +715,9 @@
     "url-encoder": {
       "description": "URL编码解码工具，用于处理URL中的特殊字符。当URL包含空格、中文或特殊符号时，需要进行编码以确保正确传输。",
       "features": {
-        "0": "支持完整URL和查询参数编码",
-        "1": "自动检测并处理中文字符",
-        "2": "支持批量文本的URL编码",
-        "3": "实时编码解码预览",
-        "4": "兼容RFC 3986标准",
-        "5": "支持自定义字符集编码"
+        "0": "支持URL和查询参数编码",
+        "1": "编码解码模式切换",
+        "2": "一键复制结果"
       },
       "useCases": {
         "0": "URL查询参数的编码处理",
@@ -772,11 +747,8 @@
       "description": "Unix时间戳转换工具，支持时间戳与人类可读时间格式的双向转换。广泛用于服务器开发、数据库存储和API接口中。",
       "features": {
         "0": "支持秒级和毫秒级时间戳",
-        "1": "多种日期格式输出",
-        "2": "时区自动识别和转换",
-        "3": "批量时间戳转换",
-        "4": "相对时间计算",
-        "5": "当前时间戳一键获取"
+        "1": "当前时间戳一键获取",
+        "2": "时间戳与日期双向转换"
       },
       "useCases": {
         "0": "数据库时间字段的调试",
@@ -807,10 +779,7 @@
       "features": {
         "0": "完整JWT结构解析（Header.Payload.Signature）",
         "1": "Base64解码和JSON格式化",
-        "2": "令牌过期时间检查",
-        "3": "签名算法识别",
-        "4": "声明（Claims）详细显示",
-        "5": "令牌有效性基础验证"
+        "2": "基本令牌解析显示"
       },
       "useCases": {
         "0": "用户身份认证调试",
@@ -840,11 +809,8 @@
       "description": "哈希生成工具，支持MD5、SHA-1、SHA-256等多种哈希算法。用于数据完整性校验、密码存储和数字签名等场景。",
       "features": {
         "0": "支持MD5、SHA-1、SHA-256、SHA-512算法",
-        "1": "文本和文件哈希计算",
-        "2": "批量哈希生成",
-        "3": "哈希值比对验证",
-        "4": "大小写输出选择",
-        "5": "实时计算，结果即时显示"
+        "1": "文本哈希计算",
+        "2": "实时计算，结果即时显示"
       },
       "useCases": {
         "0": "文件完整性验证",
@@ -873,12 +839,9 @@
     "color-converter": {
       "description": "颜色格式转换工具，支持RGB、HEX、HSL、HSV等多种颜色格式的相互转换。为设计师和前端开发者提供便捷的颜色处理功能。",
       "features": {
-        "0": "支持RGB、HEX、HSL、HSV、CMYK格式",
+        "0": "支持RGB、HEX、HSL格式转换",
         "1": "实时颜色预览",
-        "2": "颜色选择器集成",
-        "3": "调色板生成",
-        "4": "对比度检测",
-        "5": "无障碍颜色建议"
+        "2": "基本颜色选择器"
       },
       "useCases": {
         "0": "Web设计颜色方案制定",
@@ -901,6 +864,195 @@
         "1": {
           "q": "如何选择无障碍友好的颜色？",
           "a": "确保足够的对比度，避免仅用颜色传达信息，考虑色盲用户需求。"
+        }
+      }
+    },
+    "diff": {
+      "description": "文本对比工具，用于比较两个文本之间的差异。支持逐行对比、高亮显示变更内容。",
+      "features": {
+        "0": "逐行文本差异对比",
+        "1": "高亮显示增删改内容",
+        "2": "并排视图显示"
+      },
+      "useCases": {
+        "0": "代码版本差异检查",
+        "1": "文档修改对比",
+        "2": "配置文件变更审查",
+        "3": "数据文件内容比较",
+        "4": "翻译文本校对"
+      },
+      "tips": {
+        "0": "大文件对比可能需要较长时间",
+        "1": "可以忽略空格和换行来聚焦内容变化",
+        "2": "使用并排视图便于查看上下文",
+        "3": "定期保存重要的对比结果"
+      },
+      "faq": {
+        "0": {
+          "q": "如何处理大文件对比？",
+          "a": "建议将大文件分割成小块进行对比，或使用专业的文件比较工具。"
+        },
+        "1": {
+          "q": "对比结果如何保存？",
+          "a": "可以截图保存结果，或复制差异内容到其他文档中。"
+        }
+      }
+    },
+    "text-analyzer": {
+      "description": "文本分析工具，提供基础的文本统计分析功能。包括字符数、词数、行数统计和阅读时间估算。",
+      "features": {
+        "0": "字符和单词统计",
+        "1": "行数和段落统计",
+        "2": "阅读时间估算",
+        "3": "基础词频统计"
+      },
+      "useCases": {
+        "0": "SEO内容优化",
+        "1": "社交媒体文案字数控制",
+        "2": "学术论文统计",
+        "3": "翻译工作量评估",
+        "4": "内容质量分析"
+      },
+      "tips": {
+        "0": "不同语言的阅读速度标准不同",
+        "1": "词频分析有助于发现内容重点",
+        "2": "SEO优化时注意关键词密度",
+        "3": "标点符号也会影响文本复杂度"
+      },
+      "faq": {
+        "0": {
+          "q": "阅读时间如何计算？",
+          "a": "基于平均阅读速度（每分钟200-250词）估算，实际时间因人而异。"
+        },
+        "1": {
+          "q": "词频分析有什么用？",
+          "a": "帮助识别文本主题，优化关键词分布，提升内容质量。"
+        }
+      }
+    },
+    "text-processor": {
+      "description": "文本处理工具，提供基础文本编辑功能。支持大小写转换、去重、排序等常用文本操作。",
+      "features": {
+        "0": "大小写转换（大写、小写、首字母大写）",
+        "1": "去除重复行",
+        "2": "文本排序（正序、倒序）",
+        "3": "空行和空格清理",
+        "4": "文本计数功能"
+      },
+      "useCases": {
+        "0": "数据清洗和预处理",
+        "1": "代码格式化",
+        "2": "邮件列表整理",
+        "3": "关键词列表管理",
+        "4": "文档格式统一"
+      },
+      "tips": {
+        "0": "批量操作前建议先备份原文本",
+        "1": "可以组合多个操作实现复杂处理",
+        "2": "注意区分英文和中文的处理差异",
+        "3": "大文件处理时注意浏览器性能限制"
+      },
+      "faq": {
+        "0": {
+          "q": "如何去除特殊字符？",
+          "a": "使用查找替换功能，配合正则表达式可以精确删除特定字符。"
+        },
+        "1": {
+          "q": "处理中文文本有什么注意事项？",
+          "a": "中文没有明显的词边界，统计和处理时需要考虑字符特性。"
+        }
+      }
+    },
+    "csv-converter": {
+      "description": "CSV与JSON格式转换工具，支持表格数据格式双向转换。",
+      "features": {
+        "0": "CSV到JSON双向转换",
+        "1": "自动识别表头",
+        "2": "数据格式验证"
+      },
+      "useCases": {
+        "0": "数据库数据导入导出",
+        "1": "API数据格式转换",
+        "2": "Excel文件数据处理",
+        "3": "数据分析预处理",
+        "4": "系统间数据迁移"
+      },
+      "tips": {
+        "0": "确保CSV文件有清晰的表头",
+        "1": "注意处理含有逗号的数据字段",
+        "2": "JSON转CSV时注意嵌套对象的处理",
+        "3": "大文件建议分批处理"
+      },
+      "faq": {
+        "0": {
+          "q": "如何处理含有特殊字符的数据？",
+          "a": "使用引号包围含有逗号、换行符的字段，或选择其他分隔符。"
+        },
+        "1": {
+          "q": "JSON嵌套对象如何转换为CSV？",
+          "a": "嵌套对象会被展平为多列，或转换为字符串格式。"
+        }
+      }
+    },
+    "markdown-preview": {
+      "description": "Markdown预览工具，提供实时Markdown渲染功能。支持标准Markdown语法，帮助编写和预览文档内容。",
+      "features": {
+        "0": "实时Markdown渲染",
+        "1": "支持表格、代码块、链接",
+        "2": "基本Markdown语法支持"
+      },
+      "useCases": {
+        "0": "README文件编写",
+        "1": "技术文档撰写",
+        "2": "博客文章预览",
+        "3": "GitHub文档制作",
+        "4": "项目说明文档"
+      },
+      "tips": {
+        "0": "熟悉常用Markdown语法提升效率",
+        "1": "使用代码块展示技术内容",
+        "2": "合理使用标题层级组织内容",
+        "3": "预览时注意在不同设备上的显示效果"
+      },
+      "faq": {
+        "0": {
+          "q": "Markdown和HTML有什么区别？",
+          "a": "Markdown更简洁易写，HTML更灵活强大。Markdown最终会转换为HTML。"
+        },
+        "1": {
+          "q": "如何在Markdown中插入图片？",
+          "a": "使用![alt text](image-url)语法，或直接使用HTML的img标签。"
+        }
+      }
+    },
+    "qr-generator": {
+      "description": "二维码生成工具，可将文本、URL转换为二维码图片。支持基本的尺寸调节和PNG格式下载。",
+      "features": {
+        "0": "支持文本、URL内容生成",
+        "1": "可调节二维码尺寸",
+        "2": "支持PNG格式下载"
+      },
+      "useCases": {
+        "0": "网站链接分享",
+        "1": "WiFi密码快速连接",
+        "2": "联系方式信息交换",
+        "3": "产品信息标签制作",
+        "4": "活动签到和验票系统"
+      },
+      "tips": {
+        "0": "内容越多，二维码越复杂，扫描距离需要更近",
+        "1": "选择适当的错误纠正级别平衡容量和可靠性",
+        "2": "确保足够的对比度以便扫描",
+        "3": "测试在不同设备上的扫描效果"
+      },
+      "faq": {
+        "0": {
+          "q": "二维码能存储多少信息？",
+          "a": "取决于内容类型，纯数字最多7089个字符，中文汉字约1800个。"
+        },
+        "1": {
+          "q": "二维码损坏了还能扫描吗？",
+          "a": "二维码有错误纠正功能，轻微损坏仍可正常扫描。"
         }
       }
     }

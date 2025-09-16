@@ -1,7 +1,7 @@
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
-import { getToolDetails } from './ToolDetailDescription';
+import { getToolDetails } from '../utils/toolDetails.js';
 import tools from '../tools';
 
 // 工具分类映射（从BreadcrumbNav中复用）

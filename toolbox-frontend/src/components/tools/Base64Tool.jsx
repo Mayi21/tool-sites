@@ -1,97 +1,165 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Card, CardContent, Typography, TextField, Button, Stack, Alert, AlertTitle,
+  Typography, Button, Card, TextField, Alert, Stack, CardHeader, CardContent, Box,
   ToggleButton, ToggleButtonGroup
 } from '@mui/material';
-import { ContentCopy } from '@mui/icons-material';
-import CopySuccessAnimation from '../CopySuccessAnimation';
-import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
+import { ContentCopy, Transform } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function Base64Tool() {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState('encode');
-  const [error, setError] = useState(null);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [processing, setProcessing] = useState(false);
+
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  function handleConvert() {
-    try {
-      setError(null);
-      if (mode === 'encode') {
-        setOutput(btoa(unescape(encodeURIComponent(input))));
-      } else {
-        setOutput(decodeURIComponent(escape(atob(input))));
-      }
-    } catch (e) {
-      setError(e.message || t('Invalid input'));
-      setOutput('');
-    }
-  }
-
-  async function copyOutput() {
+  const handleCopy = () => {
     if (output) {
-      await copyToClipboard(output);
+      copyToClipboard(output);
     }
-  }
+  };
+
+  const handleConvert = () => {
+    if (!input.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter text to convert') });
+      return;
+    }
+
+    setProcessing(true);
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        let result = '';
+        if (mode === 'encode') {
+          result = btoa(unescape(encodeURIComponent(input)));
+          setFeedback({ type: 'success', message: t('Text encoded successfully') });
+        } else {
+          result = decodeURIComponent(escape(atob(input)));
+          setFeedback({ type: 'success', message: t('Text decoded successfully') });
+        }
+        setOutput(result);
+      } catch (e) {
+        setFeedback({ type: 'error', message: e.message || t('Invalid input for decoding') });
+        setOutput('');
+      }
+      setProcessing(false);
+    }, 300);
+  };
 
   const handleModeChange = (event, newMode) => {
     if (newMode !== null) {
       setMode(newMode);
+      setOutput('');
+      setFeedback({ type: '', message: '' });
     }
   };
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto' }}>
-        <CardContent>
-          <Typography variant="h5" component="h1" gutterBottom>{t('base64.name')}</Typography>
-          <Stack spacing={2}>
-            <TextField 
-              value={input} 
-              onChange={e => setInput(e.target.value)} 
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1">{t('Base64 Encoder/Decoder')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Encode text to Base64 or decode Base64 to text.')}
+        </Typography>
+
+        <Card variant="outlined" sx={{ mb: 2 }}>
+          <CardHeader title={t('Input Text')} />
+          <CardContent>
+            <TextField
+              value={input}
+              onChange={e => setInput(e.target.value)}
               multiline
-              rows={6} 
+              rows={8}
               label={t('Enter text to encode or decode')}
               variant="outlined"
               fullWidth
+              sx={{ mb: 2 }}
             />
-            <Stack direction="row" spacing={2} alignItems="center">
-              <ToggleButtonGroup value={mode} exclusive onChange={handleModeChange} aria-label="text alignment">
-                <ToggleButton value="encode" aria-label="left aligned">{t('Encode')}</ToggleButton>
-                <ToggleButton value="decode" aria-label="centered">{t('Decode')}</ToggleButton>
+
+            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+              <ToggleButtonGroup
+                value={mode}
+                exclusive
+                onChange={handleModeChange}
+                aria-label="conversion mode"
+              >
+                <ToggleButton value="encode" aria-label="encode">
+                  {t('Encode')}
+                </ToggleButton>
+                <ToggleButton value="decode" aria-label="decode">
+                  {t('Decode')}
+                </ToggleButton>
               </ToggleButtonGroup>
-              <Button variant="contained" onClick={handleConvert}>{t('Convert')}</Button>
+
+              <Button
+                variant="contained"
+                onClick={handleConvert}
+                startIcon={<Transform />}
+                disabled={processing || !input.trim()}
+                sx={{ minWidth: 140 }}
+              >
+                {processing ? t('Converting...') : t('Convert')}
+              </Button>
             </Stack>
-            {error && <Alert severity="error"><AlertTitle>{t('Error')}</AlertTitle>{error}</Alert>}
-            {output && (
-              <Stack spacing={1}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="subtitle1">{t('Result')}</Typography>
-                  <Button size="small" startIcon={<ContentCopy />} onClick={copyOutput}>{t('Copy')}</Button>
-                </Stack>
-                <TextField 
-                  value={output} 
-                  InputProps={{ readOnly: true }} 
-                  multiline 
-                  rows={6} 
-                  variant="filled" 
-                  fullWidth 
-                  sx={{ 
-                    '& .MuiInputBase-root': { 
-                      maxHeight: 200, 
-                      overflow: 'auto',
-                      fontFamily: 'monospace'
-                    } 
-                  }} 
-                />
-              </Stack>
+          </CardContent>
+        </Card>
+
+        {feedback.message && (
+          <Alert severity={feedback.type} sx={{ mb: 2 }}>
+            {feedback.message}
+          </Alert>
+        )}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Converted Result')}
+            action={
+              output && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
+          />
+          <CardContent>
+            {output ? (
+              <TextField
+                value={output}
+                multiline
+                readOnly
+                rows={8}
+                fullWidth
+                variant="filled"
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    maxHeight: 200,
+                    overflow: 'auto'
+                  }
+                }}
+              />
+            ) : (
+              <Box sx={{ minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">
+                  {t('Converted result will appear here. Enter text and click convert.')}
+                </Typography>
+              </Box>
             )}
-          </Stack>
-        </CardContent>
+          </CardContent>
+        </Card>
       </Card>
-      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
     </>
   );
 } 

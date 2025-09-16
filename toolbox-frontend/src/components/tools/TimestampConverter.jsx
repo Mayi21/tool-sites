@@ -1,28 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Card, Typography, TextField, Button, Stack, Grid, Paper, Box, InputAdornment, IconButton, Alert
+  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
+  ToggleButton, ToggleButtonGroup, Chip
 } from '@mui/material';
-import { ContentCopy, Schedule, Update } from '@mui/icons-material';
-import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
-import CopySuccessAnimation from '../CopySuccessAnimation';
-
-const StatisticDisplay = ({ title, value, icon }) => (
-  <Paper variant="outlined" sx={{ p: 2, textAlign: 'center' }}>
-    <Stack direction="row" spacing={1} justifyContent="center" alignItems="center">
-      {icon}
-      <Typography variant="h6" color="text.secondary">{title}</Typography>
-    </Stack>
-    <Typography variant="h5" sx={{ mt: 1, fontFamily: 'monospace' }}>{value}</Typography>
-  </Paper>
-);
+import { ContentCopy, AccessTime, CalendarToday, Refresh, Transform } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function TimestampConverter() {
   const { t } = useTranslation();
-  const [timestamp, setTimestamp] = useState('');
-  const [date, setDate] = useState('');
+  const [input, setInput] = useState('');
+  const [output, setOutput] = useState('');
+  const [mode, setMode] = useState('toDate');
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [currentTime, setCurrentTime] = useState(Date.now());
-  const [error, setError] = useState(null);
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   useEffect(() => {
@@ -30,95 +23,207 @@ export default function TimestampConverter() {
     return () => clearInterval(timer);
   }, []);
 
-  function convertTimestampToDate() {
-    if (!timestamp) return;
-    const ts = parseInt(timestamp.length > 10 ? timestamp : timestamp + '000'); // Handle seconds and ms
-    if (isNaN(ts)) {
-      setError(t('Invalid timestamp'));
+  const handleCopy = () => {
+    if (output) {
+      copyToClipboard(output);
+    }
+  };
+
+  const handleConvert = () => {
+    if (!input.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter input to convert') });
       return;
     }
-    setDate(new Date(ts).toLocaleString());
-    setError(null);
-  }
 
-  function convertDateToTimestamp() {
-    if (!date) return;
-    const dateObj = new Date(date);
-    if (isNaN(dateObj.getTime())) {
-      setError(t('Invalid date'));
-      return;
+    setLoading(true);
+    setOutput('');
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        let result = '';
+        if (mode === 'toDate') {
+          // Convert timestamp to date
+          const ts = parseInt(input.length > 10 ? input : input + '000');
+          if (isNaN(ts)) {
+            throw new Error('Invalid timestamp');
+          }
+          result = new Date(ts).toLocaleString();
+          setFeedback({ type: 'success', message: t('Timestamp converted successfully') });
+        } else {
+          // Convert date to timestamp
+          const dateObj = new Date(input);
+          if (isNaN(dateObj.getTime())) {
+            throw new Error('Invalid date');
+          }
+          result = dateObj.getTime().toString();
+          setFeedback({ type: 'success', message: t('Date converted successfully') });
+        }
+        setOutput(result);
+      } catch (e) {
+        setFeedback({ type: 'error', message: t('Invalid input format') });
+        setOutput('');
+      }
+      setLoading(false);
+    }, 300);
+  };
+
+  const handleModeChange = (event, newMode) => {
+    if (newMode !== null) {
+      setMode(newMode);
+      setOutput('');
+      setFeedback({ type: '', message: '' });
     }
-    setTimestamp(dateObj.getTime().toString());
-    setError(null);
-  }
+  };
 
-  function setCurrentTimestamp() {
-    setTimestamp(currentTime.toString());
-  }
+  const handleSetCurrentTimestamp = () => {
+    setInput(currentTime.toString());
+    setOutput('');
+    setFeedback({ type: '', message: '' });
+  };
 
   return (
     <>
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Timestamp Converter')}</Typography>
-        
-        <Grid container spacing={2} sx={{ mb: 3 }}>
-          <Grid item xs={12} sm={6}>
-            <StatisticDisplay title={t('Current Timestamp')} value={currentTime} icon={<Schedule fontSize="small" />} />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <StatisticDisplay title={t('Current Date')} value={new Date(currentTime).toLocaleString()} />
-          </Grid>
-        </Grid>
-        
-        <Stack spacing={2}>
-          {error && <Alert severity="error">{error}</Alert>}
-          <Grid container spacing={2}>
-            <Grid item xs={12} md={6}>
-              <Stack spacing={1}>
-                <TextField 
-                  label={t('Timestamp')}
-                  value={timestamp} 
-                  onChange={e => setTimestamp(e.target.value)} 
-                  placeholder={t('Enter timestamp')}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => copyToClipboard(timestamp)} edge="end">
-                          <ContentCopy />
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                />
-                <Button variant="contained" onClick={convertTimestampToDate}>{t('Convert to Date')}</Button>
+        <Typography variant="h5" component="h1">{t('Timestamp Converter')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Convert between Unix timestamps and human-readable dates bidirectionally.')}
+        </Typography>
+
+        {/* Current Time Display */}
+        <Box sx={{ mb: 2, display: 'flex', gap: 2, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <Chip
+            icon={<AccessTime />}
+            label={`${t('Current Timestamp')}: ${currentTime}`}
+            variant="outlined"
+            sx={{ fontFamily: 'monospace' }}
+          />
+          <Chip
+            icon={<CalendarToday />}
+            label={`${t('Current Date')}: ${new Date(currentTime).toLocaleString()}`}
+            variant="outlined"
+          />
+        </Box>
+
+        <Card variant="outlined" sx={{ mb: 2 }}>
+          <CardHeader title={t('Input')} />
+          <CardContent>
+            <Stack spacing={2}>
+              <TextField
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                label={mode === 'toDate' ? t('Enter timestamp') : t('Enter date')}
+                placeholder={mode === 'toDate' ? '1640995200000' : '2022-01-01 12:00:00'}
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: mode === 'toDate' ? 'monospace' : 'inherit',
+                    fontSize: 12
+                  }
+                }}
+              />
+
+              <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
+                <ToggleButtonGroup
+                  value={mode}
+                  exclusive
+                  onChange={handleModeChange}
+                  aria-label="conversion mode"
+                >
+                  <ToggleButton value="toDate" aria-label="timestamp to date">
+                    <AccessTime sx={{ mr: 1 }} />
+                    {t('To Date')}
+                  </ToggleButton>
+                  <ToggleButton value="toTimestamp" aria-label="date to timestamp">
+                    <CalendarToday sx={{ mr: 1 }} />
+                    {t('To Timestamp')}
+                  </ToggleButton>
+                </ToggleButtonGroup>
+
+                <Stack direction="row" spacing={1}>
+                  <Button
+                    variant="outlined"
+                    onClick={handleSetCurrentTimestamp}
+                    startIcon={<Refresh />}
+                    size="small"
+                  >
+                    {t('Use Current')}
+                  </Button>
+                  <Button
+                    variant="contained"
+                    onClick={handleConvert}
+                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Transform />}
+                    disabled={loading || !input.trim()}
+                    sx={{ minWidth: 120 }}
+                  >
+                    {loading ? t('Converting...') : t('Convert')}
+                  </Button>
+                </Stack>
               </Stack>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Stack spacing={1}>
-                <TextField 
-                  label={t('Date')}
-                  value={date} 
-                  onChange={e => setDate(e.target.value)} 
-                  placeholder={t('Enter date')}
-                  InputProps={{
-                    endAdornment: (
-                      <InputAdornment position="end">
-                        <IconButton onClick={() => copyToClipboard(date)} edge="end">
-                          <ContentCopy />
-                        </IconButton>
-                      </InputAdornment>
-                    )
-                  }}
-                />
-                <Button variant="outlined" onClick={convertDateToTimestamp}>{t('Convert to Timestamp')}</Button>
-              </Stack>
-            </Grid>
-          </Grid>
-          
-          <Button onClick={setCurrentTimestamp} startIcon={<Update />}>{t('Set Current Timestamp')}</Button>
-        </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
+
+        {feedback.message && (
+          <Alert severity={feedback.type} sx={{ mb: 2 }}>
+            {feedback.message}
+          </Alert>
+        )}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Converted Result')}
+            action={
+              output && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
+          />
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Converting timestamp, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : output ? (
+              <TextField
+                value={output}
+                multiline
+                readOnly
+                rows={4}
+                fullWidth
+                variant="filled"
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: 14,
+                    textAlign: 'center'
+                  }
+                }}
+              />
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
+                  {mode === 'toDate'
+                    ? t('Converted date will appear here. Enter timestamp and click convert.')
+                    : t('Converted timestamp will appear here. Enter date and click convert.')
+                  }
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Card>
-      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
     </>
   );
 } 

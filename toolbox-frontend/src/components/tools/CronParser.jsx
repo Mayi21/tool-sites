@@ -1,125 +1,184 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Card, CardContent, Typography, TextField, Button, Stack, Grid, Alert, AlertTitle,
+  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
 } from '@mui/material';
-import { PlayCircleOutline, Clear, Schedule } from '@mui/icons-material';
+import { ContentCopy, Schedule } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 import { buildApiUrl, getApiConfig } from '../../config/api';
 
 export default function CronParser() {
   const { t } = useTranslation();
-  const [cronExpression, setCronExpression] = useState('0 */20 * * * ?');
-  const [nextExecutions, setNextExecutions] = useState([]);
-  const [error, setError] = useState(null);
+  const [input, setInput] = useState('0 */20 * * * ?');
+  const [output, setOutput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [nextExecutions, setNextExecutions] = useState([]);
+  const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  const handleParse = async () => {
+  const handleCopy = () => {
+    if (output) {
+      copyToClipboard(output);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!input.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter a cron expression') });
+      return;
+    }
+
+    setLoading(true);
+    setOutput('');
+    setNextExecutions([]);
+    setFeedback({ type: '', message: '' });
+
     try {
-      setError(null);
-      setLoading(true);
-      if (!cronExpression.trim()) {
-        setError(t('Please enter a cron expression'));
-        return;
-      }
-
       const apiConfig = getApiConfig();
       const response = await fetch(buildApiUrl(apiConfig.ENDPOINTS.CRON_NEXT_TIMES), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expr: cronExpression, count: 5 }),
+        body: JSON.stringify({ expr: input, count: 5 }),
       });
 
       if (!response.ok) {
-        const errData = await response.json().catch(() => ({})); // Catch if body is not json
+        const errData = await response.json().catch(() => ({}));
         throw new Error(errData.error || `HTTP error! status: ${response.status}`);
       }
 
       const data = await response.json();
 
       if (data.success) {
-        setNextExecutions(data.times.map((time, index) => ({ id: index, time: new Date(time).toLocaleString() })));
+        const executions = data.times.map((time, index) => ({
+          id: index,
+          time: new Date(time).toLocaleString()
+        }));
+        setNextExecutions(executions);
+
+        // Create formatted output for copying
+        const formattedOutput = `Cron Expression: ${input}\n\nNext 5 Executions:\n` +
+          executions.map((exec, index) => `${index + 1}. ${exec.time}`).join('\n');
+        setOutput(formattedOutput);
+
+        setFeedback({ type: 'success', message: t('Cron expression parsed successfully') });
       } else {
-        setError(data.error || t('Unknown error'));
-        setNextExecutions([]);
+        throw new Error(data.error || t('Unknown error'));
       }
     } catch (e) {
-      setError(e.message);
+      setFeedback({ type: 'error', message: t('Invalid cron expression: {{error}}', { error: e.message }) });
+      setOutput('');
       setNextExecutions([]);
     } finally {
       setLoading(false);
     }
   };
 
-  function clearAll() {
-    setCronExpression('');
-    setNextExecutions([]);
-    setError(null);
-  }
-
   return (
-    <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-      <Typography variant="h5" component="h1" sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
-        <Schedule sx={{ mr: 1 }} />
-        {t('Cron Expression Parser')}
-      </Typography>
-      
-      <Stack spacing={3}>
-        <TextField
-          label={t('Cron Expression')}
-          value={cronExpression}
-          onChange={e => setCronExpression(e.target.value)}
-          placeholder={'0 */20 * * * ?'}
-          fullWidth
-        />
+    <>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1">{t('Cron Expression Parser')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Parse cron expressions to preview next execution times and validate scheduling syntax.')}
+        </Typography>
 
-        <Stack direction="row" spacing={1}>
-          <Button 
-            variant="contained" 
-            startIcon={<PlayCircleOutline />} 
-            onClick={handleParse}
-            disabled={loading}
-          >
-            {loading ? t('Parsing...') : t('Parse Expression')}
-          </Button>
-          <Button 
-            variant="outlined"
-            startIcon={<Clear />} 
-            onClick={clearAll}
-          >
-            {t('Clear')}
-          </Button>
-        </Stack>
+        <form onSubmit={handleSubmit}>
+          <Card variant="outlined" sx={{ mb: 2 }}>
+            <CardHeader title={t('Input Options')} />
+            <CardContent>
+              <Stack spacing={2}>
+                <TextField
+                  name="cronExpression"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  label={t('Cron Expression')}
+                  placeholder="0 */20 * * * ?"
+                  variant="outlined"
+                  fullWidth
+                  required
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      fontFamily: 'monospace',
+                      fontSize: 14
+                    }
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Schedule />}
+                  disabled={loading}
+                  fullWidth
+                >
+                  {loading ? t('Parsing...') : t('Parse Expression')}
+                </Button>
+              </Stack>
+            </CardContent>
+          </Card>
+        </form>
 
-        {error && (
-          <Alert severity="error">
-            <AlertTitle>{t('Parse Error')}</AlertTitle>
-            {error}
-          </Alert>
-        )}
+        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
 
-        {nextExecutions.length > 0 && (
-          <TableContainer component={Paper} variant="outlined">
-            <Table size="small" aria-label="next executions table">
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('Execution Time')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {nextExecutions.map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.time}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Stack>
-    </Card>
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Parsed Result')}
+            action={
+              output && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
+          />
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Parsing cron expression, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : nextExecutions.length > 0 ? (
+              <TableContainer component={Paper} variant="outlined">
+                <Table size="small" aria-label="next executions table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>{t('Execution Time')}</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {nextExecutions.map((row) => (
+                      <TableRow key={row.id}>
+                        <TableCell
+                          component="th"
+                          scope="row"
+                          sx={{ fontFamily: 'monospace', fontSize: 14 }}
+                        >
+                          {row.time}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">
+                  {t('Next execution times will appear here. Enter a cron expression and click parse.')}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
+      </Card>
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
+    </>
   );
 }

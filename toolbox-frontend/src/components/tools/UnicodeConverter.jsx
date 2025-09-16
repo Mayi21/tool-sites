@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Card, Typography, TextField, Button, Stack, Grid, Select, MenuItem, FormControl, InputLabel, Alert
+  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
+  Select, MenuItem, FormControl, InputLabel
 } from '@mui/material';
-import { ContentCopy, SwapHoriz, Clear } from '@mui/icons-material';
-import CopySuccessAnimation from '../CopySuccessAnimation';
-import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
+import { ContentCopy, Transform } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 // Conversion logic remains the same
 function chineseToUnicode(text) {
@@ -23,10 +24,12 @@ function unicodeEntityToChinese(text) {
 
 export default function UnicodeConverter() {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState('toUnicode');
-  const [error, setError] = useState(null);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
+
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   const modeOptions = [
@@ -36,41 +39,43 @@ export default function UnicodeConverter() {
     { label: t('Unicode Entity to Chinese'), value: 'fromEntity' }
   ];
 
-  function handleConvert() {
-    try {
-      setError(null);
-      let result = '';
-      switch (mode) {
-        case 'toUnicode': result = chineseToUnicode(input); break;
-        case 'fromUnicode': result = unicodeToChinese(input); break;
-        case 'toEntity': result = chineseToUnicodeEntity(input); break;
-        case 'fromEntity': result = unicodeEntityToChinese(input); break;
-        default: break;
-      }
-      setOutput(result);
-    } catch (e) {
-      setError(e.message);
-      setOutput('');
-    }
-  }
-
-  async function copyOutput() {
-    if (output) await copyToClipboard(output);
-  }
-
-  function clearAll() {
-    setInput('');
-    setOutput('');
-    setError(null);
-  }
-
-  function swapContent() {
+  const handleCopy = () => {
     if (output) {
-      setInput(output);
-      setOutput('');
-      setError(null);
+      copyToClipboard(output);
     }
-  }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!input.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter text to convert') });
+      return;
+    }
+
+    setLoading(true);
+    setOutput('');
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        let result = '';
+        switch (mode) {
+          case 'toUnicode': result = chineseToUnicode(input); break;
+          case 'fromUnicode': result = unicodeToChinese(input); break;
+          case 'toEntity': result = chineseToUnicodeEntity(input); break;
+          case 'fromEntity': result = unicodeEntityToChinese(input); break;
+          default: break;
+        }
+        setOutput(result);
+        setFeedback({ type: 'success', message: t('Conversion completed successfully') });
+      } catch (e) {
+        setFeedback({ type: 'error', message: t('Conversion failed: {{error}}', { error: e.message }) });
+        setOutput('');
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+  };
 
   const placeholderText =
     mode === 'toUnicode' ? t('Enter Chinese text to convert to Unicode') :
@@ -81,41 +86,105 @@ export default function UnicodeConverter() {
   return (
     <>
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Chinese ↔ Unicode Converter')}</Typography>
-        <Stack spacing={2}>
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
+        <Typography variant="h5" component="h1">{t('Unicode Converter')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Convert between Chinese characters and Unicode representations.')}
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          <Card variant="outlined" sx={{ mb: 2 }}>
+            <CardHeader title={t('Conversion Options')} />
+            <CardContent>
               <Stack spacing={2}>
                 <FormControl fullWidth>
                   <InputLabel id="mode-select-label">{t('Conversion Mode')}</InputLabel>
-                  <Select labelId="mode-select-label" value={mode} label={t('Conversion Mode')} onChange={e => setMode(e.target.value)}>
+                  <Select
+                    labelId="mode-select-label"
+                    value={mode}
+                    label={t('Conversion Mode')}
+                    onChange={e => setMode(e.target.value)}
+                    required
+                  >
                     {modeOptions.map(opt => <MenuItem key={opt.value} value={opt.value}>{opt.label}</MenuItem>)}
                   </Select>
                 </FormControl>
-                <TextField value={input} onChange={e => setInput(e.target.value)} multiline rows={8} label={t('Input')} placeholder={placeholderText} fullWidth />
+                <TextField
+                  name="inputText"
+                  value={input}
+                  onChange={e => setInput(e.target.value)}
+                  label={t('Input Text')}
+                  placeholder={placeholderText}
+                  multiline
+                  rows={4}
+                  fullWidth
+                  required
+                  sx={{
+                    '& .MuiInputBase-root': {
+                      fontFamily: 'monospace',
+                      fontSize: 14
+                    }
+                  }}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Transform />}
+                  disabled={loading}
+                  fullWidth
+                >
+                  {loading ? t('Converting...') : t('Convert')}
+                </Button>
               </Stack>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Stack spacing={2}>
-                <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6">{mode.includes('to') ? t('Unicode Result') : t('Chinese Result')}</Typography>
-                  {output && <Button size="small" onClick={copyOutput} startIcon={<ContentCopy />}>{t('Copy')}</Button>}
+            </CardContent>
+          </Card>
+        </form>
+
+        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Converted Result')}
+            action={
+              output && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
+          />
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Converting text, please wait...')}</Typography>
                 </Stack>
-                <TextField value={output} InputProps={{ readOnly: true }} multiline rows={8} label={t('Result')} placeholder={t('Result will appear here')} variant="filled" fullWidth sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }} />
-              </Stack>
-            </Grid>
-          </Grid>
-
-          <Stack direction="row" spacing={1} justifyContent="center">
-            <Button variant="contained" onClick={handleConvert} size="large">{t('Convert')}</Button>
-            <Button variant="outlined" startIcon={<SwapHoriz />} onClick={swapContent} disabled={!output}>{t('Swap')}</Button>
-            <Button variant="outlined" startIcon={<Clear />} onClick={clearAll}>{t('Clear')}</Button>
-          </Stack>
-
-          {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
-        </Stack>
+              </Box>
+            ) : output ? (
+              <TextField
+                value={output}
+                multiline
+                readOnly
+                rows={12}
+                fullWidth
+                variant="filled"
+                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: 12 } }}
+              />
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">
+                  {t('Converted result will appear here. Select conversion mode and enter text to convert.')}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Card>
-      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
     </>
   );
 } 

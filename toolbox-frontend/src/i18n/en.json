@@ -740,6 +740,26 @@
   "image-watermark.name": "Image Watermark",
   "password-generator.name": "Password Generator",
   "base64.name": "Base64 Encoder/Decoder",
+  "Base64 Encoder/Decoder": "Base64 Encoder/Decoder",
+  "Encode text to Base64 or decode Base64 to text.": "Encode text to Base64 or decode Base64 to text.",
+  "Input Text": "Input Text",
+  "Converted Result": "Converted Result",
+  "Converting...": "Converting...",
+  "Please enter text to convert": "Please enter text to convert",
+  "Text encoded successfully": "Text encoded successfully",
+  "Text decoded successfully": "Text decoded successfully",
+  "Invalid input for decoding": "Invalid input for decoding",
+  "Converted result will appear here. Enter text and click convert.": "Converted result will appear here. Enter text and click convert.",
+  "Format and validate JSON data with syntax highlighting.": "Format and validate JSON data with syntax highlighting.",
+  "Input JSON": "Input JSON",
+  "Formatted Result": "Formatted Result",
+  "Formatted JSON will appear here. Enter valid JSON and click Format or Minify.": "Formatted JSON will appear here. Enter valid JSON and click Format or Minify.",
+  "Processing...": "Processing...",
+  "Processing JSON, please wait...": "Processing JSON, please wait...",
+  "JSON formatted successfully": "JSON formatted successfully",
+  "JSON minified successfully": "JSON minified successfully",
+  "Processing": "Processing",
+  "Invalid JSON format": "Invalid JSON format",
   "base64.pageDescription": "Free online Base64 encoder/decoder tool, supports text, Chinese, URL, JSON encoding and decoding with one click. Ad-free, fast, clipboard support - essential tool for developers and operations.",
   "toolDetails": {
     "base64": {
@@ -775,7 +795,7 @@
       }
     },
     "json-formatter": {
-      "description": "JSON (JavaScript Object Notation) formatting tool that helps developers beautify, validate and compress JSON data. Supports syntax highlighting, error detection and format conversion.",
+      "description": "JSON formatting tool that helps developers beautify, validate and compress JSON data. Supports syntax highlighting, error detection and format conversion.",
       "features": {
         "0": "Smart JSON formatting and beautification",
         "1": "JSON data compression (Minify)",

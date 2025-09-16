@@ -1,39 +1,59 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Card, Typography, TextField, Button, Stack, Alert, AlertTitle } from '@mui/material';
-import { ContentCopy, Download } from '@mui/icons-material';
-import CopySuccessAnimation from '../CopySuccessAnimation';
-import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
+import {
+  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress
+} from '@mui/material';
+import { ContentCopy, Download, FormatAlignLeft, Compress } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function JsonFormatter() {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   function formatJson() {
-    try {
-      setError(null);
-      const parsed = JSON.parse(input);
-      const formatted = JSON.stringify(parsed, null, 2);
-      setOutput(formatted);
-    } catch (e) {
-      setError(t('Invalid JSON format'));
-      setOutput('');
-    }
+    setLoading(true);
+    setError(null);
+    setOutput('');
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        const parsed = JSON.parse(input);
+        const formatted = JSON.stringify(parsed, null, 2);
+        setOutput(formatted);
+        setFeedback({ type: 'success', message: t('JSON formatted successfully') });
+      } catch (e) {
+        setError(t('Invalid JSON format'));
+        setOutput('');
+      }
+      setLoading(false);
+    }, 300);
   }
 
   function minifyJson() {
-    try {
-      setError(null);
-      const parsed = JSON.parse(input);
-      const minified = JSON.stringify(parsed);
-      setOutput(minified);
-    } catch (e) {
-      setError(t('Invalid JSON format'));
-      setOutput('');
-    }
+    setLoading(true);
+    setError(null);
+    setOutput('');
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        const parsed = JSON.parse(input);
+        const minified = JSON.stringify(parsed);
+        setOutput(minified);
+        setFeedback({ type: 'success', message: t('JSON minified successfully') });
+      } catch (e) {
+        setError(t('Invalid JSON format'));
+        setOutput('');
+      }
+      setLoading(false);
+    }, 300);
   }
 
   async function copyToClipboardHandler() {
@@ -56,64 +76,119 @@ export default function JsonFormatter() {
 
   return (
     <>
-      <Card sx={{ p: 3 }}>
-        <Typography variant="h4" component="h1" sx={{ mb: 3, textAlign: 'center' }}>
-          {t('JSON Formatter')}
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1">{t('JSON Formatter')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Format and validate JSON data with syntax highlighting.')}
         </Typography>
 
-        <Stack spacing={3}>
-          <TextField
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            multiline
-            rows={8}
-            label={t('Enter JSON to format')}
-            variant="outlined"
-            fullWidth
-            sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }}
-          />
-
-          <Stack direction="row" spacing={2} justifyContent="center">
-            <Button variant="contained" size="large" onClick={formatJson}>
-              {t('Format')}
-            </Button>
-            <Button variant="outlined" size="large" onClick={minifyJson}>
-              {t('Minify')}
-            </Button>
-          </Stack>
-
-          {error && (
-            <Alert severity="error">
-              <AlertTitle>{t('Error')}</AlertTitle>
-              {error}
-            </Alert>
-          )}
-
-          {output && (
+        <Card variant="outlined" sx={{ mb: 2 }}>
+          <CardHeader title={t('Input JSON')} />
+          <CardContent>
             <Stack spacing={2}>
-              <Stack direction="row" spacing={2} justifyContent="center">
-                <Button variant="outlined" startIcon={<ContentCopy />} onClick={copyToClipboardHandler}>
-                  {t('Copy')}
+              <TextField
+                value={input}
+                onChange={e => setInput(e.target.value)}
+                multiline
+                rows={8}
+                label={t('Enter JSON to format')}
+                variant="outlined"
+                fullWidth
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: 12
+                  }
+                }}
+              />
+
+              <Stack direction="row" spacing={2}>
+                <Button
+                  variant="contained"
+                  onClick={formatJson}
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <FormatAlignLeft />}
+                  disabled={loading || !input.trim()}
+                  fullWidth
+                >
+                  {loading ? t('Processing...') : t('Format')}
                 </Button>
-                <Button variant="outlined" startIcon={<Download />} onClick={downloadJson}>
-                  {t('Download')}
+
+                <Button
+                  variant="outlined"
+                  onClick={minifyJson}
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Compress />}
+                  disabled={loading || !input.trim()}
+                  fullWidth
+                >
+                  {loading ? t('Processing...') : t('Minify')}
                 </Button>
               </Stack>
+            </Stack>
+          </CardContent>
+        </Card>
 
+        {error && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {error}
+          </Alert>
+        )}
+
+        {feedback.message && (
+          <Alert severity={feedback.type} sx={{ mb: 2 }}>
+            {feedback.message}
+          </Alert>
+        )}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Formatted Result')}
+            action={
+              output && (
+                <Stack direction="row" spacing={1}>
+                  <Button size="small" onClick={copyToClipboardHandler} startIcon={<ContentCopy />}>
+                    {t('Copy')}
+                  </Button>
+                  <Button size="small" onClick={downloadJson} startIcon={<Download />}>
+                    {t('Download')}
+                  </Button>
+                </Stack>
+              )
+            }
+          />
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Processing JSON, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : output ? (
               <TextField
                 value={output}
-                InputProps={{
-                  readOnly: true,
-                  style: { fontFamily: 'monospace' }
-                }}
                 multiline
+                readOnly
                 rows={12}
-                variant="filled"
                 fullWidth
+                variant="filled"
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: 12,
+                    maxHeight: 400,
+                    overflow: 'auto'
+                  }
+                }}
               />
-            </Stack>
-          )}
-        </Stack>
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">
+                  {t('Formatted JSON will appear here. Enter valid JSON and click Format or Minify.')}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Card>
 
       <CopySuccessAnimation

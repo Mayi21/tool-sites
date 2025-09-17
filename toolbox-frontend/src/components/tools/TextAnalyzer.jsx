@@ -267,7 +267,7 @@ ${analysis.wordFrequency.map(({ word, count }) => `${word}: ${count}`).join('\n'
             ) : (
               <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
-                  {t('Analysis results will appear here. Enter text above to start analysis.')}
+                  {t('Processing results will appear here. Enter text above and select an operation.')}
                 </Typography>
               </Box>
             )}

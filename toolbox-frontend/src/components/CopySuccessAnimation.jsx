@@ -17,6 +17,9 @@ export default function CopySuccessAnimation({ visible, onAnimationEnd }) {
         }, 300);
       }, 1500);
       return () => clearTimeout(timer);
+    } else {
+      // When visible becomes false, immediately reset to hidden
+      setAnimationState('hidden');
     }
   }, [visible, onAnimationEnd]);
 

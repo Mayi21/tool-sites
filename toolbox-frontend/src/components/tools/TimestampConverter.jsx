@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
   ToggleButton, ToggleButtonGroup, Chip
 } from '@mui/material';
-import { ContentCopy, AccessTime, CalendarToday, Refresh, Transform } from '@mui/icons-material';
+import { ContentCopy, AccessTime, CalendarToday, Transform } from '@mui/icons-material';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
@@ -12,7 +12,7 @@ export default function TimestampConverter() {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
-  const [mode, setMode] = useState('toDate');
+  const [mode, setMode] = useState('toTimestamp');
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [currentTime, setCurrentTime] = useState(Date.now());
@@ -76,10 +76,12 @@ export default function TimestampConverter() {
     }
   };
 
-  const handleSetCurrentTimestamp = () => {
-    setInput(currentTime.toString());
-    setOutput('');
-    setFeedback({ type: '', message: '' });
+  const handleCopyCurrentTimestamp = () => {
+    copyToClipboard(currentTime.toString());
+  };
+
+  const handleCopyCurrentDate = () => {
+    copyToClipboard(new Date(currentTime).toLocaleString());
   };
 
   return (
@@ -96,12 +98,32 @@ export default function TimestampConverter() {
             icon={<AccessTime />}
             label={`${t('Current Timestamp')}: ${currentTime}`}
             variant="outlined"
-            sx={{ fontFamily: 'monospace' }}
+            clickable
+            onClick={handleCopyCurrentTimestamp}
+            sx={{
+              fontFamily: 'monospace',
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'primary.light',
+                color: 'primary.contrastText'
+              }
+            }}
+            title={t('Click to copy timestamp')}
           />
           <Chip
             icon={<CalendarToday />}
             label={`${t('Current Date')}: ${new Date(currentTime).toLocaleString()}`}
             variant="outlined"
+            clickable
+            onClick={handleCopyCurrentDate}
+            sx={{
+              cursor: 'pointer',
+              '&:hover': {
+                backgroundColor: 'primary.light',
+                color: 'primary.contrastText'
+              }
+            }}
+            title={t('Click to copy date')}
           />
         </Box>
 
@@ -141,25 +163,15 @@ export default function TimestampConverter() {
                   </ToggleButton>
                 </ToggleButtonGroup>
 
-                <Stack direction="row" spacing={1}>
-                  <Button
-                    variant="outlined"
-                    onClick={handleSetCurrentTimestamp}
-                    startIcon={<Refresh />}
-                    size="small"
-                  >
-                    {t('Use Current')}
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={handleConvert}
-                    startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Transform />}
-                    disabled={loading || !input.trim()}
-                    sx={{ minWidth: 120 }}
-                  >
-                    {loading ? t('Converting...') : t('Convert')}
-                  </Button>
-                </Stack>
+                <Button
+                  variant="contained"
+                  onClick={handleConvert}
+                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Transform />}
+                  disabled={loading || !input.trim()}
+                  sx={{ minWidth: 120 }}
+                >
+                  {loading ? t('Converting...') : t('Convert')}
+                </Button>
               </Stack>
             </Stack>
           </CardContent>

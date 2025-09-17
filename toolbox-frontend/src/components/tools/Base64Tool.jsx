@@ -65,11 +65,11 @@ export default function Base64Tool() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('Base64 Encoder/Decoder')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Encode text to Base64 or decode Base64 to text.')}
+          {t('Base64 Encode/Decode Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input Text')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <TextField
               value={input}
@@ -118,7 +118,7 @@ export default function Base64Tool() {
 
         <Card variant="outlined">
           <CardHeader
-            title={t('Converted Result')}
+            title={t('Processing Results')}
             action={
               output && (
                 <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>

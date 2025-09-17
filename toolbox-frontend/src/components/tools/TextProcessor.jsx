@@ -124,7 +124,7 @@ export default function TextProcessor() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('Text Processor')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Process text with various operations including case conversion, formatting, and statistical analysis.')}
+          {t('Text Processing Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>

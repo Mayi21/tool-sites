@@ -260,7 +260,7 @@ export default function DiffTool() {
         const result = computeLineDiff(a, b, { ignoreWhitespace, caseSensitive });
         setDiffLines(result);
 
-        // 计算差异统计
+        // Calculate diff statistics
         const stats = result.reduce((acc, line) => {
           if (line.type === 'add') acc.added++;
           else if (line.type === 'del') acc.deleted++;
@@ -311,7 +311,7 @@ export default function DiffTool() {
 
     setCurrentDiffIndex(newIndex);
 
-    // 滚动到差异位置
+    // Scroll to diff position
     setTimeout(() => {
       const element = document.querySelector(`[data-diff-line="${newIndex}"]`);
       if (element) {
@@ -325,11 +325,11 @@ export default function DiffTool() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('Text Comparison')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Compare two texts and highlight the differences between them.')}
+          {t('Text Comparison Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <Stack spacing={2}>
               <Grid container spacing={2}>
@@ -484,7 +484,7 @@ export default function DiffTool() {
               </Box>
             ) : diffLines.length > 0 ? (
               <Box sx={{ position: 'relative' }}>
-                {/* 差异对比区域 */}
+                {/* Diff comparison area */}
                   <Box sx={{
                     display: 'flex',
                     border: '2px solid',
@@ -494,7 +494,7 @@ export default function DiffTool() {
                     maxHeight: 500,
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                   }}>
-                  {/* 左侧文本 */}
+                  {/* Left text */}
                   <Box sx={{
                     flex: 1,
                     borderRight: '2px solid',
@@ -574,7 +574,7 @@ export default function DiffTool() {
                                 </Typography>
                               ) : line.type === 'add' ? (
                                 <Typography component="span" sx={{ color: 'grey.400', fontSize: 'inherit' }}>
-                                  {/* 空行占位 */}
+                                  {/* Empty line placeholder */}
                                 </Typography>
                               ) : (
                                 diffWords(line.left, line.right)
@@ -590,7 +590,7 @@ export default function DiffTool() {
                     </Box>
                   </Box>
 
-                  {/* 右侧文本 */}
+                  {/* Right text */}
                   <Box sx={{ flex: 1, overflow: 'auto' }}>
                     <Box sx={{
                       bgcolor: 'grey.50',
@@ -664,7 +664,7 @@ export default function DiffTool() {
                                 </Typography>
                               ) : line.type === 'del' ? (
                                 <Typography component="span" sx={{ color: 'grey.400', fontSize: 'inherit' }}>
-                                  {/* 空行占位 */}
+                                  {/* Empty line placeholder */}
                                 </Typography>
                               ) : (
                                 diffWords(line.left, line.right)

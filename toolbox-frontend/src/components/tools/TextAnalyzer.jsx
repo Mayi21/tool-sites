@@ -119,11 +119,11 @@ ${analysis.wordFrequency.map(({ word, count }) => `${word}: ${count}`).join('\n'
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('Text Analyzer')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Analyze text statistics including word count, reading time, and frequency analysis.')}
+          {t('Text Statistics Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input Text')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <Stack spacing={2}>
               <TextField
@@ -149,7 +149,7 @@ ${analysis.wordFrequency.map(({ word, count }) => `${word}: ${count}`).join('\n'
                 onClick={handleAnalyze}
                 fullWidth
               >
-                {loading ? t('Analyzing...') : t('Analyze Text')}
+                {loading ? t('Processing...') : t('Analyze')}
               </Button>
             </Stack>
           </CardContent>
@@ -159,7 +159,7 @@ ${analysis.wordFrequency.map(({ word, count }) => `${word}: ${count}`).join('\n'
 
         <Card variant="outlined">
           <CardHeader
-            title={t('Analysis Results')}
+            title={t('Processing Results')}
             action={
               analysis && (
                 <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>

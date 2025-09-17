@@ -79,11 +79,11 @@ export default function JsonFormatter() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('JSON Formatter')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Format and validate JSON data with syntax highlighting.')}
+          {t('JSON Format/Minify Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input JSON')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <Stack spacing={2}>
               <TextField
@@ -141,7 +141,7 @@ export default function JsonFormatter() {
 
         <Card variant="outlined">
           <CardHeader
-            title={t('Formatted Result')}
+            title={t('Processing Results')}
             action={
               output && (
                 <Stack direction="row" spacing={1}>

@@ -98,11 +98,11 @@ export default function RegexTester() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('Regex Tester')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Test regular expressions with real-time matching and capture group analysis.')}
+          {t('Regex Testing Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Pattern & Test Data')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <Stack spacing={2}>
               <TextField
@@ -176,7 +176,7 @@ export default function RegexTester() {
 
         <Card variant="outlined">
           <CardHeader
-            title={t('Test Results')}
+            title={t('Processing Results')}
             action={
               output && (
                 <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>

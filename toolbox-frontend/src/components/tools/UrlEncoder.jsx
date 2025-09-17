@@ -65,11 +65,11 @@ export default function UrlEncoder() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('URL Encoder/Decoder')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Encode or decode URLs and query strings safely for web forms and API testing.')}
+          {t('URL Encode/Decode Tool')}
         </Typography>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input URL')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <Stack spacing={2}>
               <TextField
@@ -122,7 +122,7 @@ export default function UrlEncoder() {
 
         <Card variant="outlined">
           <CardHeader
-            title={t('Converted Result')}
+            title={t('Processing Results')}
             action={
               output && (
                 <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>

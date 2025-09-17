@@ -85,12 +85,12 @@ export default function PasswordGenerator() {
           <Typography variant="h5" component="h1">{t('Password Generator')}</Typography>
         </Stack>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Generate secure passwords with customizable options and strength analysis.')}
+          {t('Password Generator Tool')}
         </Typography>
 
         <form onSubmit={handleSubmit}>
           <Card variant="outlined" sx={{ mb: 2 }}>
-            <CardHeader title={t('Generation Options')} />
+            <CardHeader title={t('Input and Options')} />
             <CardContent>
               <Grid container spacing={2}>
                 <Grid item xs={12} sm={6}>
@@ -135,14 +135,36 @@ export default function PasswordGenerator() {
         )}
 
         <Card variant="outlined">
-          <CardHeader title={t('Generated Passwords')} action={generatedPasswords.length > 0 && <Button size="small" onClick={() => copyToClipboard(generatedPasswords.join('\n'))} startIcon={<ContentCopy />}>{t('Copy All')}</Button>} />
+          <CardHeader
+            title={t('Processing Results')}
+            action={
+              generatedPasswords.length > 0 && (
+                <Button size="small" onClick={() => copyToClipboard(generatedPasswords.join('\n'))} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
+          />
           <CardContent>
             {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', p: 5 }}><CircularProgress /></Box>
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Processing text, please wait...')}</Typography>
+                </Stack>
+              </Box>
             ) : generatedPasswords.length > 0 ? (
-              <TextField value={generatedPasswords.join('\n')} multiline readOnly rows={10} fullWidth variant="filled" sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }} />
+              <TextField
+                value={generatedPasswords.join('\n')}
+                multiline
+                readOnly
+                rows={10}
+                fullWidth
+                variant="filled"
+                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: 12 } }}
+              />
             ) : (
-              <Box sx={{ textAlign: 'center', p: 5 }}><Typography color="text.secondary">{t('Generated passwords will appear here.')}</Typography></Box>
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Typography color="text.secondary">{t('Processing results will appear here. Enter text above and select an operation.')}</Typography></Box>
             )}
           </CardContent>
         </Card>

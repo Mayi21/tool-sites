@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Card, CardContent, Typography, TextField, Button, Stack, Grid, Paper
+  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
+  Paper
 } from '@mui/material';
-import { ContentCopy } from '@mui/icons-material';
-import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
-import CopySuccessAnimation from '../CopySuccessAnimation';
+import { ContentCopy, Preview, Refresh } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 // Basic markdown renderer, kept as is.
 function renderMarkdown(text) {
@@ -28,76 +29,211 @@ function renderMarkdown(text) {
 
 export default function MarkdownPreview() {
   const { t } = useTranslation();
-  const [markdown, setMarkdown] = useState(`# Hello World
+  const [loading, setLoading] = useState(false);
+  const [markdown, setMarkdown] = useState(`# ${t('Hello World')}
 
-This is **bold** and *italic* text.
+${t('This is')} **${t('bold')}** ${t('and')} *${t('italic')}* ${t('text')}.
 
-- List item 1
-- List item 2
+- ${t('List item')} 1
+- ${t('List item')} 2
 
 \`\`\`javascript
-console.log("Hello World");
+console.log("${t('Hello World')}");
 \`\`\``);
+  const [renderedHtml, setRenderedHtml] = useState('');
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
+
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  async function copyMarkdown() {
-    if (markdown) {
-      await copyToClipboard(markdown);
+  const handlePreview = () => {
+    if (!markdown.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter markdown text to preview') });
+      return;
     }
-  }
+
+    setLoading(true);
+    setRenderedHtml('');
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        const html = renderMarkdown(markdown);
+        setRenderedHtml(html);
+        setLoading(false);
+        setFeedback({ type: 'success', message: t('Markdown preview generated successfully') });
+      } catch (error) {
+        setFeedback({ type: 'error', message: t('Preview generation failed, please try again') });
+        setLoading(false);
+      }
+    }, 300);
+  };
+
+  const handleCopy = () => {
+    if (markdown) {
+      copyToClipboard(markdown);
+    }
+  };
+
+  // Auto-preview when markdown changes (with debounce)
+  const debouncedPreview = useCallback(() => {
+    const timer = setTimeout(() => {
+      if (markdown.trim()) {
+        const html = renderMarkdown(markdown);
+        setRenderedHtml(html);
+      } else {
+        setRenderedHtml('');
+      }
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [markdown]);
+
+  // Effect for auto-preview
+  useEffect(() => {
+    const cleanup = debouncedPreview();
+    return cleanup;
+  }, [debouncedPreview]);
 
   return (
     <>
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Markdown Preview')}</Typography>
-        
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <Stack spacing={1}>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6">{t('Markdown')}</Typography>
-                <Button size="small" onClick={copyMarkdown} startIcon={<ContentCopy />}>
+        <Typography variant="h5" component="h1">{t('Markdown Preview')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Markdown Preview Tool')}
+        </Typography>
+
+        <Card variant="outlined" sx={{ mb: 2 }}>
+          <CardHeader title={t('Input Text')} />
+          <CardContent>
+            <Stack spacing={2}>
+              <TextField
+                value={markdown}
+                onChange={(e) => setMarkdown(e.target.value)}
+                label={t('Enter text to process')}
+                multiline
+                rows={12}
+                fullWidth
+                variant="outlined"
+                placeholder={t('Paste or type your text here for processing...')}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: 14
+                  }
+                }}
+              />
+
+              <Button
+                variant="contained"
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Preview />}
+                disabled={loading || !markdown.trim()}
+                onClick={handlePreview}
+                fullWidth
+              >
+                {loading ? t('Previewing...') : t('Preview')}
+              </Button>
+            </Stack>
+          </CardContent>
+        </Card>
+
+        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Markdown Preview')}
+            action={
+              renderedHtml && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
                   {t('Copy')}
                 </Button>
-              </Stack>
-              
-              <TextField 
-                value={markdown} 
-                onChange={e => setMarkdown(e.target.value)} 
-                multiline
-                rows={20} 
-                label={t('Enter markdown text')}
-                variant="outlined"
-                fullWidth
-                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace' } }}
-              />
-            </Stack>
-          </Grid>
-          
-          <Grid item xs={12} md={6}>
-            <Stack spacing={1}>
-              <Typography variant="h6">{t('Preview')}</Typography>
-              
-              <Paper 
+              )
+            }
+          />
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Generating preview, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : renderedHtml ? (
+              <Paper
                 variant="outlined"
                 sx={{
-                  p: 2,
-                  minHeight: 480,
+                  p: 3,
+                  minHeight: 400,
                   overflow: 'auto',
-                  textAlign: 'left',
-                  '& h1, & h2, & h3, & h4, & h5, & h6': { mt: 2, mb: 1 },
-                  '& p': { my: 1 },
-                  '& ul': { pl: 3 },
-                  '& pre': { p: 1, bgcolor: 'action.hover', borderRadius: 1, whiteSpace: 'pre-wrap' },
-                  '& code': { fontFamily: 'monospace' }
+                  bgcolor: 'background.paper',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 1,
+                  '& h1, & h2, & h3, & h4, & h5, & h6': {
+                    mt: 2,
+                    mb: 1,
+                    color: 'text.primary',
+                    fontWeight: 'bold'
+                  },
+                  '& p': {
+                    my: 1,
+                    color: 'text.primary',
+                    lineHeight: 1.6
+                  },
+                  '& ul': {
+                    pl: 3,
+                    my: 1
+                  },
+                  '& li': {
+                    color: 'text.primary',
+                    mb: 0.5
+                  },
+                  '& pre': {
+                    p: 2,
+                    bgcolor: 'grey.100',
+                    borderRadius: 1,
+                    whiteSpace: 'pre-wrap',
+                    fontSize: '0.875rem',
+                    border: '1px solid',
+                    borderColor: 'grey.300'
+                  },
+                  '& code': {
+                    fontFamily: 'monospace',
+                    bgcolor: 'grey.100',
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 0.5,
+                    fontSize: '0.875rem'
+                  },
+                  '& pre code': {
+                    bgcolor: 'transparent',
+                    px: 0,
+                    py: 0
+                  },
+                  '& strong': {
+                    fontWeight: 'bold',
+                    color: 'text.primary'
+                  },
+                  '& em': {
+                    fontStyle: 'italic',
+                    color: 'text.secondary'
+                  }
                 }}
-                dangerouslySetInnerHTML={{ __html: renderMarkdown(markdown) }}
+                dangerouslySetInnerHTML={{ __html: renderedHtml }}
               />
-            </Stack>
-          </Grid>
-        </Grid>
+            ) : (
+              <Box sx={{ minHeight: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
+                  {t('Processing results will appear here. Enter text above and select an operation.')}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Card>
-      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
     </>
   );
-} 
+}

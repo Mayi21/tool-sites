@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Card, CardContent, Typography, TextField, Button, Stack, Grid, Box, InputAdornment, IconButton
+  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
+  Select, MenuItem, FormControl, InputLabel, Grid
 } from '@mui/material';
 import { ContentCopy, Palette } from '@mui/icons-material';
-import useCopyWithAnimation from '../../hooks/useCopyWithAnimation';
-import CopySuccessAnimation from '../CopySuccessAnimation';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
-// Color conversion logic remains the same
+// Color conversion logic
 function hexToRgb(hex) {
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
   return result ? { r: parseInt(result[1], 16), g: parseInt(result[2], 16), b: parseInt(result[3], 16) } : null;
@@ -52,115 +53,240 @@ function hslToRgb(h, s, l) {
   return { r: Math.round(r * 255), g: Math.round(g * 255), b: Math.round(b * 255) };
 }
 
-const ColorInput = ({ label, value, onChange, onCopy }) => (
-  <TextField
-    label={label}
-    value={value}
-    onChange={onChange}
-    fullWidth
-    variant="outlined"
-    InputProps={{
-      endAdornment: (
-        <InputAdornment position="end">
-          <IconButton onClick={onCopy} edge="end">
-            <ContentCopy />
-          </IconButton>
-        </InputAdornment>
-      ),
-    }}
-  />
-);
-
 export default function ColorConverter() {
   const { t } = useTranslation();
-  const [hex, setHex] = useState('#ff6b6b');
-  const [rgb, setRgb] = useState('255, 107, 107');
-  const [hsl, setHsl] = useState('0, 100, 67');
-  const [previewColor, setPreviewColor] = useState('#ff6b6b');
+  const [loading, setLoading] = useState(false);
+  const [inputColor, setInputColor] = useState('#ff6b6b');
+  const [convertedColors, setConvertedColors] = useState('');
+  const [inputFormat, setInputFormat] = useState('hex');
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
+
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  function updateFromHex(hexValue) {
-    setHex(hexValue);
-    const rgbObj = hexToRgb(hexValue);
-    if (rgbObj) {
-      setRgb(`${rgbObj.r}, ${rgbObj.g}, ${rgbObj.b}`);
-      const hslObj = rgbToHsl(rgbObj.r, rgbObj.g, rgbObj.b);
-      setHsl(`${hslObj.h}, ${hslObj.s}, ${hslObj.l}`);
-      setPreviewColor(hexValue);
+  const handleCopy = () => {
+    if (convertedColors) {
+      copyToClipboard(convertedColors);
     }
-  }
+  };
 
-  function updateFromRgb(rgbValue) {
-    setRgb(rgbValue);
-    const parts = rgbValue.split(',').map(s => parseInt(s.trim()));
-    if (parts.length === 3 && parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) {
-      const hexValue = rgbToHex(parts[0], parts[1], parts[2]);
-      setHex(hexValue);
-      const hslObj = rgbToHsl(parts[0], parts[1], parts[2]);
-      setHsl(`${hslObj.h}, ${hslObj.s}, ${hslObj.l}`);
-      setPreviewColor(hexValue);
+  const generateRandomColor = () => {
+    const randomHex = '#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0');
+    setInputColor(randomHex);
+    setInputFormat('hex');
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    if (!inputColor.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter a color value to convert') });
+      return;
     }
-  }
 
-  function updateFromHsl(hslValue) {
-    setHsl(hslValue);
-    const parts = hslValue.split(',').map(s => parseInt(s.trim()));
-    if (parts.length === 3 && parts.every(p => !isNaN(p))) {
-      const rgbObj = hslToRgb(parts[0], parts[1], parts[2]);
-      setRgb(`${rgbObj.r}, ${rgbObj.g}, ${rgbObj.b}`);
-      const hexValue = rgbToHex(rgbObj.r, rgbObj.g, rgbObj.b);
-      setHex(hexValue);
-      setPreviewColor(hexValue);
+    setLoading(true);
+    setConvertedColors('');
+    setFeedback({ type: '', message: '' });
+
+    setTimeout(() => {
+      try {
+        let rgb;
+
+        if (inputFormat === 'hex') {
+          rgb = hexToRgb(inputColor);
+          if (!rgb) throw new Error('Invalid HEX format');
+        } else if (inputFormat === 'rgb') {
+          const parts = inputColor.replace(/[^\d,]/g, '').split(',').map(s => parseInt(s.trim()));
+          if (parts.length !== 3 || parts.some(p => isNaN(p) || p < 0 || p > 255)) {
+            throw new Error('Invalid RGB format');
+          }
+          rgb = { r: parts[0], g: parts[1], b: parts[2] };
+        } else if (inputFormat === 'hsl') {
+          const parts = inputColor.replace(/[^\d,]/g, '').split(',').map(s => parseInt(s.trim()));
+          if (parts.length !== 3 || parts.some(p => isNaN(p))) {
+            throw new Error('Invalid HSL format');
+          }
+          rgb = hslToRgb(parts[0], parts[1], parts[2]);
+        }
+
+        const hex = rgbToHex(rgb.r, rgb.g, rgb.b);
+        const hsl = rgbToHsl(rgb.r, rgb.g, rgb.b);
+
+        const results = [
+          `HEX: ${hex}`,
+          `RGB: rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`,
+          `HSL: hsl(${hsl.h}, ${hsl.s}%, ${hsl.l}%)`,
+          `RGB Values: ${rgb.r}, ${rgb.g}, ${rgb.b}`,
+          `HSL Values: ${hsl.h}, ${hsl.s}, ${hsl.l}`
+        ];
+
+        setConvertedColors(results.join('\n'));
+        setLoading(false);
+        setFeedback({ type: 'success', message: t('Color conversion completed successfully') });
+      } catch (error) {
+        setConvertedColors('');
+        setLoading(false);
+        setFeedback({ type: 'error', message: error.message || t('Color conversion failed, please check your input format') });
+      }
+    }, 500);
+  };
+
+  const getPreviewColor = () => {
+    try {
+      if (inputFormat === 'hex') {
+        return inputColor;
+      } else if (inputFormat === 'rgb') {
+        const parts = inputColor.replace(/[^\d,]/g, '').split(',').map(s => parseInt(s.trim()));
+        if (parts.length === 3 && parts.every(p => !isNaN(p) && p >= 0 && p <= 255)) {
+          return rgbToHex(parts[0], parts[1], parts[2]);
+        }
+      } else if (inputFormat === 'hsl') {
+        const parts = inputColor.replace(/[^\d,]/g, '').split(',').map(s => parseInt(s.trim()));
+        if (parts.length === 3 && parts.every(p => !isNaN(p))) {
+          const rgb = hslToRgb(parts[0], parts[1], parts[2]);
+          return rgbToHex(rgb.r, rgb.g, rgb.b);
+        }
+      }
+    } catch (e) {
+      // Return default color if parsing fails
     }
-  }
-
-  function handleCopy(colorValue) {
-    copyToClipboard(colorValue);
-  }
+    return '#ff6b6b';
+  };
 
   return (
     <>
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1" sx={{ mb: 2 }}>{t('Color Converter')}</Typography>
-        <Stack spacing={2}>
-          <Box sx={{ 
-            width: '100%', 
-            height: 100, 
-            backgroundColor: previewColor, 
-            borderRadius: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: 'white',
-            fontSize: 18,
-            fontWeight: 'bold',
-            textShadow: '1px 1px 2px rgba(0,0,0,0.5)'
-          }}>
-            {previewColor}
-          </Box>
-          
-          <Grid container spacing={2}>
-            <Grid item xs={12} sm={4}>
-              <ColorInput label="HEX" value={hex} onChange={e => updateFromHex(e.target.value)} onCopy={() => handleCopy(hex)} />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <ColorInput label="RGB" value={rgb} onChange={e => updateFromRgb(e.target.value)} onCopy={() => handleCopy(`rgb(${rgb})`)} />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <ColorInput label="HSL" value={hsl} onChange={e => updateFromHsl(e.target.value)} onCopy={() => handleCopy(`hsl(${hsl.replace(/,/g, ', ').replace(/ (\d+)/g, '$1%')})`)} />
-            </Grid>
-          </Grid>
-          
-          <Button 
-            variant="outlined" 
-            startIcon={<Palette />} 
-            onClick={() => updateFromHex('#' + Math.floor(Math.random()*16777215).toString(16).padStart(6, '0'))}
-          >
-            {t('Random Color')}
-          </Button>
-        </Stack>
+        <Typography variant="h5" component="h1">{t('Color Converter')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('RGB/HEX/HSL Converter')}
+        </Typography>
+
+        <form onSubmit={handleSubmit}>
+          <Card variant="outlined" sx={{ mb: 2 }}>
+            <CardHeader title={t('Input and Options')} />
+            <CardContent>
+              <Stack spacing={2}>
+                <FormControl fullWidth>
+                  <InputLabel id="input-format-label">{t('Input Format')}</InputLabel>
+                  <Select
+                    labelId="input-format-label"
+                    value={inputFormat}
+                    label={t('Input Format')}
+                    onChange={(e) => setInputFormat(e.target.value)}
+                  >
+                    <MenuItem value="hex">HEX</MenuItem>
+                    <MenuItem value="rgb">RGB</MenuItem>
+                    <MenuItem value="hsl">HSL</MenuItem>
+                  </Select>
+                </FormControl>
+
+                <Box sx={{
+                  width: '100%',
+                  height: 80,
+                  backgroundColor: getPreviewColor(),
+                  borderRadius: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: 'white',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                  border: '1px solid',
+                  borderColor: 'divider'
+                }}>
+                  {getPreviewColor()}
+                </Box>
+
+                <TextField
+                  value={inputColor}
+                  onChange={(e) => setInputColor(e.target.value)}
+                  label={
+                    inputFormat === 'hex' ? t('Enter text to process') :
+                    inputFormat === 'rgb' ? t('Enter text to process') :
+                    t('Enter text to process')
+                  }
+                  fullWidth
+                  variant="outlined"
+                  placeholder={
+                    inputFormat === 'hex' ? '#ff6b6b' :
+                    inputFormat === 'rgb' ? '255, 107, 107' :
+                    '0, 100, 67'
+                  }
+                />
+
+                <Grid container spacing={2}>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Palette />}
+                      disabled={loading}
+                      fullWidth
+                    >
+                      {loading ? t('Processing...') : t('Convert')}
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Button
+                      variant="outlined"
+                      startIcon={<Palette />}
+                      onClick={generateRandomColor}
+                      fullWidth
+                    >
+                      {t('Random Color')}
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Stack>
+            </CardContent>
+          </Card>
+        </form>
+
+        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Converted Colors')}
+            action={
+              convertedColors && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
+          />
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Processing text, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : convertedColors ? (
+              <TextField
+                value={convertedColors}
+                multiline
+                readOnly
+                rows={8}
+                fullWidth
+                variant="filled"
+                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: 12 } }}
+              />
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary">
+                  {t('Processing results will appear here. Enter text above and select an operation.')}
+                </Typography>
+              </Box>
+            )}
+          </CardContent>
+        </Card>
       </Card>
-      <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
     </>
   );
 } 

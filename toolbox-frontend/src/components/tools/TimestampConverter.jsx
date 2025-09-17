@@ -89,7 +89,7 @@ export default function TimestampConverter() {
       <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
         <Typography variant="h5" component="h1">{t('Timestamp Converter')}</Typography>
         <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Convert between Unix timestamps and human-readable dates bidirectionally.')}
+          {t('Unix Timestamp Converter')}
         </Typography>
 
         {/* Current Time Display */}
@@ -128,7 +128,7 @@ export default function TimestampConverter() {
         </Box>
 
         <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input')} />
+          <CardHeader title={t('Input and Options')} />
           <CardContent>
             <Stack spacing={2}>
               <TextField

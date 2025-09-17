@@ -1,63 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Typography, Input, Card, Row, Col, Statistic, Progress, Space, Button, message } from 'antd';
-import { FileTextOutlined, BarChartOutlined, CopyOutlined } from '@ant-design/icons';
-
-const { Title } = Typography;
-const { TextArea } = Input;
+import {
+  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
+  Grid, Chip, Divider
+} from '@mui/material';
+import { ContentCopy, Analytics, Refresh } from '@mui/icons-material';
+import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function TextAnalyzer() {
   const { t } = useTranslation();
+  const [loading, setLoading] = useState(false);
   const [text, setText] = useState('');
-  const [stats, setStats] = useState({
-    characters: 0,
-    charactersNoSpaces: 0,
-    words: 0,
-    lines: 0,
-    sentences: 0,
-    paragraphs: 0,
-    uniqueWords: 0,
-    averageWordLength: 0,
-    readingTime: 0
-  });
+  const [analysis, setAnalysis] = useState(null);
+  const [feedback, setFeedback] = useState({ type: '', message: '' });
 
-  useEffect(() => {
-    analyzeText(text);
-  }, [text]);
+  const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  function analyzeText(inputText) {
-    if (!inputText) {
-      setStats({
-        characters: 0,
-        charactersNoSpaces: 0,
-        words: 0,
-        lines: 0,
-        sentences: 0,
-        paragraphs: 0,
-        uniqueWords: 0,
-        averageWordLength: 0,
-        readingTime: 0
-      });
+  const analyzeText = useCallback((inputText) => {
+    if (!inputText.trim()) {
+      setAnalysis(null);
       return;
     }
 
     const characters = inputText.length;
     const charactersNoSpaces = inputText.replace(/\s/g, '').length;
     const words = inputText.trim().split(/\s+/).filter(word => word.length > 0).length;
-    const lines = inputText.split('\n').filter(line => line.trim().length > 0).length;
+    const lines = inputText.split('\n').length;
     const sentences = inputText.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0).length;
     const paragraphs = inputText.split(/\n\s*\n/).filter(para => para.trim().length > 0).length;
-    
+
     const wordArray = inputText.toLowerCase().match(/\b\w+\b/g) || [];
     const uniqueWords = new Set(wordArray).size;
-    const averageWordLength = wordArray.length > 0 
+    const averageWordLength = wordArray.length > 0
       ? (wordArray.reduce((sum, word) => sum + word.length, 0) / wordArray.length).toFixed(1)
       : 0;
-    
+
     // Reading time estimation (average 200 words per minute)
     const readingTime = Math.ceil(words / 200);
 
-    setStats({
+    // Word frequency analysis
+    const frequency = {};
+    wordArray.forEach(word => {
+      frequency[word] = (frequency[word] || 0) + 1;
+    });
+
+    const wordFrequency = Object.entries(frequency)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 10)
+      .map(([word, count]) => ({ word, count }));
+
+    setAnalysis({
       characters,
       charactersNoSpaces,
       words,
@@ -65,155 +58,227 @@ export default function TextAnalyzer() {
       sentences,
       paragraphs,
       uniqueWords,
-      averageWordLength,
-      readingTime
+      averageWordLength: parseFloat(averageWordLength),
+      readingTime,
+      wordFrequency
     });
-  }
+  }, []);
 
-  function getWordFrequency() {
-    if (!text) return [];
-    
-    const wordArray = text.toLowerCase().match(/\b\w+\b/g) || [];
-    const frequency = {};
-    
-    wordArray.forEach(word => {
-      frequency[word] = (frequency[word] || 0) + 1;
-    });
-    
-    return Object.entries(frequency)
-      .sort(([,a], [,b]) => b - a)
-      .slice(0, 10)
-      .map(([word, count]) => ({ word, count }));
-  }
+  const handleAnalyze = () => {
+    if (!text.trim()) {
+      setFeedback({ type: 'error', message: t('Please enter text to analyze') });
+      return;
+    }
 
-  function copyAnalysis() {
-    const analysisText = `Text Analysis Report:
-Characters: ${stats.characters}
-Characters (no spaces): ${stats.charactersNoSpaces}
-Words: ${stats.words}
-Lines: ${stats.lines}
-Sentences: ${stats.sentences}
-Paragraphs: ${stats.paragraphs}
-Unique Words: ${stats.uniqueWords}
-Average Word Length: ${stats.averageWordLength}
-Reading Time: ${stats.readingTime} minutes
+    setLoading(true);
+    setAnalysis(null);
+    setFeedback({ type: '', message: '' });
 
-Top 10 Most Frequent Words:
-${getWordFrequency().map(({ word, count }) => `${word}: ${count}`).join('\n')}`;
-    
-    navigator.clipboard.writeText(analysisText);
-    message.success(t('Copied to clipboard'));
-  }
+    setTimeout(() => {
+      try {
+        analyzeText(text);
+        setLoading(false);
+        setFeedback({ type: 'success', message: t('Text analysis completed successfully') });
+      } catch (error) {
+        setFeedback({ type: 'error', message: t('Analysis failed, please try again') });
+        setLoading(false);
+      }
+    }, 500);
+  };
 
-  const wordFrequency = getWordFrequency();
+  const handleCopy = () => {
+    if (analysis) {
+      const analysisText = `${t('Text Analysis Report')}:
+${t('Characters')}: ${analysis.characters}
+${t('Characters (no spaces)')}: ${analysis.charactersNoSpaces}
+${t('Words')}: ${analysis.words}
+${t('Lines')}: ${analysis.lines}
+${t('Sentences')}: ${analysis.sentences}
+${t('Paragraphs')}: ${analysis.paragraphs}
+${t('Unique Words')}: ${analysis.uniqueWords}
+${t('Average Word Length')}: ${analysis.averageWordLength}
+${t('Reading Time')}: ${analysis.readingTime} ${t('minutes')}
+
+${t('Top 10 Most Frequent Words')}:
+${analysis.wordFrequency.map(({ word, count }) => `${word}: ${count}`).join('\n')}`;
+
+      copyToClipboard(analysisText);
+    }
+  };
+
+  // Auto-analyze when text changes (with debounce effect)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      analyzeText(text);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [text, analyzeText]);
 
   return (
-    <Card style={{ maxWidth: 1000, margin: '0 auto' }}>
-      <Title level={2}>{t('Text Analyzer')}</Title>
-      
-      <Row gutter={[24, 24]}>
-        <Col span={12}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-            <span>{t('Input Text')}</span>
-            <Button size="small" onClick={copyAnalysis} icon={<CopyOutlined />}>
-              {t('Copy Analysis')}
-            </Button>
-          </div>
-          <TextArea 
-            value={text} 
-            onChange={e => setText(e.target.value)} 
-            rows={12} 
-            placeholder={t('Enter text to analyze')}
+    <>
+      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
+        <Typography variant="h5" component="h1">{t('Text Analyzer')}</Typography>
+        <Typography color="text.secondary" sx={{ mb: 2 }}>
+          {t('Analyze text statistics including word count, reading time, and frequency analysis.')}
+        </Typography>
+
+        <Card variant="outlined" sx={{ mb: 2 }}>
+          <CardHeader title={t('Input Text')} />
+          <CardContent>
+            <Stack spacing={2}>
+              <TextField
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                label={t('Enter text to analyze')}
+                multiline
+                rows={8}
+                fullWidth
+                variant="outlined"
+                placeholder={t('Paste or type your text here for analysis...')}
+                sx={{
+                  '& .MuiInputBase-root': {
+                    fontFamily: 'monospace',
+                    fontSize: 14
+                  }
+                }}
+              />
+              <Button
+                variant="contained"
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Analytics />}
+                disabled={loading || !text.trim()}
+                onClick={handleAnalyze}
+                fullWidth
+              >
+                {loading ? t('Analyzing...') : t('Analyze Text')}
+              </Button>
+            </Stack>
+          </CardContent>
+        </Card>
+
+        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+
+        <Card variant="outlined">
+          <CardHeader
+            title={t('Analysis Results')}
+            action={
+              analysis && (
+                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
+                  {t('Copy')}
+                </Button>
+              )
+            }
           />
-        </Col>
-        
-        <Col span={12}>
-          <Space direction="vertical" size="large" style={{ width: '100%' }}>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Characters')} 
-                  value={stats.characters} 
-                  prefix={<FileTextOutlined />}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Words')} 
-                  value={stats.words} 
-                  prefix={<BarChartOutlined />}
-                />
-              </Col>
-            </Row>
-            
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Lines')} 
-                  value={stats.lines} 
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Sentences')} 
-                  value={stats.sentences} 
-                />
-              </Col>
-            </Row>
-            
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Paragraphs')} 
-                  value={stats.paragraphs} 
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Unique Words')} 
-                  value={stats.uniqueWords} 
-                />
-              </Col>
-            </Row>
-            
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Avg Word Length')} 
-                  value={stats.averageWordLength} 
-                  precision={1}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic 
-                  title={t('Reading Time')} 
-                  value={stats.readingTime} 
-                  suffix={t('min')}
-                />
-              </Col>
-            </Row>
-            
-            {wordFrequency.length > 0 && (
-              <Card title={t('Word Frequency')} size="small">
-                <Space direction="vertical" style={{ width: '100%' }}>
-                  {wordFrequency.map(({ word, count }, index) => (
-                    <div key={word} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span>{word}</span>
-                      <Progress 
-                        percent={Math.round((count / wordFrequency[0].count) * 100)} 
-                        size="small" 
-                        style={{ width: 100 }}
-                        showInfo={false}
-                      />
-                      <span>{count}</span>
-                    </div>
-                  ))}
-                </Space>
-              </Card>
+          <CardContent>
+            {loading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
+                <Stack alignItems="center" spacing={1}>
+                  <CircularProgress />
+                  <Typography>{t('Analyzing text, please wait...')}</Typography>
+                </Stack>
+              </Box>
+            ) : analysis ? (
+              <Stack spacing={3}>
+                <Grid container spacing={2}>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="h4" color="primary">{analysis.characters.toLocaleString()}</Typography>
+                      <Typography variant="body2" color="text.secondary">{t('Characters')}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="h4" color="primary">{analysis.words.toLocaleString()}</Typography>
+                      <Typography variant="body2" color="text.secondary">{t('Words')}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="h4" color="primary">{analysis.lines}</Typography>
+                      <Typography variant="body2" color="text.secondary">{t('Lines')}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
+                      <Typography variant="h4" color="primary">{analysis.sentences}</Typography>
+                      <Typography variant="body2" color="text.secondary">{t('Sentences')}</Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                <Divider />
+
+                <Grid container spacing={2}>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'info.light', color: 'info.contrastText', borderRadius: 1 }}>
+                      <Typography variant="h4">{analysis.charactersNoSpaces.toLocaleString()}</Typography>
+                      <Typography variant="body2">{t('Characters (no spaces)')}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.light', color: 'success.contrastText', borderRadius: 1 }}>
+                      <Typography variant="h4">{analysis.paragraphs}</Typography>
+                      <Typography variant="body2">{t('Paragraphs')}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'warning.light', color: 'warning.contrastText', borderRadius: 1 }}>
+                      <Typography variant="h4">{analysis.uniqueWords}</Typography>
+                      <Typography variant="body2">{t('Unique Words')}</Typography>
+                    </Box>
+                  </Grid>
+                  <Grid item xs={6} sm={4} md={3}>
+                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'secondary.light', color: 'secondary.contrastText', borderRadius: 1 }}>
+                      <Typography variant="h4">{analysis.averageWordLength}</Typography>
+                      <Typography variant="body2">{t('Avg Word Length')}</Typography>
+                    </Box>
+                  </Grid>
+                </Grid>
+
+                <Divider />
+
+                <Box sx={{ textAlign: 'center', p: 3, bgcolor: 'primary.light', color: 'primary.contrastText', borderRadius: 2 }}>
+                  <Typography variant="h3">{analysis.readingTime}</Typography>
+                  <Typography variant="h6">{t('Reading Time (minutes)')}</Typography>
+                  <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                    {t('Based on 200 words per minute average reading speed')}
+                  </Typography>
+                </Box>
+
+                {analysis.wordFrequency.length > 0 && (
+                  <>
+                    <Divider />
+                    <Box>
+                      <Typography variant="h6" gutterBottom>{t('Most Frequent Words')}</Typography>
+                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                        {analysis.wordFrequency.map(({ word, count }, index) => (
+                          <Chip
+                            key={word}
+                            label={`${word} (${count})`}
+                            color={index === 0 ? 'primary' : index < 3 ? 'secondary' : 'default'}
+                            variant={index < 3 ? 'filled' : 'outlined'}
+                            sx={{ mb: 1 }}
+                          />
+                        ))}
+                      </Stack>
+                    </Box>
+                  </>
+                )}
+              </Stack>
+            ) : (
+              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
+                  {t('Analysis results will appear here. Enter text above to start analysis.')}
+                </Typography>
+              </Box>
             )}
-          </Space>
-        </Col>
-      </Row>
-    </Card>
+          </CardContent>
+        </Card>
+      </Card>
+
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
+      />
+    </>
   );
-} 
+}

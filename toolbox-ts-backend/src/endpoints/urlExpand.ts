@@ -39,9 +39,9 @@ export class ExpandUrl extends OpenAPIRoute {
 
 	async handle(c: Context<{ Bindings: Env }>) {
 		try {
-			const { shortCode } = await this.getValidatedData<typeof this.schema>();
+			const { params } = await this.getValidatedData<typeof this.schema>();
 
-			const record = await c.env.KV.get(shortCode.params.shortCode);
+			const record = await c.env.KV.get(params.shortCode);
 
 			if (!record) {
 				return c.json({
@@ -61,7 +61,7 @@ export class ExpandUrl extends OpenAPIRoute {
 			}
 
 			const baseUrl = this.getBaseUrl(c);
-			const shortUrl = `${baseUrl}/${shortCode.params.shortCode}`;
+			const shortUrl = `${baseUrl}/${params.shortCode}`;
 
 			return c.json({
 				success: true,

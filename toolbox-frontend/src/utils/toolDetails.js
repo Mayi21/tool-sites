@@ -630,6 +630,40 @@ export const getToolDetails = (path, t) => {
           a: t('toolDetails.cron-parser.faq.1.a', '合理设置执行间隔，使用锁机制防止同一任务并发执行。')
         }
       ]
+    },
+    '/url-shortener': {
+      description: t('toolDetails.url-shortener.description', '短链生成工具，将长网址转换为简短、易记的链接。支持自定义别名、过期设置和点击统计，优化链接分享效果。'),
+      features: [
+        t('toolDetails.url-shortener.features.0', '即时缩短长网址'),
+        t('toolDetails.url-shortener.features.1', '支持自定义别名'),
+        t('toolDetails.url-shortener.features.2', '灵活的过期设置'),
+        t('toolDetails.url-shortener.features.3', '批量网址处理'),
+        t('toolDetails.url-shortener.features.4', '点击跟踪和统计'),
+        t('toolDetails.url-shortener.features.5', '二维码生成')
+      ],
+      useCases: [
+        t('toolDetails.url-shortener.useCases.0', '社交媒体链接分享'),
+        t('toolDetails.url-shortener.useCases.1', '邮件营销活动'),
+        t('toolDetails.url-shortener.useCases.2', '短信链接分享'),
+        t('toolDetails.url-shortener.useCases.3', '印刷媒体和二维码'),
+        t('toolDetails.url-shortener.useCases.4', '链接跟踪分析')
+      ],
+      tips: [
+        t('toolDetails.url-shortener.tips.0', '使用有描述性的自定义别名提高品牌识别度'),
+        t('toolDetails.url-shortener.tips.1', '为临时活动设置合适的过期时间'),
+        t('toolDetails.url-shortener.tips.2', '监控点击统计以衡量参与度'),
+        t('toolDetails.url-shortener.tips.3', '分享敏感链接时需考虑网址安全性')
+      ],
+      faq: [
+        {
+          q: t('toolDetails.url-shortener.faq.0.q', '短链有效期是多长时间？'),
+          a: t('toolDetails.url-shortener.faq.0.a', '短链可以设置1小时到1年的有效期，或根据设置永久有效。')
+        },
+        {
+          q: t('toolDetails.url-shortener.faq.1.q', '可以为短链设置自定义别名吗？'),
+          a: t('toolDetails.url-shortener.faq.1.a', '可以，您可以指定自定义别名，使短链更加易记和品牌化。')
+        }
+      ]
     }
     // 工具详细信息配置完成
   };

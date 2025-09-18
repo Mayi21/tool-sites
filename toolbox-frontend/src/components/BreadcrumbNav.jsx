@@ -14,6 +14,7 @@ const getToolCategory = (path) => {
     '/timestamp': 'dev',
     '/jwt-decoder': 'dev',
     '/cron-parser': 'dev',
+    '/url-shortener': 'dev',
     '/diff': 'text',
     '/text-analyzer': 'text',
     '/text-processor': 'text',

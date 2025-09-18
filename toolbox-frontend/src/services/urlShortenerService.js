@@ -14,7 +14,8 @@ export class UrlShortenerApiService {
         body: JSON.stringify({
           url,
           alias: options.alias,
-          expireTime: options.expireTime
+          expireTime: options.expireTime,
+          password: options.password
         })
       });
 

@@ -21,7 +21,9 @@
       "Bash(do grep -q \"\"\"$key\"\":\" en.json)",
       "Bash(npm start:*)",
       "Bash(npm run:*)",
-      "Bash(npx wrangler dev:*)"
+      "Bash(npx wrangler dev:*)",
+      "Bash(curl:*)",
+      "Bash(/bashes)"
     ],
     "deny": [],
     "ask": []

@@ -7,6 +7,7 @@ export interface Env {
   DB: D1Database;
   KV: KVNamespace; // 添加KV存储绑定
   FRONTEND_DOMAIN?: string; // CORS允许的前端域名
+  BACKEND_DOMAIN?: string; // 后端API域名
   SHORT_DOMAIN?: string; // 短链专用域名（可选）
 }
 
@@ -25,6 +26,7 @@ export const ShortenUrlRequest = z.object({
 	url: Str({ example: "https://example.com/very/long/url" }),
 	alias: Str({ required: false, example: "my-custom-link" }),
 	expireTime: z.string().optional().nullable(),
+	password: Str({ required: false, example: "mypassword123" }),
 });
 
 export const ShortenUrlBatchRequest = z.object({
@@ -70,6 +72,7 @@ export interface UrlRecord {
 	creator: string;
 	userAgent: string;
 	ip: string;
+	password?: string; // 可选的密码保护
 }
 
 // 统计数据类型

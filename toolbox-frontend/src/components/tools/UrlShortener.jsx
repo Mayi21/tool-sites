@@ -19,9 +19,15 @@ export default function UrlShortener() {
   const [urlInput, setUrlInput] = useState('');
   const [customAlias, setCustomAlias] = useState('');
   const [expireTime, setExpireTime] = useState('never');
+  const [password, setPassword] = useState('');
   const [results, setResults] = useState([]);
   const [feedback, setFeedback] = useState({ type: '', message: '' });
   const [showAdvanced, setShowAdvanced] = useState(false);
+
+  const handleQrCode = (shortUrl) => {
+    const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(shortUrl)}`;
+    window.open(qrCodeUrl, '_blank');
+  };
 
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
@@ -56,7 +62,8 @@ export default function UrlShortener() {
           // 单个URL处理
           apiResult = await UrlShortenerApiService.shortenUrl(urls[0].trim(), {
             alias: customAlias,
-            expireTime: expireTime === 'never' ? null : expireTime
+            expireTime: expireTime === 'never' ? null : expireTime,
+            password: password || undefined
           });
 
           if (apiResult.success) {
@@ -139,6 +146,7 @@ export default function UrlShortener() {
   const handleClear = () => {
     setUrlInput('');
     setCustomAlias('');
+    setPassword('');
     setResults([]);
     setFeedback({ type: '', message: '' });
   };
@@ -240,6 +248,17 @@ export default function UrlShortener() {
                             <MenuItem value="1year">{t('1 Year')}</MenuItem>
                           </Select>
                         </FormControl>
+
+                        <TextField
+                          value={password}
+                          onChange={(e) => setPassword(e.target.value)}
+                          label={t('Password Protection (Optional)')}
+                          type="password"
+                          fullWidth
+                          variant="outlined"
+                          placeholder={t('Enter password to protect this URL')}
+                          helperText={t('Leave empty for no password protection')}
+                        />
                       </Stack>
                     )}
                   </>
@@ -341,7 +360,7 @@ export default function UrlShortener() {
                               </IconButton>
                             </Tooltip>
                             <Tooltip title={t('QR Code')}>
-                              <IconButton size="small">
+                              <IconButton size="small" onClick={() => handleQrCode(result.shortUrl)}>
                                 <QrCode2 fontSize="small" />
                               </IconButton>
                             </Tooltip>
@@ -408,7 +427,7 @@ export default function UrlShortener() {
             ) : (
               <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Typography color="text.secondary">
-                  {t('Processing results will appear here. Enter text above and select an operation.')}
+                  {t('Short URLs will appear here. Enter URLs above and click generate.')}
                 </Typography>
               </Box>
             )}

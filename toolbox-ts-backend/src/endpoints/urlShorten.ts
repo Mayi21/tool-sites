@@ -44,7 +44,7 @@ export class ShortenUrl extends OpenAPIRoute {
 	async handle(c: Context<{ Bindings: Env }>) {
 		try {
 			const body = await this.getValidatedData<typeof this.schema>();
-			const { url, alias, expireTime } = body.body;
+			const { url, alias, expireTime, password } = body.body;
 
 			// 验证URL格式
 			if (!this.isValidUrl(url)) {
@@ -54,20 +54,33 @@ export class ShortenUrl extends OpenAPIRoute {
 				}, 400);
 			}
 
-			// 生成短码
-			const shortCode = alias || this.generateShortCode();
+			// 生成短码（循环直到找到可用的短码）
+			let shortCode = alias;
+			if (!shortCode) {
+				// 如果没有自定义别名，循环生成直到找到可用的短码
+				let attempts = 0;
+				const maxAttempts = 10;
+				do {
+					shortCode = this.generateShortCode();
+					const existing = await c.env.KV.get(shortCode);
+					if (!existing) break;
+					attempts++;
+				} while (attempts < maxAttempts);
 
-			// 检查短码是否已存在
-			const existing = await c.env.KV.get(shortCode);
-			if (existing) {
-				if (alias) {
+				if (attempts >= maxAttempts) {
+					return c.json({
+						success: false,
+						error: "Unable to generate unique short code, please try again"
+					}, 500);
+				}
+			} else {
+				// 检查自定义别名是否已存在
+				const existing = await c.env.KV.get(shortCode);
+				if (existing) {
 					return c.json({
 						success: false,
 						error: "Custom alias already exists"
 					}, 400);
-				} else {
-					// 如果自动生成的短码冲突，重新生成
-					return this.handle(c);
 				}
 			}
 
@@ -82,7 +95,8 @@ export class ShortenUrl extends OpenAPIRoute {
 				lastAccessed: null,
 				creator: 'api',
 				userAgent: c.req.header('User-Agent') || '',
-				ip: c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || ''
+				ip: c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For') || '',
+				password: password || undefined // 添加密码字段
 			};
 
 			// 保存到KV存储
@@ -167,14 +181,19 @@ export class ShortenUrl extends OpenAPIRoute {
 	}
 
 	private getBaseUrl(c: Context<{ Bindings: Env }>): string {
-		// 短链应该指向后端服务器，不是前端
-		// 本地开发时使用当前服务器地址，生产环境使用配置的短链域名
+		// 优先级：BACKEND_DOMAIN > 自动检测
+
+		if (c.env.BACKEND_DOMAIN) {
+			return c.env.BACKEND_DOMAIN;
+		}
+
+		// 自动检测：本地开发环境使用当前host
 		const host = c.req.header('host');
 		if (host && (host.includes('localhost') || host.includes('127.0.0.1'))) {
-			// 本地开发环境
 			return `http://${host}`;
 		}
-		// 生产环境，可以设置专门的短链域名
-		return c.env.SHORT_DOMAIN || `https://${host || 'api.toolifyhub.top'}`;
+
+		// 默认回退地址
+		return `https://${host || 'api.toolifyhub.top'}`;
 	}
 }

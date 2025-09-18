@@ -205,14 +205,22 @@ export class ShortenUrlBatch extends OpenAPIRoute {
 	}
 
 	private getBaseUrl(c: Context<{ Bindings: Env }>): string {
-		// 短链应该指向后端服务器，不是前端
-		// 本地开发时使用当前服务器地址，生产环境使用配置的短链域名
+		// 优先级：SHORT_DOMAIN > BACKEND_DOMAIN > 自动检测
+		if (c.env.SHORT_DOMAIN) {
+			return c.env.SHORT_DOMAIN;
+		}
+
+		if (c.env.BACKEND_DOMAIN) {
+			return c.env.BACKEND_DOMAIN;
+		}
+
+		// 自动检测：本地开发环境使用当前host
 		const host = c.req.header('host');
 		if (host && (host.includes('localhost') || host.includes('127.0.0.1'))) {
-			// 本地开发环境
 			return `http://${host}`;
 		}
-		// 生产环境，可以设置专门的短链域名
-		return c.env.SHORT_DOMAIN || `https://${host || 'api.toolifyhub.top'}`;
+
+		// 默认回退地址
+		return `https://${host || 'api.toolifyhub.top'}`;
 	}
 }

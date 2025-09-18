@@ -11,8 +11,8 @@
 		"enabled": true
 	},
 	"vars": {
-		"FRONTEND_DOMAIN": "http://localhost:5173,http://localhost:5175,http://127.0.0.1:5173,http://127.0.0.1:5175",
-		"BACKEND_DOMAIN": "http://localhost:8787"
+		"FRONTEND_DOMAIN": "https://toolifyhub.top",
+		"BACKEND_DOMAIN": "https://api.toolifyhub.top"
 	},
 	"d1_databases": [
 		{

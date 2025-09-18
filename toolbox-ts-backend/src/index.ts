@@ -175,7 +175,8 @@ app.get('/sitemap.xml', (c) => {
     "/jwt-decoder",
     "/color-converter",
     "/qr-generator",
-    "/diff"
+    "/diff",
+    "/url-shortener"
   ];
   
   const normalPriorityTools = [

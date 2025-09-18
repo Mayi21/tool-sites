@@ -60,7 +60,7 @@ export default function CronParser() {
         setNextExecutions(executions);
 
         // Create formatted output for copying
-        const formattedOutput = `Cron Expression: ${input}\n\nNext 5 Executions:\n` +
+        const formattedOutput = `${t('Cron Expression')}: ${input}\n\n${t('Next Executions')}:\n` +
           executions.map((exec, index) => `${index + 1}. ${exec.time}`).join('\n');
         setOutput(formattedOutput);
 

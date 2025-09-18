@@ -11,13 +11,19 @@
 		"enabled": true
 	},
 	"vars": {
-		"FRONTEND_DOMAIN": "https://toolifyhub.top"
+		"FRONTEND_DOMAIN": "http://localhost:5175"
 	},
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "toolsite",
 			"database_id": "bb9c95e0-2058-4ebc-af75-2b10aea97297"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "8bdaf9d510674a01970dd4b03530e172"
 		}
 	]
 }

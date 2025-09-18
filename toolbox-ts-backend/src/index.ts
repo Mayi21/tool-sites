@@ -7,6 +7,13 @@ import { TaskFetch } from "./endpoints/taskFetch";
 import { TaskList } from "./endpoints/taskList";
 import { CronNextTimes } from './endpoints/cronNextTimes';
 
+// 短链功能端点
+import { ShortenUrl } from "./endpoints/urlShorten";
+import { ShortenUrlBatch } from "./endpoints/urlShortenBatch";
+import { ExpandUrl } from "./endpoints/urlExpand";
+import { UrlRedirect } from "./endpoints/urlRedirect";
+import { UrlStats } from "./endpoints/urlStats";
+
 // Start a Hono app
 const app = new Hono<{ Bindings: Env }>();
 
@@ -94,8 +101,27 @@ openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 // 已移除 Analytics 端点
 openapi.post('/api/cron/next-times', CronNextTimes);
 
+// 短链功能API端点
+openapi.post("/api/url/shorten", ShortenUrl);
+openapi.post("/api/url/shorten/batch", ShortenUrlBatch);
+openapi.get("/api/url/expand/:shortCode", ExpandUrl);
+openapi.get("/api/url/stats/:shortCode", UrlStats);
+
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))
+
+// 短链重定向处理（非OpenAPI路由）
+app.get('/:shortCode', async (c) => {
+	const shortCode = c.req.param('shortCode');
+
+	// 跳过特殊路径
+	if (shortCode === 'api' || shortCode === 'robots.txt' || shortCode === 'sitemap.xml') {
+		return c.notFound();
+	}
+
+	const redirect = new UrlRedirect();
+	return redirect.handle(c);
+});
 
 // Export the Hono app
 
@@ -121,6 +147,7 @@ Allow: /url-encoder
 Allow: /timestamp
 Allow: /hash-generator
 Allow: /qr-generator
+Allow: /url-shortener
 
 # Crawl-delay for aggressive bots
 User-agent: SemrushBot
@@ -153,7 +180,7 @@ app.get('/sitemap.xml', (c) => {
   
   const normalPriorityTools = [
     "/text-analyzer",
-    "/text-processor", 
+    "/text-processor",
     "/markdown-preview",
     "/csv-converter",
     "/image-compressor",
@@ -161,7 +188,8 @@ app.get('/sitemap.xml', (c) => {
     "/cron-parser",
     "/image-watermark",
     "/uuid-generator",
-    "/password-generator"
+    "/password-generator",
+    "/url-shortener"
   ];
 
   let sitemap = `<?xml version="1.0" encoding="UTF-8"?>

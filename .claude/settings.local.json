@@ -18,7 +18,10 @@
       "Bash(echo:*)",
       "Bash(for key in \"Convert between Chinese characters and Unicode representations.\" \"Conversion Options\" \"Conversion Mode\" \"Converting text, please wait...\" \"Conversion completed successfully\" \"Conversion failed: {{error}}\" \"Converted result will appear here. Select conversion mode and enter text to convert.\")",
       "Bash(for key in \"Unicode Converter\" \"Convert between Chinese characters and Unicode representations.\" \"Conversion Options\" \"Conversion Mode\" \"Input Text\" \"Converting text, please wait...\" \"Conversion completed successfully\" \"Conversion failed: {{error}}\" \"Converted result will appear here. Select conversion mode and enter text to convert.\" \"Chinese to Unicode\" \"Unicode to Chinese\" \"Chinese to Unicode Entity\" \"Unicode Entity to Chinese\" \"Enter Chinese text to convert to Unicode\" \"Enter Unicode codes (e.g., \\\\u4e2d\\\\u6587)\" \"Enter Chinese text to convert to Unicode entities\" \"Enter Unicode entities (e.g., &#x4E2D;&#x6587;)\" \"Converting...\" \"Convert\" \"Copy\" \"Please enter text to convert\" \"Converted Result\")",
-      "Bash(do grep -q \"\"\"$key\"\":\" en.json)"
+      "Bash(do grep -q \"\"\"$key\"\":\" en.json)",
+      "Bash(npm start:*)",
+      "Bash(npm run:*)",
+      "Bash(npx wrangler dev:*)"
     ],
     "deny": [],
     "ask": []

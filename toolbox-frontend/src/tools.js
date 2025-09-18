@@ -201,4 +201,14 @@ export default [
     pageDescriptionKey: 'password-generator.pageDescription',
     Component: lazy(() => import('./components/tools/PasswordGenerator')),
   },
+  {
+    path: '/url-shortener',
+    nameKey: 'url-shortener.name',
+    descKey: 'URL Shortener Tool',
+    cardDescription: '强大的短链生成工具，支持批量处理、自定义别名、过期设置和访问统计',
+    keywords: 'url shortener,short link,link shortener,短链,短链接,链接缩短,批量短链,自定义短链',
+    pageTitleKey: 'url-shortener.pageTitle',
+    pageDescriptionKey: 'url-shortener.pageDescription',
+    Component: lazy(() => import('./components/tools/UrlShortener')),
+  },
 ];

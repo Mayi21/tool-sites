@@ -9,7 +9,7 @@ const API_CONFIG = {
     }
 
     // 本地开发默认值
-    const localDefault = 'http://localhost:8787';
+    const localDefault = 'http://127.0.0.1:8787';
     if (import.meta.env.DEV) {
       return localDefault;
     }

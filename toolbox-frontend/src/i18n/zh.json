@@ -314,6 +314,8 @@
   "Next 5 execution times (UTC)": "未来5次执行时间（UTC）：",
   "Failed to parse: ": "解析失败: ",
   "Unrecognized expression type (only 5 or 6 fields supported)": "无法识别表达式类型（仅支持5位或6位）",
+  "Input Options": "输入选项",
+  "Next execution times will appear here. Enter a cron expression and click parse.": "下次执行时间将在此显示。请输入Cron表达式并点击解析。",
   "Image Watermark": "图片水印",
   "Add watermark to image": "给图片添加水印",
   "Image size cannot exceed 10MB": "图片大小不能超过10MB",

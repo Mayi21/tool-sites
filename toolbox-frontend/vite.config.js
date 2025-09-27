@@ -57,13 +57,16 @@ export default defineConfig(({ mode }) => {
             // 国际化库分离
             'i18n-vendor': ['react-i18next', 'i18next', 'i18n-iso-countries'],
             // 其他工具库分离
-            'utils-vendor': ['react-helmet-async', 'dayjs', 'qrcode', 'js-base64']
+            'utils-vendor': ['react-helmet-async', 'qrcode', 'js-base64', 'lodash'],
+            // 表单处理库
+            'form-vendor': ['react-hook-form']
           }
         }
       },
       // 字体和关键资源优化
       cssCodeSplit: true,
       minify: 'esbuild', // 使用更快的 esbuild 代替 terser
+      target: 'es2015', // 确保兼容性
       // 预加载关键资源配置
       assetsInlineLimit: 4096,
     },

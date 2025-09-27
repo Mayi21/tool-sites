@@ -23,7 +23,9 @@
       "Bash(npm run:*)",
       "Bash(npx wrangler dev:*)",
       "Bash(curl:*)",
-      "Bash(/bashes)"
+      "Bash(/bashes)",
+      "Bash(npm audit:*)",
+      "Bash(npx wrangler deploy:*)"
     ],
     "deny": [],
     "ask": []

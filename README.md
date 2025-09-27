@@ -1,53 +1,142 @@
-# 多功能工具箱
+# Multi-functional Toolbox
+
+[![GitHub stars](https://img.shields.io/github/stars/Mayi21/tool-sites)](https://github.com/Mayi21/tool-sites/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/Mayi21/tool-sites)](https://github.com/Mayi21/tool-sites/network)
+[![GitHub issues](https://img.shields.io/github/issues/Mayi21/tool-sites)](https://github.com/Mayi21/tool-sites/issues)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Deploy to Cloudflare Workers](https://img.shields.io/badge/Deploy-Cloudflare%20Workers-orange)](https://workers.cloudflare.com/)
+
+[English](README.md) | [中文](README_zh.md)
+
 ![img.png](img.png)
-## 📁 项目结构
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Node.js >= 16.x
+- npm or yarn
+- Cloudflare account (for deployment)
+- Git
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/Mayi21/tool-sites.git
+cd tool-sites
+```
+
+2. **Install frontend dependencies**
+```bash
+cd toolbox-frontend
+npm install
+# or
+yarn install
+```
+
+3. **Install backend dependencies**
+```bash
+cd ../toolbox-ts-backend
+npm install
+# or
+yarn install
+```
+
+4. **Local development**
+```bash
+# Frontend development (in toolbox-frontend directory)
+npm run dev
+
+# Backend development (in toolbox-ts-backend directory)
+npm run dev
+```
+
+## 📁 Project Structure
 ```
 tool-sites/
-├── toolbox-frontend # 前端页面
-│   ├── dist
-│   │   └── assets
-│   ├── public
-│   └── src
-│       ├── assets
-│       ├── components
-│       │   ├── Dashboard
-│       │   └── tools
-│       ├── config
-│       ├── hooks
-│       ├── i18n
-│       └── utils
-└── toolbox-ts-backend # 后端
+├── toolbox-frontend # Frontend pages
+│   ├── dist
+│   │   └── assets
+│   ├── public
+│   └── src
+│       ├── assets
+│       ├── components
+│       │   ├── Dashboard
+│       │   └── tools
+│       ├── config
+│       ├── hooks
+│       ├── i18n
+│       └── utils
+└── toolbox-ts-backend # Backend
     ├── database
     └── src
         ├── endpoints
-        │   └── questionnaire
+        │   └── questionnaire
         ├── services
         └── types
 ```
 
-## 🎨 设计特色
+## 🎨 Features
 
-- **10+在线工具**：Base64编解码、Cron解析、图片压缩、水印等
-- **前后端分离**：Pages部署前端，Workers部署后端 API
-- **持久化存储**：D1数据库存储数据
-- **0成本上线**：全部运行在Cloudflare免费额度内
-- **开源透明**：方便查看源码
+- **10+ Online Tools**: Base64 encode/decode, Cron parser, image compression, watermarking, and more
+- **Separation of Concerns**: Frontend deployed on Pages, backend API on Workers
+- **Persistent Storage**: Data stored in D1 database
+- **Zero-cost Deployment**: Runs entirely within Cloudflare's free tier
+- **Open Source**: Transparent source code
 
+## 🔧 Environment Variables
 
-## 🔧 本地部署
+### Frontend Environment Variables
 
-0. fork项目到自己的仓库中，然后克隆到本地
-1. 在Cloudflare的Wokers和Pages使用该项目创建
-2. 本地修改[wrangler.jsonc](toolbox-ts-backend/wrangler.jsonc)中FRONTEND_DOMAIN，增加自己项目中Pages的地址，用于放通CROS校验
-3. 在Cloudflare的Pages->设置->变量和机密，添加类型：文本；变量名称：API_URL；变量值：Workers地址（如：https://toolifyhub-backend.xxx.workers.dev）
-4. 推送代码重新部署
-5. 打开Pages地址即可正常访问
+Create a `.env` file in the `toolbox-frontend` directory:
 
-## 🤝 贡献
+```bash
+# API backend URL
+VITE_API_URL=https://your-backend.workers.dev
 
-欢迎提交 Issue 和 Pull Request 来帮助改进 [多功能工具箱](https://toolifyhub.top/)
+# Other configurations (as needed)
+VITE_APP_TITLE=Multi-functional Toolbox
+```
 
-你可以通过以下方式参与项目：
-- 提交bug报告和功能建议
-- 改进文档和代码
-- 分享使用体验和反馈
+### Backend Environment Variables
+
+Configure in `wrangler.jsonc` in the `toolbox-ts-backend` directory:
+
+```json
+{
+  "name": "toolbox-backend",
+  "main": "src/index.ts",
+  "compatibility_date": "2023-05-18",
+  "vars": {
+    "FRONTEND_DOMAIN": "https://your-frontend.pages.dev"
+  }
+}
+```
+
+### Cloudflare Pages Environment Variables
+
+Set in Cloudflare Pages console:
+
+| Variable Name | Description | Example |
+|---------------|-------------|---------|
+| `API_URL` | Workers API URL | `https://toolbox-backend.xxx.workers.dev` |
+| `NODE_VERSION` | Node.js version | `18` |
+
+## 🔧 Deployment
+
+0. Fork this repository to your own account, then clone locally
+1. Create new projects in Cloudflare Workers and Pages using this repository
+2. Modify `FRONTEND_DOMAIN` in [wrangler.jsonc](toolbox-ts-backend/wrangler.jsonc) locally, add your Pages URL for CORS validation
+3. In Cloudflare Pages -> Settings -> Environment variables, add: Type: Text; Variable name: API_URL; Variable value: Workers URL (e.g., https://toolifyhub-backend.xxx.workers.dev)
+4. Push code to redeploy
+5. Open the Pages URL to access normally
+
+## 🤝 Contributing
+
+Welcome to submit Issues and Pull Requests to help improve [Multi-functional Toolbox](https://toolifyhub.top/)
+
+You can contribute to the project by:
+- Submitting bug reports and feature suggestions
+- Improving documentation and code
+- Sharing usage experiences and feedback

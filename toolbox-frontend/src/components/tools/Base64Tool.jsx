@@ -4,7 +4,7 @@ import {
   Typography, Button, Card, TextField, Alert, Stack, CardHeader, CardContent, Box,
   ToggleButton, ToggleButtonGroup
 } from '@mui/material';
-import { ContentCopy, Transform } from '@mui/icons-material';
+import { ContentCopy, Transform, Clear } from '@mui/icons-material';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
@@ -22,6 +22,12 @@ export default function Base64Tool() {
     if (output) {
       copyToClipboard(output);
     }
+  };
+
+  const handleClear = () => {
+    setInput('');      // 清空输入内容
+    setOutput('');     // 清空输出结果
+    setFeedback({ type: '', message: '' }); // 清空反馈信息
   };
 
   const handleConvert = () => {
@@ -97,15 +103,27 @@ export default function Base64Tool() {
                 </ToggleButton>
               </ToggleButtonGroup>
 
-              <Button
-                variant="contained"
-                onClick={handleConvert}
-                startIcon={<Transform />}
-                disabled={processing || !input.trim()}
-                sx={{ minWidth: 140 }}
-              >
-                {processing ? t('Converting...') : t('Convert')}
-              </Button>
+              <Stack direction="row" spacing={1}>
+                <Button
+                  variant="contained"
+                  onClick={handleConvert}
+                  startIcon={<Transform />}
+                  disabled={processing || !input.trim()}
+                  sx={{ minWidth: 140 }}
+                >
+                  {processing ? t('Converting...') : t('Convert')}
+                </Button>
+
+                <Button
+                  variant="outlined"
+                  onClick={handleClear}
+                  startIcon={<Clear />}
+                  disabled={!input}
+                  sx={{ minWidth: 100 }}
+                >
+                  {t('Clear')}
+                </Button>
+              </Stack>
             </Stack>
           </CardContent>
         </Card>

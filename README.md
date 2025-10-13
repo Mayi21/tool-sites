@@ -8,7 +8,7 @@
 
 [English](README.md) | [中文](README_zh.md)
 
-![img.png](img.png)
+![img_1.png](img_en.png)
 
 ## 🚀 Quick Start
 

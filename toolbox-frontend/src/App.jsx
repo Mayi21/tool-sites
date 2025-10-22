@@ -1,5 +1,16 @@
 import { useState, useEffect, Suspense, lazy, useCallback } from 'react';
 import { BrowserRouter, Routes, Route, useLocation, useNavigate, Link } from 'react-router-dom';
+
+// 路由切换时滚动到顶部的组件
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+}
 import { useTranslation } from 'react-i18next';
 import { 
   ThemeProvider, 
@@ -439,6 +450,7 @@ function App() {
       <CssBaseline />
       <FontOptimization />
       <BrowserRouter>
+        <ScrollToTop />
         <IntelligentPreloader />
         <DynamicTitle />
         <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

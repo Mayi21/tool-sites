@@ -15,7 +15,8 @@ export class CronNextTimes extends OpenAPIRoute {
           'application/json': {
             schema: z.object({
               expr: z.string(),
-              count: z.number().default(5)
+              count: z.number().default(5),
+              timezone: z.string().default('Asia/Shanghai')
             })
           }
         }
@@ -39,7 +40,7 @@ export class CronNextTimes extends OpenAPIRoute {
 
   async handle(c: AppContext) {
     const data = await this.getValidatedData<typeof this.schema>();
-    let { expr, count } = data.body;
+    let { expr, count, timezone } = data.body;
 
     let processedExpr = expr.trim().replace(/\?/g, '*');
     const parts = processedExpr.split(/\s+/);
@@ -54,7 +55,11 @@ export class CronNextTimes extends OpenAPIRoute {
     }
 
     try {
-      const interval = parser.default.parse(processedExpr);
+      // Parse with timezone support to ensure correct local time interpretation
+      const interval = parser.default.parse(processedExpr, {
+        currentDate: new Date(),
+        tz: timezone
+      });
       const times = [];
       for (let i = 0; i < count; i++) {
         times.push(interval.next().toISOString());

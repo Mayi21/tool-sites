@@ -25,7 +25,9 @@
       "Bash(curl:*)",
       "Bash(/bashes)",
       "Bash(npm audit:*)",
-      "Bash(npx wrangler deploy:*)"
+      "Bash(npx wrangler deploy:*)",
+      "Bash(node:*)",
+      "Bash(TZ=Europe/London node:*)"
     ],
     "deny": [],
     "ask": []

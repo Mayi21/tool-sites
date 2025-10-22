@@ -39,10 +39,12 @@ export default function CronParser() {
 
     try {
       const apiConfig = getApiConfig();
+      // Get user's timezone
+      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai';
       const response = await fetch(buildApiUrl(apiConfig.ENDPOINTS.CRON_NEXT_TIMES), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expr: input, count: 5 }),
+        body: JSON.stringify({ expr: input, count: 5, timezone: userTimezone }),
       });
 
       if (!response.ok) {

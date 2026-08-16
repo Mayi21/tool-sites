@@ -1,0 +1,18 @@
+{
+  "timestamp.nowLabel": "现在的 Unix 时间戳：",
+  "timestamp.pause": "暂停",
+  "timestamp.resume": "继续",
+  "timestamp.tsLabel": "Unix 时间戳",
+  "timestamp.dateLabel": "时间（字符串）",
+  "timestamp.fieldsLabel": "时间（分字段）",
+  "timestamp.unitSecond": "秒",
+  "timestamp.unitMilli": "毫秒",
+  "timestamp.invalidTs": "时间戳无效，请输入纯数字",
+  "timestamp.invalidDate": "时间格式无效，示例：2026-08-16 12:00:00",
+  "timestamp.year": "年",
+  "timestamp.month": "月",
+  "timestamp.day": "日",
+  "timestamp.hour": "时",
+  "timestamp.minute": "分",
+  "timestamp.second": "秒"
+}

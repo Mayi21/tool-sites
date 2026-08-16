@@ -5,39 +5,61 @@
     <link rel="icon" type="image/svg+xml" href="/toolbox-icon.svg" />
     <link rel="apple-touch-icon" href="/toolbox-icon.svg" />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=1024" />
     <meta name="description" content="多功能在线工具箱 - 一站式开发者工具集合，包含Base64编解码、JSON格式化、正则测试、Cron解析等实用工具" />
     <meta name="keywords" content="在线工具,开发工具,Base64,JSON,正则表达式,Cron,工具箱" />
-    <meta name="theme-color" content="#1677ff" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fafafa" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#09090b" />
 
-    <!-- 关键资源预加载优化 -->
-    <!-- 预加载关键图标 - 提升首屏渲染速度 -->
-    <link rel="preload" href="/toolbox-icon.svg" as="image" type="image/svg+xml">
-
-    <!-- 预加载PWA清单 - 提升离线体验 -->
-    <link rel="preload" href="/manifest.json" as="fetch" crossorigin="anonymous">
-
-    <!-- 字体优化：预加载系统字体和设置font-display -->
     <style>
-      /* 系统字体优化 - 确保快速渲染 */
-      @font-face {
-        font-family: 'System';
-        src: local('-apple-system'), local('BlinkMacSystemFont'), local('Segoe UI'), local('Roboto'), local('Helvetica Neue'), local('Arial');
-        font-display: swap;
-        font-weight: 100 900;
-      }
-
-      /* 预定义字体栈，避免FOIT */
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        font-display: swap;
+        margin: 0;
       }
-
-      /* 关键渲染路径优化 */
-      * {
-        font-display: swap;
+      /* 静态骨架屏：JS 就绪前显示左菜单布局轮廓，React 挂载后自动覆盖 */
+      #root:empty::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background:
+          /* 左侧栏 */
+          linear-gradient(#fff, #fff) 0 0 / 240px 100% no-repeat,
+          /* 菜单项占位条 */
+          repeating-linear-gradient(
+            #f4f4f5 0 14px, transparent 14px 40px
+          ) 16px 76px / 180px 480px no-repeat,
+          /* logo 占位 */
+          linear-gradient(#f4f4f5, #f4f4f5) 16px 20px / 160px 22px no-repeat,
+          /* 内容区卡片占位 */
+          linear-gradient(#fff, #fff) 272px 24px / calc(100% - 304px) 70vh no-repeat,
+          /* 页面底色 */
+          #fafafa;
+        background-repeat: no-repeat;
+        animation: skeleton-pulse 1.2s ease-in-out infinite;
+      }
+      :root.dark #root:empty::before {
+        background:
+          linear-gradient(#18181b, #18181b) 0 0 / 240px 100% no-repeat,
+          repeating-linear-gradient(
+            #27272a 0 14px, transparent 14px 40px
+          ) 16px 76px / 180px 480px no-repeat,
+          linear-gradient(#27272a, #262626) 16px 20px / 160px 22px no-repeat,
+          linear-gradient(#18181b, #18181b) 272px 24px / calc(100% - 304px) 70vh no-repeat,
+          #09090b;
+      }
+      @keyframes skeleton-pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.6; }
       }
     </style>
+    <script>
+      // 尽早应用暗色主题，避免骨架屏/首屏闪白
+      try {
+        var t = localStorage.getItem('theme');
+        var dark = t === 'dark' || (t === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        if (dark) document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
 
     <title>多功能工具箱 - Multi-function Toolbox</title>
   </head>

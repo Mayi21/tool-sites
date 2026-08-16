@@ -1,20 +1,17 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
-  FormControl, InputLabel, Select, MenuItem
-} from '@mui/material';
-import { ContentCopy, Transform, Clear } from '@mui/icons-material';
+import { Button, Alert, Textarea, Select } from '../ui';
+import { Copy, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function TextProcessor() {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [operation, setOperation] = useState('uppercase');
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
 
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
@@ -84,28 +81,21 @@ export default function TextProcessor() {
     return result;
   }, [t]);
 
-  const handleProcess = () => {
+  // 输入或操作类型变化时实时处理
+  useDebouncedEffect(() => {
     if (!input.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter text to process') });
+      setOutput('');
+      setError('');
       return;
     }
-
-    setLoading(true);
-    setOutput('');
-    setFeedback({ type: '', message: '' });
-
-    setTimeout(() => {
-      try {
-        const result = processText(input, operation);
-        setOutput(result);
-        setLoading(false);
-        setFeedback({ type: 'success', message: t('Text processing completed successfully') });
-      } catch (error) {
-        setFeedback({ type: 'error', message: t('Processing failed, please try again') });
-        setLoading(false);
-      }
-    }, 500);
-  };
+    try {
+      setOutput(processText(input, operation));
+      setError('');
+    } catch {
+      setOutput('');
+      setError(t('Processing failed, please try again'));
+    }
+  }, [input, operation, processText]);
 
   const handleCopy = () => {
     if (output) {
@@ -115,126 +105,68 @@ export default function TextProcessor() {
 
   const handleClear = () => {
     setInput('');
-    setOutput('');
-    setFeedback({ type: '', message: '' });
   };
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Text Processor')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Text Processor')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Text Processing Tool')}
-        </Typography>
+        </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={2}>
-              <TextField
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                label={t('Enter text to process')}
-                multiline
-                rows={8}
-                fullWidth
-                variant="outlined"
-                placeholder={t('Paste or type your text here for processing...')}
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 14
-                  }
-                }}
-              />
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <div className="w-56">
+            <Select
+              value={operation}
+              onChange={(e) => setOperation(e.target.value)}
+              aria-label={t('Processing Operation')}
+            >
+              {operations.map(op => (
+                <option key={op.value} value={op.value}>
+                  {op.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={handleClear} disabled={!input} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!output} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-              <Stack direction="row" spacing={2} alignItems="center">
-                <FormControl sx={{ minWidth: 250, flex: 1 }}>
-                  <InputLabel id="operation-select-label">{t('Processing Operation')}</InputLabel>
-                  <Select
-                    labelId="operation-select-label"
-                    value={operation}
-                    label={t('Processing Operation')}
-                    onChange={(e) => setOperation(e.target.value)}
-                  >
-                    {operations.map(op => (
-                      <MenuItem key={op.value} value={op.value}>
-                        {op.label}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+        {error && (
+          <Alert severity="error" className="mb-3">
+            {error}
+          </Alert>
+        )}
 
-                <Button
-                  variant="contained"
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Transform />}
-                  disabled={loading || !input.trim()}
-                  onClick={handleProcess}
-                  sx={{ minWidth: 120 }}
-                >
-                  {loading ? t('Processing...') : t('Process')}
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  startIcon={<Clear />}
-                  onClick={handleClear}
-                  sx={{ minWidth: 100 }}
-                >
-                  {t('Clear')}
-                </Button>
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
-
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              output && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            label={t('Enter text to process')}
+            rows={18}
+            placeholder={t('Paste or type your text here for processing...')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-sm"
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Processing text, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : output ? (
-              <TextField
-                value={output}
-                InputProps={{ readOnly: true }}
-                multiline
-                rows={12}
-                fullWidth
-                variant="filled"
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 14,
-                    backgroundColor: 'grey.50'
-                  }
-                }}
-              />
-            ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
-                  {t('Processing results will appear here. Enter text above and select an operation.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Card>
+          <Textarea
+            value={output}
+            readOnly
+            rows={18}
+            label={t('Processing Results')}
+            placeholder={t('Converted result will appear here')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-sm bg-muted"
+          />
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}

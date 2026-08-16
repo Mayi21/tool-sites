@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
-  ToggleButton, ToggleButtonGroup
-} from '@mui/material';
-import { ContentCopy, Transform, Link, LinkOff } from '@mui/icons-material';
+import { Button, Alert, Textarea, ToggleButtonGroup } from '../ui';
+import { Copy, Link, Link2Off, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function UrlEncoder() {
@@ -13,8 +11,7 @@ export default function UrlEncoder() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState('encode');
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
   const handleCopy = () => {
@@ -23,149 +20,84 @@ export default function UrlEncoder() {
     }
   };
 
-  const handleConvert = () => {
+  const handleModeChange = (event, newMode) => {
+    if (newMode !== null) setMode(newMode);
+  };
+
+  // 输入或模式变化时实时转换
+  useDebouncedEffect(() => {
     if (!input.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter URL to convert') });
+      setOutput('');
+      setError('');
       return;
     }
-
-    setLoading(true);
-    setOutput('');
-    setFeedback({ type: '', message: '' });
-
-    setTimeout(() => {
-      try {
-        let result = '';
-        if (mode === 'encode') {
-          result = encodeURIComponent(input);
-          setFeedback({ type: 'success', message: t('URL encoded successfully') });
-        } else {
-          result = decodeURIComponent(input);
-          setFeedback({ type: 'success', message: t('URL decoded successfully') });
-        }
-        setOutput(result);
-      } catch (e) {
-        setFeedback({ type: 'error', message: t('Invalid input for URL conversion') });
-        setOutput('');
-      }
-      setLoading(false);
-    }, 300);
-  };
-
-  const handleModeChange = (event, newMode) => {
-    if (newMode !== null) {
-      setMode(newMode);
+    try {
+      const result = mode === 'encode'
+        ? encodeURIComponent(input)
+        : decodeURIComponent(input);
+      setOutput(result);
+      setError('');
+    } catch {
       setOutput('');
-      setFeedback({ type: '', message: '' });
+      setError(t('Invalid input for URL conversion'));
     }
-  };
+  }, [input, mode]);
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('URL Encoder/Decoder')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('URL Encoder/Decoder')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('URL Encode/Decode Tool')}
-        </Typography>
+        </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={2}>
-              <TextField
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                multiline
-                rows={6}
-                label={t('Enter URL to encode or decode')}
-                variant="outlined"
-                fullWidth
-                sx={{ mb: 2 }}
-              />
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <ToggleButtonGroup
+            value={mode}
+            onChange={handleModeChange}
+            aria-label="conversion mode"
+            options={[
+              { value: 'encode', label: <span className="inline-flex items-center gap-1"><Link size={16} />{t('Encode')}</span> },
+              { value: 'decode', label: <span className="inline-flex items-center gap-1"><Link2Off size={16} />{t('Decode')}</span> },
+            ]}
+          />
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={() => setInput('')} disabled={!input} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!output} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-              <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-                <ToggleButtonGroup
-                  value={mode}
-                  exclusive
-                  onChange={handleModeChange}
-                  aria-label="conversion mode"
-                >
-                  <ToggleButton value="encode" aria-label="encode">
-                    <Link sx={{ mr: 1 }} />
-                    {t('Encode')}
-                  </ToggleButton>
-                  <ToggleButton value="decode" aria-label="decode">
-                    <LinkOff sx={{ mr: 1 }} />
-                    {t('Decode')}
-                  </ToggleButton>
-                </ToggleButtonGroup>
-
-                <Button
-                  variant="contained"
-                  onClick={handleConvert}
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Transform />}
-                  disabled={loading || !input.trim()}
-                  sx={{ minWidth: 140 }}
-                >
-                  {loading ? t('Converting...') : t('Convert')}
-                </Button>
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {feedback.message && (
-          <Alert severity={feedback.type} sx={{ mb: 2 }}>
-            {feedback.message}
+        {error && (
+          <Alert severity="error" className="mb-3">
+            {error}
           </Alert>
         )}
 
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              output && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            rows={18}
+            label={t('Enter URL to encode or decode')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-xs"
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Converting URL, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : output ? (
-              <TextField
-                value={output}
-                multiline
-                readOnly
-                rows={8}
-                fullWidth
-                variant="filled"
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                    maxHeight: 240,
-                    overflow: 'auto'
-                  }
-                }}
-              />
-            ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  {t('Converted URL will appear here. Enter URL and select encode or decode.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Card>
+          <Textarea
+            value={output}
+            readOnly
+            rows={18}
+            label={t('Processing Results')}
+            placeholder={t('Converted result will appear here')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-xs bg-muted"
+          />
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}
@@ -173,4 +105,4 @@ export default function UrlEncoder() {
       />
     </>
   );
-} 
+}

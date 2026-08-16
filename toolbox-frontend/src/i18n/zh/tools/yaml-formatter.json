@@ -1,0 +1,7 @@
+{
+  "yaml-formatter.title": "YAML 格式化/校验",
+  "yaml-formatter.subtitle": "YAML 美化、语法校验、YAML 与 JSON 互转",
+  "yaml-formatter.prettify": "格式化",
+  "yaml-formatter.inputLabel": "请输入 YAML（JSON → YAML 模式下输入 JSON）",
+  "yaml-formatter.invalid": "YAML 格式无效"
+}

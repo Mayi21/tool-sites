@@ -1,5 +1,13 @@
 import { lazy } from 'react';
 
+import { loadToolLocale } from './i18n';
+
+// 工具页 chunk 与其翻译一起懒加载；preload 供左侧菜单悬停时预取
+const toolPage = (key, load) => {
+  const loader = () => Promise.all([load(), loadToolLocale(key)]).then(([mod]) => mod);
+  return { Component: lazy(loader), preload: loader };
+};
+
 export default [
   {
     path: '/base64',
@@ -9,7 +17,7 @@ export default [
     keywords: 'base64,encoder,decoder,online,free,base64 encode,base64 decode,编码,解码,数据传输',
     pageTitleKey: 'base64.pageTitle',
     pageDescriptionKey: 'base64.pageDescription',
-    Component: lazy(() => import('./components/tools/Base64Tool')),
+    ...toolPage('base64', () => import('./components/tools/Base64Tool')),
   },
   {
     path: '/diff',
@@ -19,7 +27,17 @@ export default [
     keywords: 'text,diff,comparison,compare,文本对比,差异比较,代码审查,版本管理',
     pageTitleKey: 'diff.pageTitle',
     pageDescriptionKey: 'diff.pageDescription',
-    Component: lazy(() => import('./components/tools/DiffTool')),
+    ...toolPage('diff', () => import('./components/tools/DiffTool')),
+  },
+  {
+    path: '/yaml-formatter',
+    nameKey: 'yaml-formatter.name',
+    descKey: 'yaml-formatter.pageDescription',
+    cardDescription: 'YAML格式化校验工具，支持美化、多文档和YAML与JSON互转',
+    keywords: 'yaml,formatter,validator,prettify,yaml format,yaml to json,json to yaml,格式化,校验',
+    pageTitleKey: 'yaml-formatter.pageTitle',
+    pageDescriptionKey: 'yaml-formatter.pageDescription',
+    ...toolPage('yaml-formatter', () => import('./components/tools/YamlFormatter')),
   },
   {
     path: '/json-formatter',
@@ -29,7 +47,7 @@ export default [
     keywords: 'json,formatter,validator,beautify,minify,json format,json validator,格式化,压缩',
     pageTitleKey: 'json-formatter.pageTitle',
     pageDescriptionKey: 'json-formatter.pageDescription',
-    Component: lazy(() => import('./components/tools/JsonFormatter')),
+    ...toolPage('json-formatter', () => import('./components/tools/JsonFormatter')),
   },
   {
     path: '/url-encoder',
@@ -39,7 +57,7 @@ export default [
     keywords: 'url,encoder,decoder,encode,decode,query string,网址编码,解码,中文URL',
     pageTitleKey: 'url-encoder.pageTitle',
     pageDescriptionKey: 'url-encoder.pageDescription',
-    Component: lazy(() => import('./components/tools/UrlEncoder')),
+    ...toolPage('url-encoder', () => import('./components/tools/UrlEncoder')),
   },
   {
     path: '/timestamp',
@@ -49,17 +67,7 @@ export default [
     keywords: 'timestamp,unix,converter,datetime,时间戳,转换器,unix时间,日期转换',
     pageTitleKey: 'timestamp.pageTitle',
     pageDescriptionKey: 'timestamp.pageDescription',
-    Component: lazy(() => import('./components/tools/TimestampConverter')),
-  },
-  {
-    path: '/color-converter',
-    nameKey: 'color-converter.name',
-    descKey: 'RGB/HEX/HSL Converter',
-    cardDescription: '多格式颜色转换器，支持RGB、HEX、HSL、HSV互转，含颜色预览功能',
-    keywords: 'color,converter,hex,rgb,hsl,hsv,颜色转换器,颜色代码,调色板',
-    pageTitleKey: 'color-converter.pageTitle',
-    pageDescriptionKey: 'color-converter.pageDescription',
-    Component: lazy(() => import('./components/tools/ColorConverter')),
+    ...toolPage('timestamp', () => import('./components/tools/TimestampConverter')),
   },
   {
     path: '/regex-tester',
@@ -69,7 +77,7 @@ export default [
     keywords: 'regex,regular expression,tester,pattern,match,正则表达式,测试,模式匹配',
     pageTitleKey: 'regex-tester.pageTitle',
     pageDescriptionKey: 'regex-tester.pageDescription',
-    Component: lazy(() => import('./components/tools/RegexTester')),
+    ...toolPage('regex-tester', () => import('./components/tools/RegexTester')),
   },
   {
     path: '/text-analyzer',
@@ -79,7 +87,7 @@ export default [
     keywords: 'text,analyzer,word count,character count,文本分析,字数统计,词频分析',
     pageTitleKey: 'text-analyzer.pageTitle',
     pageDescriptionKey: 'text-analyzer.pageDescription',
-    Component: lazy(() => import('./components/tools/TextAnalyzer')),
+    ...toolPage('text-analyzer', () => import('./components/tools/TextAnalyzer')),
   },
   {
     path: '/hash-generator',
@@ -89,7 +97,7 @@ export default [
     keywords: 'hash,md5,sha1,sha256,generator,哈希,加密,生成器,数据完整性',
     pageTitleKey: 'hash-generator.pageTitle',
     pageDescriptionKey: 'hash-generator.pageDescription',
-    Component: lazy(() => import('./components/tools/HashGenerator')),
+    ...toolPage('hash-generator', () => import('./components/tools/HashGenerator')),
   },
   {
     path: '/text-processor',
@@ -99,7 +107,7 @@ export default [
     keywords: 'text,processor,batch,大小写转换,去重,排序,文本处理,批量操作',
     pageTitleKey: 'text-processor.pageTitle',
     pageDescriptionKey: 'text-processor.pageDescription',
-    Component: lazy(() => import('./components/tools/TextProcessor')),
+    ...toolPage('text-processor', () => import('./components/tools/TextProcessor')),
   },
   {
     path: '/uuid-generator',
@@ -109,7 +117,7 @@ export default [
     keywords: 'uuid,generator,unique id,batch,数据库主键,API令牌,唯一标识符',
     pageTitleKey: 'uuid-generator.pageTitle',
     pageDescriptionKey: 'uuid-generator.pageDescription',
-    Component: lazy(() => import('./components/tools/UUIDGenerator')),
+    ...toolPage('uuid-generator', () => import('./components/tools/UUIDGenerator')),
   },
   {
     path: '/markdown-preview',
@@ -119,7 +127,7 @@ export default [
     keywords: 'markdown,preview,editor,实时预览,语法高亮,文档编写,README',
     pageTitleKey: 'markdown-preview.pageTitle',
     pageDescriptionKey: 'markdown-preview.pageDescription',
-    Component: lazy(() => import('./components/tools/MarkdownPreview')),
+    ...toolPage('markdown-preview', () => import('./components/tools/MarkdownPreview')),
   },
   {
     path: '/csv-converter',
@@ -129,7 +137,7 @@ export default [
     keywords: 'csv,json,converter,convert,数据转换,csv转json,表格数据,数据格式',
     pageTitleKey: 'csv-converter.pageTitle',
     pageDescriptionKey: 'csv-converter.pageDescription',
-    Component: lazy(() => import('./components/tools/CsvConverter')),
+    ...toolPage('csv-converter', () => import('./components/tools/CsvConverter')),
   },
   {
     path: '/jwt-decoder',
@@ -139,17 +147,7 @@ export default [
     keywords: 'jwt,json web token,decoder,decode,jwt解码,token解析,身份认证',
     pageTitleKey: 'jwt-decoder.pageTitle',
     pageDescriptionKey: 'jwt-decoder.pageDescription',
-    Component: lazy(() => import('./components/tools/JwtDecoder')),
-  },
-  {
-    path: '/qr-generator',
-    nameKey: 'qr-generator.name',
-    descKey: 'QR Code Generator Tool',
-    cardDescription: '高质量二维码生成器，支持文本、URL、WiFi信息，可自定义尺寸样式',
-    keywords: 'qr,qr code,generator,二维码,生成器,qrcode,扫码,URL分享',
-    pageTitleKey: 'qr-generator.pageTitle',
-    pageDescriptionKey: 'qr-generator.pageDescription',
-    Component: lazy(() => import('./components/tools/QrGenerator')),
+    ...toolPage('jwt-decoder', () => import('./components/tools/JwtDecoder')),
   },
   {
     path: '/image-compressor',
@@ -159,7 +157,7 @@ export default [
     keywords: 'image,compressor,optimization,图片压缩,优化,减小文件,批量处理',
     pageTitleKey: 'image-compressor.pageTitle',
     pageDescriptionKey: 'image-compressor.pageDescription',
-    Component: lazy(() => import('./components/tools/ImageCompressor')),
+    ...toolPage('image-compressor', () => import('./components/tools/ImageCompressor')),
   },
   {
     path: '/unicode-converter',
@@ -169,7 +167,7 @@ export default [
     keywords: 'unicode,converter,chinese,unicode转换,中文编码,字符编码,乱码修复',
     pageTitleKey: 'unicode-converter.pageTitle',
     pageDescriptionKey: 'unicode-converter.pageDescription',
-    Component: lazy(() => import('./components/tools/UnicodeConverter')),
+    ...toolPage('unicode-converter', () => import('./components/tools/UnicodeConverter')),
   },
   {
     path: '/cron-parser',
@@ -179,7 +177,7 @@ export default [
     keywords: 'cron,parser,expression,schedule,定时任务,cron表达式,调度,Linux',
     pageTitleKey: 'cron-parser.pageTitle',
     pageDescriptionKey: 'cron-parser.pageDescription',
-    Component: lazy(() => import('./components/tools/CronParser')),
+    ...toolPage('cron-parser', () => import('./components/tools/CronParser')),
   },
   {
     path: '/image-watermark',
@@ -189,7 +187,7 @@ export default [
     keywords: 'image,watermark,copyright,版权保护,水印,图片处理,品牌标识',
     pageTitleKey: 'image-watermark.pageTitle',
     pageDescriptionKey: 'image-watermark.pageDescription',
-    Component: lazy(() => import('./components/tools/WatermarkTool')),
+    ...toolPage('image-watermark', () => import('./components/tools/WatermarkTool')),
   },
   {
     path: '/password-generator',
@@ -199,7 +197,7 @@ export default [
     keywords: 'password,generator,security,密码生成,安全,强度评估,随机密码',
     pageTitleKey: 'password-generator.pageTitle',
     pageDescriptionKey: 'password-generator.pageDescription',
-    Component: lazy(() => import('./components/tools/PasswordGenerator')),
+    ...toolPage('password-generator', () => import('./components/tools/PasswordGenerator')),
   },
   {
     path: '/url-shortener',
@@ -209,6 +207,6 @@ export default [
     keywords: 'url shortener,short link,link shortener,短链,短链接,链接缩短,批量短链,自定义短链',
     pageTitleKey: 'url-shortener.pageTitle',
     pageDescriptionKey: 'url-shortener.pageDescription',
-    Component: lazy(() => import('./components/tools/UrlShortener')),
+    ...toolPage('url-shortener', () => import('./components/tools/UrlShortener')),
   },
 ];

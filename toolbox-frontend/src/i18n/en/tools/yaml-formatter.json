@@ -1,0 +1,7 @@
+{
+  "yaml-formatter.title": "YAML Formatter/Validator",
+  "yaml-formatter.subtitle": "Prettify YAML, validate syntax, convert between YAML and JSON",
+  "yaml-formatter.prettify": "Prettify",
+  "yaml-formatter.inputLabel": "Enter YAML (or JSON in JSON → YAML mode)",
+  "yaml-formatter.invalid": "Invalid YAML format"
+}

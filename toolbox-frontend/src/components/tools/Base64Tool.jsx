@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, Alert, Stack, CardHeader, CardContent, Box,
-  ToggleButton, ToggleButtonGroup
-} from '@mui/material';
-import { ContentCopy, Transform, Clear } from '@mui/icons-material';
+import { Button, Alert, Textarea, ToggleButtonGroup } from '../ui';
+import { Copy, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function Base64Tool() {
@@ -13,8 +11,7 @@ export default function Base64Tool() {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
   const [mode, setMode] = useState('encode');
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
-  const [processing, setProcessing] = useState(false);
+  const [error, setError] = useState('');
 
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
@@ -25,154 +22,87 @@ export default function Base64Tool() {
   };
 
   const handleClear = () => {
-    setInput('');      // 清空输入内容
-    setOutput('');     // 清空输出结果
-    setFeedback({ type: '', message: '' }); // 清空反馈信息
-  };
-
-  const handleConvert = () => {
-    if (!input.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter text to convert') });
-      return;
-    }
-
-    setProcessing(true);
-    setFeedback({ type: '', message: '' });
-
-    setTimeout(() => {
-      try {
-        let result = '';
-        if (mode === 'encode') {
-          result = btoa(unescape(encodeURIComponent(input)));
-          setFeedback({ type: 'success', message: t('Text encoded successfully') });
-        } else {
-          result = decodeURIComponent(escape(atob(input)));
-          setFeedback({ type: 'success', message: t('Text decoded successfully') });
-        }
-        setOutput(result);
-      } catch (e) {
-        setFeedback({ type: 'error', message: e.message || t('Invalid input for decoding') });
-        setOutput('');
-      }
-      setProcessing(false);
-    }, 300);
+    setInput('');
   };
 
   const handleModeChange = (event, newMode) => {
-    if (newMode !== null) {
-      setMode(newMode);
-      setOutput('');
-      setFeedback({ type: '', message: '' });
-    }
+    if (newMode !== null) setMode(newMode);
   };
+
+  // 输入或模式变化时实时转换
+  useDebouncedEffect(() => {
+    if (!input.trim()) {
+      setOutput('');
+      setError('');
+      return;
+    }
+    try {
+      const result = mode === 'encode'
+        ? btoa(unescape(encodeURIComponent(input)))
+        : decodeURIComponent(escape(atob(input)));
+      setOutput(result);
+      setError('');
+    } catch (e) {
+      setOutput('');
+      setError(e.message || t('Invalid input for decoding'));
+    }
+  }, [input, mode]);
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Base64 Encoder/Decoder')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Base64 Encoder/Decoder')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Base64 Encode/Decode Tool')}
-        </Typography>
+        </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <TextField
-              value={input}
-              onChange={e => setInput(e.target.value)}
-              multiline
-              rows={8}
-              label={t('Enter text to encode or decode')}
-              variant="outlined"
-              fullWidth
-              sx={{ mb: 2 }}
-            />
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <ToggleButtonGroup
+            value={mode}
+            onChange={handleModeChange}
+            aria-label="conversion mode"
+            options={[
+              { value: 'encode', label: t('Encode') },
+              { value: 'decode', label: t('Decode') },
+            ]}
+          />
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={handleClear} disabled={!input} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!output} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-            <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-              <ToggleButtonGroup
-                value={mode}
-                exclusive
-                onChange={handleModeChange}
-                aria-label="conversion mode"
-              >
-                <ToggleButton value="encode" aria-label="encode">
-                  {t('Encode')}
-                </ToggleButton>
-                <ToggleButton value="decode" aria-label="decode">
-                  {t('Decode')}
-                </ToggleButton>
-              </ToggleButtonGroup>
-
-              <Stack direction="row" spacing={1}>
-                <Button
-                  variant="contained"
-                  onClick={handleConvert}
-                  startIcon={<Transform />}
-                  disabled={processing || !input.trim()}
-                  sx={{ minWidth: 140 }}
-                >
-                  {processing ? t('Converting...') : t('Convert')}
-                </Button>
-
-                <Button
-                  variant="outlined"
-                  onClick={handleClear}
-                  startIcon={<Clear />}
-                  disabled={!input}
-                  sx={{ minWidth: 100 }}
-                >
-                  {t('Clear')}
-                </Button>
-              </Stack>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {feedback.message && (
-          <Alert severity={feedback.type} sx={{ mb: 2 }}>
-            {feedback.message}
+        {error && (
+          <Alert severity="error" className="mb-3">
+            {error}
           </Alert>
         )}
 
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              output && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            rows={18}
+            label={t('Enter text to encode or decode')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-xs"
           />
-          <CardContent>
-            {output ? (
-              <TextField
-                value={output}
-                multiline
-                readOnly
-                rows={8}
-                fullWidth
-                variant="filled"
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                    maxHeight: 200,
-                    overflow: 'auto'
-                  }
-                }}
-              />
-            ) : (
-              <Box sx={{ minHeight: 200, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  {t('Converted result will appear here. Enter text and click convert.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Card>
+          <Textarea
+            value={output}
+            readOnly
+            rows={18}
+            label={t('Processing Results')}
+            placeholder={t('Converted result will appear here')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-xs bg-muted"
+          />
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}
@@ -180,4 +110,4 @@ export default function Base64Tool() {
       />
     </>
   );
-} 
+}

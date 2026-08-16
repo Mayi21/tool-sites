@@ -1,77 +1,29 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, Paper, Stack, Typography } from '@mui/material';
-import { Home, ArrowBack, Refresh } from '@mui/icons-material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { Home, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
+import { Button, Card } from './ui';
 
 export default function NotFound() {
   const navigate = useNavigate();
 
-  const handleGoHome = () => {
-    navigate('/', { replace: true });
-  };
-
-  const handleGoBack = () => {
-    navigate(-1);
-  };
-
-  const handleRefresh = () => {
-    window.location.reload();
-  };
-
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        bgcolor: 'background.default',
-        p: 3,
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          textAlign: 'center',
-          maxWidth: '500px',
-          width: '100%',
-        }}
-      >
-        <ErrorOutlineIcon sx={{ fontSize: 64, color: 'error.main' }} />
-        <Typography variant="h4" component="h1" gutterBottom sx={{ mt: 2 }}>
-          404
-        </Typography>
-        <Typography variant="subtitle1" color="text.secondary">
-          抱歉，您访问的页面不存在。
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          您可以返回主页或上一页继续浏览。
-        </Typography>
-        <Stack direction="row" spacing={2} justifyContent="center">
-          <Button
-            variant="contained"
-            startIcon={<Home />}
-            onClick={handleGoHome}
-          >
+    <div className="flex min-h-screen items-center justify-center p-6">
+      <Card className="w-full max-w-lg p-8 text-center">
+        <AlertCircle size={64} className="mx-auto text-danger" />
+        <h1 className="mt-4 text-3xl font-bold text-fg">404</h1>
+        <p className="mt-2 text-fg-secondary">抱歉，您访问的页面不存在。</p>
+        <p className="mb-6 text-sm text-fg-secondary">您可以返回主页或上一页继续浏览。</p>
+        <div className="flex flex-wrap justify-center gap-3">
+          <Button startIcon={<Home size={16} />} onClick={() => navigate('/', { replace: true })}>
             返回主页
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowBack />}
-            onClick={handleGoBack}
-          >
+          <Button variant="outlined" startIcon={<ArrowLeft size={16} />} onClick={() => navigate(-1)}>
             返回上页
           </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Refresh />}
-            onClick={handleRefresh}
-          >
+          <Button variant="outlined" startIcon={<RefreshCw size={16} />} onClick={() => window.location.reload()}>
             刷新页面
           </Button>
-        </Stack>
-      </Paper>
-    </Box>
+        </div>
+      </Card>
+    </div>
   );
-} 
+}

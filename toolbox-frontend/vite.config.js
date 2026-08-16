@@ -1,7 +1,6 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
-import { preloadPlugin } from './src/plugins/preloadPlugin.js';
-import { criticalCssPlugin } from './src/plugins/criticalCssPlugin.js';
+import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 import { constants } from 'zlib';
 
@@ -13,16 +12,15 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      preloadPlugin(),
-      criticalCssPlugin(), // 关键CSS内联优化
+      tailwindcss(),
       // Gzip压缩配置
       viteCompression({
         algorithm: 'gzip',
         ext: '.gz',
-        threshold: 1024, // 只压缩大于1KB的文件
-        deleteOriginFile: false, // 保留原文件
+        threshold: 1024,
+        deleteOriginFile: false,
         compressionOptions: {
-          level: 9 // 最高压缩级别
+          level: 9
         }
       }),
       // Brotli压缩配置（更好的压缩率）
@@ -33,7 +31,7 @@ export default defineConfig(({ mode }) => {
         deleteOriginFile: false,
         compressionOptions: {
           params: {
-            [constants.BROTLI_PARAM_QUALITY]: 11 // 最高质量
+            [constants.BROTLI_PARAM_QUALITY]: 11
           }
         }
       })
@@ -46,28 +44,13 @@ export default defineConfig(({ mode }) => {
       rollupOptions: {
         output: {
           manualChunks: {
-            // React核心库分离
-            'react-vendor': ['react', 'react-dom', 'react-router-dom'],
-            // Material UI库分离
-            'mui-vendor': ['@mui/material', '@mui/icons-material', '@emotion/react', '@emotion/styled'],
-            // Ant Design库分离
-            'antd-vendor': ['antd'],
-            // 图表库分离
-            'chart-vendor': ['recharts', 'chart.js', 'd3-scale'],
-            // 国际化库分离
-            'i18n-vendor': ['react-i18next', 'i18next', 'i18n-iso-countries'],
-            // 其他工具库分离
-            'utils-vendor': ['react-helmet-async', 'qrcode', 'js-base64', 'lodash'],
-            // 表单处理库
-            'form-vendor': ['react-hook-form']
+            'react-vendor': ['react', 'react-dom', 'react-router-dom']
           }
         }
       },
-      // 字体和关键资源优化
       cssCodeSplit: true,
-      minify: 'esbuild', // 使用更快的 esbuild 代替 terser
-      target: 'es2015', // 确保兼容性
-      // 预加载关键资源配置
+      minify: 'esbuild',
+      target: 'es2020',
       assetsInlineLimit: 4096,
     },
     server: {

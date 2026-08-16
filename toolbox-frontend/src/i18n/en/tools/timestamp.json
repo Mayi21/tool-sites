@@ -1,0 +1,18 @@
+{
+  "timestamp.nowLabel": "Current Unix timestamp:",
+  "timestamp.pause": "Pause",
+  "timestamp.resume": "Resume",
+  "timestamp.tsLabel": "Unix timestamp",
+  "timestamp.dateLabel": "Time (string)",
+  "timestamp.fieldsLabel": "Time (fields)",
+  "timestamp.unitSecond": "sec",
+  "timestamp.unitMilli": "ms",
+  "timestamp.invalidTs": "Invalid timestamp, digits only",
+  "timestamp.invalidDate": "Invalid time format, e.g. 2026-08-16 12:00:00",
+  "timestamp.year": "Y",
+  "timestamp.month": "M",
+  "timestamp.day": "D",
+  "timestamp.hour": "h",
+  "timestamp.minute": "m",
+  "timestamp.second": "s"
+}

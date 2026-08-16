@@ -1,10 +1,7 @@
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
-  Slider, Grid
-} from '@mui/material';
-import { UploadFile, Compress, Download } from '@mui/icons-material';
+import { Button, Alert, Slider, Spinner } from '../ui';
+import { Upload, Minimize2, Download } from 'lucide-react';
 
 function formatFileSize(bytes) {
   if (bytes === 0) return '0 Bytes';
@@ -69,6 +66,9 @@ export default function ImageCompressor() {
           const ctx = canvas.getContext('2d');
           canvas.width = img.width;
           canvas.height = img.height;
+          // JPEG 不支持透明通道，先铺白底避免透明区域被合成为黑色
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.drawImage(img, 0, 0);
           canvas.toBlob((blob) => {
             const compressedUrl = URL.createObjectURL(blob);
@@ -76,14 +76,18 @@ export default function ImageCompressor() {
             setCompressedSize(blob.size);
             setLoading(false);
             const reduction = originalSize > 0 ? Math.round((1 - blob.size / originalSize) * 100) : 0;
-            setFeedback({
-              type: 'success',
-              message: t('Image compressed successfully') + ` (${reduction}% ${t('reduction')})`
-            });
+            if (reduction <= 0) {
+              setFeedback({ type: 'warning', message: t('Image is already optimized, compression would increase size') });
+            } else {
+              setFeedback({
+                type: 'success',
+                message: t('Image compressed successfully') + ` (${reduction}% ${t('reduction')})`
+              });
+            }
           }, 'image/jpeg', quality / 100);
         };
         img.src = originalImage;
-      } catch (error) {
+      } catch {
         setLoading(false);
         setFeedback({ type: 'error', message: t('Image compression failed, please try again') });
       }
@@ -102,157 +106,116 @@ export default function ImageCompressor() {
   const reduction = originalSize > 0 && compressedSize > 0 ? Math.round((1 - compressedSize / originalSize) * 100) : 0;
 
   return (
-    <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Image Compressor')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
-          {t('Online Image Compressor')}
-        </Typography>
+    <div className="w-full">
+      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Image Compressor')}</h1>
+      <p className="text-fg-secondary mb-3">
+        {t('Online Image Compressor')}
+      </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={3}>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleImageUpload}
-              />
-              <Button
-                variant="outlined"
-                startIcon={<UploadFile />}
-                onClick={() => fileInputRef.current.click()}
-                fullWidth
-                size="large"
-              >
-                {t('Select Image')}
-              </Button>
-
-              <Box>
-                <Typography gutterBottom>{t('Quality')}: {quality}%</Typography>
-                <Slider
-                  value={quality}
-                  onChange={(e, newValue) => setQuality(newValue)}
-                  aria-labelledby="quality-slider"
-                  valueLabelDisplay="auto"
-                  step={5}
-                  min={10}
-                  max={100}
-                />
-              </Box>
-
-              <Button
-                variant="contained"
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Compress />}
-                disabled={loading || !originalImage}
-                onClick={handleCompress}
-                fullWidth
-              >
-                {loading ? t('Processing...') : t('Process')}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
-
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              compressedImage && (
-                <Button size="small" onClick={downloadCompressed} startIcon={<Download />}>
-                  {t('Download')}
-                </Button>
-              )
-            }
+      {/* 工具栏：所有操作集中 */}
+      <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+        <div className="flex min-w-[220px] items-center gap-2">
+          <span className="whitespace-nowrap text-sm text-fg">{t('Quality')}: {quality}%</span>
+          <Slider
+            value={quality}
+            onChange={(e) => setQuality(Number(e.target.value))}
+            aria-labelledby="quality-slider"
+            step={5}
+            min={10}
+            max={100}
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Processing text, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : originalImage ? (
-              <Grid container spacing={2}>
-                <Grid item xs={12} md={6}>
-                  <Card variant="outlined">
-                    <CardHeader title={t('Original Image')} titleTypographyProps={{ variant: 'h6' }} />
-                    <CardContent>
-                      <img
-                        src={originalImage}
-                        alt="Original"
-                        style={{
-                          width: '100%',
-                          maxHeight: 300,
-                          objectFit: 'contain',
-                          borderRadius: 4
-                        }}
-                      />
-                      <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                        {t('Size')}: {formatFileSize(originalSize)}
-                      </Typography>
-                    </CardContent>
-                  </Card>
-                </Grid>
+        </div>
+        <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+        <div className="flex items-center gap-1">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleImageUpload}
+          />
+          <Button size="small" variant="text" onClick={() => fileInputRef.current.click()} startIcon={<Upload size={16} />}>
+            {t('Select Image')}
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={loading ? <Spinner size={16} /> : <Minimize2 size={16} />}
+            disabled={loading || !originalImage}
+            onClick={handleCompress}
+          >
+            {loading ? t('Processing...') : t('Process')}
+          </Button>
+          <Button size="small" variant="text" onClick={downloadCompressed} disabled={!compressedImage} startIcon={<Download size={16} />}>
+            {t('Download')}
+          </Button>
+        </div>
+      </div>
 
-                <Grid item xs={12} md={6}>
-                  <Card variant="outlined">
-                    <CardHeader title={t('Compressed Image')} titleTypographyProps={{ variant: 'h6' }} />
-                    <CardContent>
-                      {compressedImage ? (
-                        <>
-                          <img
-                            src={compressedImage}
-                            alt="Compressed"
-                            style={{
-                              width: '100%',
-                              maxHeight: 300,
-                              objectFit: 'contain',
-                              borderRadius: 4
-                            }}
-                          />
-                          <Typography variant="body2" align="center" sx={{ mt: 1 }}>
-                            {t('Size')}: {formatFileSize(compressedSize)}
-                            <br />
-                            {t('Reduction')}: {reduction}%
-                          </Typography>
-                        </>
-                      ) : (
-                        <Box sx={{
-                          height: 300,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          border: '2px dashed',
-                          borderColor: 'divider',
-                          borderRadius: 1
-                        }}>
-                          <Typography color="text.secondary">
-                            {t('Compressed image will appear here after compression')}
-                          </Typography>
-                        </Box>
-                      )}
-                    </CardContent>
-                  </Card>
-                </Grid>
-              </Grid>
-            ) : (
-              <Box sx={{ minHeight: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  {t('Processing results will appear here. Enter text above and select an operation.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
+      {feedback.message && <Alert severity={feedback.type} className="mb-3">{feedback.message}</Alert>}
 
-        <canvas ref={canvasRef} style={{ display: 'none' }} />
-      </Card>
-    </>
+      {/* 左原图 / 右压缩结果 */}
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <p className="mb-2 text-sm text-fg">{t('Original Image')}</p>
+          {originalImage ? (
+            <>
+              <img
+                src={originalImage}
+                alt="Original"
+                className="w-full rounded max-h-[300px] object-contain"
+              />
+              <p className="mt-2 text-center text-sm text-fg">
+                {t('Size')}: {formatFileSize(originalSize)}
+              </p>
+            </>
+          ) : (
+            <div
+              className="flex h-[300px] cursor-pointer items-center justify-center rounded border-2 border-dashed border-line"
+              onClick={() => fileInputRef.current.click()}
+            >
+              <p className="text-fg-secondary">{t('Select Image')}</p>
+            </div>
+          )}
+        </div>
+
+        <div>
+          <p className="mb-2 text-sm text-fg">{t('Compressed Image')}</p>
+          {loading ? (
+            <div className="flex h-[300px] items-center justify-center rounded border-2 border-dashed border-line">
+              <div className="flex flex-col items-center gap-2">
+                <Spinner />
+                <p className="text-fg">{t('Processing text, please wait...')}</p>
+              </div>
+            </div>
+          ) : compressedImage ? (
+            <>
+              <img
+                src={compressedImage}
+                alt="Compressed"
+                className="w-full rounded max-h-[300px] object-contain"
+              />
+              <p className="mt-2 text-center text-sm text-fg">
+                {t('Size')}: {formatFileSize(compressedSize)}
+                {reduction > 0 && (
+                  <>
+                    <br />
+                    {t('Reduction')}: {reduction}%
+                  </>
+                )}
+              </p>
+            </>
+          ) : (
+            <div className="flex h-[300px] items-center justify-center rounded border-2 border-dashed border-line">
+              <p className="text-fg-secondary">
+                {t('Compressed image will appear here after compression')}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+    </div>
   );
-} 
+}

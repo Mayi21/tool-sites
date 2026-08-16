@@ -1,22 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
-  Slider, Grid, Modal
-} from '@mui/material';
-import { UploadFile, Download, Preview } from '@mui/icons-material';
+import { Button, Alert, Input, Slider, Modal, Spinner } from '../ui';
+import { Upload, Download, Eye } from 'lucide-react';
 import { getBase64 } from '../../utils/imageUtils';
-
-const modalStyle = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  width: '80vw',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 2,
-};
 
 export default function WatermarkTool() {
   const { t } = useTranslation();
@@ -46,7 +32,7 @@ export default function WatermarkTool() {
       const base64Url = await getBase64(file);
       setImageUrl(base64Url);
       setFeedback({ type: 'success', message: t('Image uploaded successfully') });
-    } catch (error) {
+    } catch {
       setFeedback({ type: 'error', message: t('Image upload failed, please try again') });
     } finally {
       setLoading(false);
@@ -89,7 +75,7 @@ export default function WatermarkTool() {
           setLoading(false);
           setFeedback({ type: 'error', message: t('Image processing failed, please try again') });
         };
-      } catch (error) {
+      } catch {
         setLoading(false);
         setFeedback({ type: 'error', message: t('Watermark processing failed, please try again') });
       }
@@ -138,174 +124,127 @@ export default function WatermarkTool() {
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Image Watermark')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Image Watermark')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Add watermark to image')}
-        </Typography>
+        </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={3}>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                hidden
-                onChange={handleImageUpload}
-              />
-              <Button
-                variant="outlined"
-                startIcon={<UploadFile />}
-                onClick={() => fileInputRef.current.click()}
-                fullWidth
-                size="large"
-              >
-                {t('Select Image')}
-              </Button>
-
-              <TextField
-                label={t('Enter text to process')}
-                value={watermarkText}
-                onChange={(e) => setWatermarkText(e.target.value)}
-                fullWidth
-                variant="outlined"
-                placeholder={t('Paste or type your text here for processing...')}
-              />
-
-              <Grid container spacing={2} alignItems="center">
-                <Grid item xs={6}>
-                  <Typography>{t('Color')}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <input
-                    type="color"
-                    value={watermarkColor}
-                    onChange={(e) => setWatermarkColor(e.target.value)}
-                    style={{
-                      border: 'none',
-                      background: 'none',
-                      width: 60,
-                      height: 40,
-                      cursor: 'pointer',
-                      borderRadius: 4
-                    }}
-                  />
-                </Grid>
-              </Grid>
-
-              <Box>
-                <Typography gutterBottom>
-                  {t('Opacity')}: {(transparency * 100).toFixed(0)}%
-                </Typography>
-                <Slider
-                  value={transparency}
-                  min={0}
-                  max={1}
-                  step={0.01}
-                  onChange={(e, val) => setTransparency(val)}
-                />
-              </Box>
-
-              <Box>
-                <Typography gutterBottom>
-                  {t('Font Size')}: {fontSize}px
-                </Typography>
-                <Slider
-                  value={fontSize}
-                  min={12}
-                  max={128}
-                  step={1}
-                  onChange={(e, val) => setFontSize(val)}
-                />
-              </Box>
-
-              <Button
-                variant="contained"
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <UploadFile />}
-                disabled={loading || !imageUrl}
-                onClick={handleProcess}
-                fullWidth
-              >
-                {loading ? t('Processing...') : t('Apply Watermark')}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
-
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Watermarked Image')}
-            action={
-              imageUrl && (
-                <Stack direction="row" spacing={1}>
-                  <Button size="small" onClick={handlePreview} startIcon={<Preview />}>
-                    {t('Preview')}
-                  </Button>
-                  <Button size="small" onClick={handleDownload} startIcon={<Download />}>
-                    {t('Download')}
-                  </Button>
-                </Stack>
-              )
-            }
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            hidden
+            onChange={handleImageUpload}
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 400 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Processing watermark, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : imageUrl ? (
-              <Box sx={{
-                width: '100%',
-                minHeight: 400,
-                border: '1px dashed',
-                borderColor: 'divider',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                overflow: 'hidden',
-                cursor: 'pointer',
-                borderRadius: 1
-              }}>
+          <Button size="small" variant="text" onClick={() => fileInputRef.current.click()} startIcon={<Upload size={16} />}>
+            {t('Select Image')}
+          </Button>
+          <Button
+            variant="contained"
+            size="small"
+            startIcon={loading ? <Spinner size={16} /> : <Upload size={16} />}
+            disabled={loading || !imageUrl}
+            onClick={handleProcess}
+          >
+            {loading ? t('Processing...') : t('Apply Watermark')}
+          </Button>
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={handlePreview} disabled={!imageUrl} startIcon={<Eye size={16} />}>
+              {t('Preview')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleDownload} disabled={!imageUrl} startIcon={<Download size={16} />}>
+              {t('Download')}
+            </Button>
+          </div>
+        </div>
+
+        {feedback.message && <Alert severity={feedback.type} className="mb-3">{feedback.message}</Alert>}
+
+        {/* 左参数 / 右预览 */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-6">
+            <Input
+              label={t('Enter text to process')}
+              value={watermarkText}
+              onChange={(e) => setWatermarkText(e.target.value)}
+              placeholder={t('Paste or type your text here for processing...')}
+            />
+
+            <div className="grid grid-cols-2 items-center gap-4">
+              <p className="text-fg">{t('Color')}</p>
+              <input
+                type="color"
+                value={watermarkColor}
+                onChange={(e) => setWatermarkColor(e.target.value)}
+                className="h-10 w-[60px] cursor-pointer rounded border-0 bg-transparent"
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-fg">
+                {t('Opacity')}: {(transparency * 100).toFixed(0)}%
+              </p>
+              <Slider
+                value={transparency}
+                min={0}
+                max={1}
+                step={0.01}
+                onChange={(e) => setTransparency(Number(e.target.value))}
+              />
+            </div>
+
+            <div>
+              <p className="mb-2 text-fg">
+                {t('Font Size')}: {fontSize}px
+              </p>
+              <Slider
+                value={fontSize}
+                min={12}
+                max={128}
+                step={1}
+                onChange={(e) => setFontSize(Number(e.target.value))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-sm text-fg">{t('Watermarked Image')}</p>
+            {imageUrl ? (
+              /* canvas 常驻 DOM（loading 时仅盖遮罩），否则处理回调里 canvasRef 为 null */
+              <div className="relative flex min-h-[400px] w-full items-center justify-center overflow-hidden rounded border border-dashed border-line">
                 <canvas
                   ref={canvasRef}
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '400px',
-                    objectFit: 'contain'
-                  }}
+                  className="max-w-full max-h-[400px] object-contain"
                 />
-              </Box>
+                {loading && (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-paper/70">
+                    <Spinner />
+                    <p className="text-fg">{t('Processing watermark, please wait...')}</p>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Box sx={{ minHeight: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
+              <div className="flex min-h-[400px] items-center justify-center rounded border border-dashed border-line">
+                <p className="text-fg-secondary">
                   {t('Processing results will appear here. Enter text above and select an operation.')}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             )}
-          </CardContent>
-        </Card>
-      </Card>
+          </div>
+        </div>
+      </div>
 
-      <Modal open={previewOpen} onClose={() => setPreviewOpen(false)}>
-        <Box sx={modalStyle}>
-          <img
-            src={previewUrl}
-            alt="preview"
-            loading="lazy"
-            style={{
-              width: '100%',
-              maxHeight: '80vh',
-              objectFit: 'contain'
-            }}
-          />
-        </Box>
+      <Modal open={previewOpen} onClose={() => setPreviewOpen(false)} className="max-w-[80vw]">
+        <img
+          src={previewUrl}
+          alt="preview"
+          loading="lazy"
+          className="w-full max-h-[80vh] object-contain"
+        />
       </Modal>
     </>
   );

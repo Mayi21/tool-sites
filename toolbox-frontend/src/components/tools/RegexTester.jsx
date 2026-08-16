@@ -1,11 +1,9 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
-  Checkbox, FormControlLabel, FormGroup, Chip, Divider
-} from '@mui/material';
-import { ContentCopy, PlayArrow, Search, Flag } from '@mui/icons-material';
+import { Button, Alert, Input, Textarea, Checkbox } from '../ui';
+import { Copy, Flag, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function RegexTester() {
@@ -13,8 +11,7 @@ export default function RegexTester() {
   const [pattern, setPattern] = useState('');
   const [testText, setTestText] = useState('');
   const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
   const [flags, setFlags] = useState({
     g: true,  // global
     i: false, // ignoreCase
@@ -33,193 +30,124 @@ export default function RegexTester() {
       ...flags,
       [event.target.name]: event.target.checked,
     });
-    // Clear results when flags change
-    setOutput('');
-    setFeedback({ type: '', message: '' });
   };
 
-  const handleTest = () => {
-    if (!pattern.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter a regex pattern') });
+  // pattern、flags、测试文本变化时实时匹配
+  useDebouncedEffect(() => {
+    if (!pattern.trim() || !testText.trim()) {
+      setOutput('');
+      setError('');
       return;
     }
-    if (!testText.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter test text') });
-      return;
-    }
+    try {
+      const flagString = Object.keys(flags).filter(key => flags[key]).join('');
+      const regex = new RegExp(pattern, flagString);
+      const results = [];
+      let match;
 
-    setLoading(true);
-    setOutput('');
-    setFeedback({ type: '', message: '' });
-
-    setTimeout(() => {
-      try {
-        const flagString = Object.keys(flags).filter(key => flags[key]).join('');
-        const regex = new RegExp(pattern, flagString);
-        const results = [];
-        let match;
-
-        if (flags.g) {
-          while ((match = regex.exec(testText)) !== null) {
-            results.push({ match: match[0], index: match.index, groups: match.slice(1) });
-          }
-        } else {
-          match = regex.exec(testText);
-          if (match) {
-            results.push({ match: match[0], index: match.index, groups: match.slice(1) });
-          }
+      if (flags.g) {
+        while ((match = regex.exec(testText)) !== null) {
+          results.push({ match: match[0], index: match.index, groups: match.slice(1) });
+          if (match[0] === '') regex.lastIndex++;
         }
-
-        if (results.length > 0) {
-          const resultText = results.map((result, index) =>
-            `Match ${index + 1}:\n` +
-            `  Text: "${result.match}"\n` +
-            `  Position: ${result.index}\n` +
-            (result.groups.length > 0 ? `  Groups: [${result.groups.map(g => `"${g}"`).join(', ')}]\n` : '') +
-            '\n'
-          ).join('');
-
-          setOutput(resultText);
-          setFeedback({ type: 'success', message: t('Found {{count}} matches', { count: results.length }) });
-        } else {
-          setOutput(t('No matches found'));
-          setFeedback({ type: 'info', message: t('No matches found for the given pattern') });
+      } else {
+        match = regex.exec(testText);
+        if (match) {
+          results.push({ match: match[0], index: match.index, groups: match.slice(1) });
         }
-      } catch (e) {
-        setFeedback({ type: 'error', message: t('Invalid regex pattern: {{error}}', { error: e.message }) });
-        setOutput('');
       }
-      setLoading(false);
-    }, 300);
-  };
+
+      if (results.length > 0) {
+        const resultText = results.map((result, index) =>
+          `Match ${index + 1}:\n` +
+          `  Text: "${result.match}"\n` +
+          `  Position: ${result.index}\n` +
+          (result.groups.length > 0 ? `  Groups: [${result.groups.map(g => `"${g}"`).join(', ')}]\n` : '') +
+          '\n'
+        ).join('');
+
+        setOutput(resultText);
+      } else {
+        setOutput(t('No matches found'));
+      }
+      setError('');
+    } catch (e) {
+      setOutput('');
+      setError(t('Invalid regex pattern: {{error}}', { error: e.message }));
+    }
+  }, [pattern, testText, flags]);
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Regex Tester')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Regex Tester')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Regex Testing Tool')}
-        </Typography>
+        </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={2}>
-              <TextField
-                value={pattern}
-                onChange={e => setPattern(e.target.value)}
-                label={t('Enter regex pattern')}
-                placeholder="^[a-zA-Z0-9]+$"
-                variant="outlined"
-                fullWidth
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 12
-                  }
-                }}
-              />
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <span className="inline-flex items-center gap-2 text-sm font-medium text-fg">
+            <Flag size={16} />
+            {t('Regex Flags')}
+          </span>
+          <div className="flex flex-row flex-wrap gap-4">
+            <Checkbox checked={flags.g} onChange={handleFlagChange} name="g" label="Global (g)" />
+            <Checkbox checked={flags.i} onChange={handleFlagChange} name="i" label="Ignore Case (i)" />
+            <Checkbox checked={flags.m} onChange={handleFlagChange} name="m" label="Multiline (m)" />
+          </div>
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button
+              size="small"
+              variant="text"
+              onClick={() => { setPattern(''); setTestText(''); }}
+              disabled={!pattern && !testText}
+              startIcon={<X size={16} />}
+            >
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!output} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-              {/* Regex Flags */}
-              <Box>
-                <Typography variant="subtitle2" sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Flag fontSize="small" />
-                  {t('Regex Flags')}
-                </Typography>
-                <Stack direction="row" spacing={1} flexWrap="wrap">
-                  <FormControlLabel
-                    control={<Checkbox checked={flags.g} onChange={handleFlagChange} name="g" size="small" />}
-                    label="Global (g)"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={flags.i} onChange={handleFlagChange} name="i" size="small" />}
-                    label="Ignore Case (i)"
-                  />
-                  <FormControlLabel
-                    control={<Checkbox checked={flags.m} onChange={handleFlagChange} name="m" size="small" />}
-                    label="Multiline (m)"
-                  />
-                </Stack>
-              </Box>
-
-              <Divider />
-
-              <TextField
-                value={testText}
-                onChange={e => setTestText(e.target.value)}
-                multiline
-                rows={6}
-                label={t('Enter text to test')}
-                placeholder="Sample text to test your regex pattern against..."
-                variant="outlined"
-                fullWidth
-              />
-
-              <Button
-                variant="contained"
-                onClick={handleTest}
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <PlayArrow />}
-                disabled={loading || !pattern.trim() || !testText.trim()}
-                fullWidth
-              >
-                {loading ? t('Testing...') : t('Test Regex')}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
-
-        {feedback.message && (
-          <Alert severity={feedback.type} sx={{ mb: 2 }}>
-            {feedback.message}
+        {error && (
+          <Alert severity="error" className="mb-3">
+            {error}
           </Alert>
         )}
 
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              output && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
+            <Input
+              value={pattern}
+              onChange={e => setPattern(e.target.value)}
+              label={t('Enter regex pattern')}
+              placeholder="^[a-zA-Z0-9]+$"
+              className="font-mono text-xs"
+            />
+            <Textarea
+              value={testText}
+              onChange={e => setTestText(e.target.value)}
+              rows={12}
+              label={t('Enter text to test')}
+              placeholder="Sample text to test your regex pattern against..."
+              className="h-[calc(100vh-340px)] min-h-[240px]"
+            />
+          </div>
+          <Textarea
+            value={output}
+            readOnly
+            rows={16}
+            label={t('Processing Results')}
+            placeholder={t('Test results will appear here. Enter a regex pattern and test text, then click Test Regex.')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-xs bg-muted"
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Testing regex pattern, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : output ? (
-              <TextField
-                value={output}
-                multiline
-                readOnly
-                rows={12}
-                fullWidth
-                variant="filled"
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 12,
-                    maxHeight: 400,
-                    overflow: 'auto'
-                  }
-                }}
-              />
-            ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
-                  {t('Test results will appear here. Enter a regex pattern and test text, then click Test Regex.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Card>
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}
@@ -227,4 +155,4 @@ export default function RegexTester() {
       />
     </>
   );
-} 
+}

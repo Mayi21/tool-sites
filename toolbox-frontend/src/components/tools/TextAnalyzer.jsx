@@ -1,36 +1,33 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
-  Grid, Chip, Divider
-} from '@mui/material';
-import { ContentCopy, Analytics, Refresh } from '@mui/icons-material';
+import { Button, Textarea, Chip, Divider } from '../ui';
+import { Copy, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function TextAnalyzer() {
   const { t } = useTranslation();
-  const [loading, setLoading] = useState(false);
   const [text, setText] = useState('');
   const [analysis, setAnalysis] = useState(null);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
 
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  const analyzeText = useCallback((inputText) => {
-    if (!inputText.trim()) {
+  // 输入变化时实时分析
+  useDebouncedEffect(() => {
+    if (!text.trim()) {
       setAnalysis(null);
       return;
     }
 
-    const characters = inputText.length;
-    const charactersNoSpaces = inputText.replace(/\s/g, '').length;
-    const words = inputText.trim().split(/\s+/).filter(word => word.length > 0).length;
-    const lines = inputText.split('\n').length;
-    const sentences = inputText.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0).length;
-    const paragraphs = inputText.split(/\n\s*\n/).filter(para => para.trim().length > 0).length;
+    const characters = text.length;
+    const charactersNoSpaces = text.replace(/\s/g, '').length;
+    const words = text.trim().split(/\s+/).filter(word => word.length > 0).length;
+    const lines = text.split('\n').length;
+    const sentences = text.split(/[.!?]+/).filter(sentence => sentence.trim().length > 0).length;
+    const paragraphs = text.split(/\n\s*\n/).filter(para => para.trim().length > 0).length;
 
-    const wordArray = inputText.toLowerCase().match(/\b\w+\b/g) || [];
+    const wordArray = text.toLowerCase().match(/\b\w+\b/g) || [];
     const uniqueWords = new Set(wordArray).size;
     const averageWordLength = wordArray.length > 0
       ? (wordArray.reduce((sum, word) => sum + word.length, 0) / wordArray.length).toFixed(1)
@@ -62,29 +59,7 @@ export default function TextAnalyzer() {
       readingTime,
       wordFrequency
     });
-  }, []);
-
-  const handleAnalyze = () => {
-    if (!text.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter text to analyze') });
-      return;
-    }
-
-    setLoading(true);
-    setAnalysis(null);
-    setFeedback({ type: '', message: '' });
-
-    setTimeout(() => {
-      try {
-        analyzeText(text);
-        setLoading(false);
-        setFeedback({ type: 'success', message: t('Text analysis completed successfully') });
-      } catch (error) {
-        setFeedback({ type: 'error', message: t('Analysis failed, please try again') });
-        setLoading(false);
-      }
-    }, 500);
-  };
+  }, [text]);
 
   const handleCopy = () => {
     if (analysis) {
@@ -106,174 +81,119 @@ ${analysis.wordFrequency.map(({ word, count }) => `${word}: ${count}`).join('\n'
     }
   };
 
-  // Auto-analyze when text changes (with debounce effect)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      analyzeText(text);
-    }, 300);
-    return () => clearTimeout(timer);
-  }, [text, analyzeText]);
-
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Text Analyzer')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Text Analyzer')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Text Statistics Tool')}
-        </Typography>
+        </p>
 
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={2}>
-              <TextField
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                label={t('Enter text to analyze')}
-                multiline
-                rows={8}
-                fullWidth
-                variant="outlined"
-                placeholder={t('Paste or type your text here for analysis...')}
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 14
-                  }
-                }}
-              />
-              <Button
-                variant="contained"
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Analytics />}
-                disabled={loading || !text.trim()}
-                onClick={handleAnalyze}
-                fullWidth
-              >
-                {loading ? t('Processing...') : t('Analyze')}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={() => setText('')} disabled={!text} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!analysis} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
-
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              analysis && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            label={t('Enter text to analyze')}
+            rows={18}
+            placeholder={t('Paste or type your text here for analysis...')}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-sm"
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Analyzing text, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : analysis ? (
-              <Stack spacing={3}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" color="primary">{analysis.characters.toLocaleString()}</Typography>
-                      <Typography variant="body2" color="text.secondary">{t('Characters')}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" color="primary">{analysis.words.toLocaleString()}</Typography>
-                      <Typography variant="body2" color="text.secondary">{t('Words')}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" color="primary">{analysis.lines}</Typography>
-                      <Typography variant="body2" color="text.secondary">{t('Lines')}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" color="primary">{analysis.sentences}</Typography>
-                      <Typography variant="body2" color="text.secondary">{t('Sentences')}</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
+          <div>
+            {analysis ? (
+              <div className="flex flex-col gap-6">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <div className="text-3xl font-semibold text-primary">{analysis.characters.toLocaleString()}</div>
+                    <div className="text-sm text-fg-secondary">{t('Characters')}</div>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <div className="text-3xl font-semibold text-primary">{analysis.words.toLocaleString()}</div>
+                    <div className="text-sm text-fg-secondary">{t('Words')}</div>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <div className="text-3xl font-semibold text-primary">{analysis.lines}</div>
+                    <div className="text-sm text-fg-secondary">{t('Lines')}</div>
+                  </div>
+                  <div className="text-center p-4 bg-muted rounded-lg">
+                    <div className="text-3xl font-semibold text-primary">{analysis.sentences}</div>
+                    <div className="text-sm text-fg-secondary">{t('Sentences')}</div>
+                  </div>
+                </div>
 
-                <Divider />
+                <Divider className="my-0" />
 
-                <Grid container spacing={2}>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'info.light', color: 'info.contrastText', borderRadius: 1 }}>
-                      <Typography variant="h4">{analysis.charactersNoSpaces.toLocaleString()}</Typography>
-                      <Typography variant="body2">{t('Characters (no spaces)')}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'success.light', color: 'success.contrastText', borderRadius: 1 }}>
-                      <Typography variant="h4">{analysis.paragraphs}</Typography>
-                      <Typography variant="body2">{t('Paragraphs')}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'warning.light', color: 'warning.contrastText', borderRadius: 1 }}>
-                      <Typography variant="h4">{analysis.uniqueWords}</Typography>
-                      <Typography variant="body2">{t('Unique Words')}</Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={6} sm={4} md={3}>
-                    <Box sx={{ textAlign: 'center', p: 2, bgcolor: 'secondary.light', color: 'secondary.contrastText', borderRadius: 1 }}>
-                      <Typography variant="h4">{analysis.averageWordLength}</Typography>
-                      <Typography variant="body2">{t('Avg Word Length')}</Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="text-center p-4 bg-primary/10 text-primary rounded-lg">
+                    <div className="text-3xl font-semibold">{analysis.charactersNoSpaces.toLocaleString()}</div>
+                    <div className="text-sm">{t('Characters (no spaces)')}</div>
+                  </div>
+                  <div className="text-center p-4 bg-success/10 text-success rounded-lg">
+                    <div className="text-3xl font-semibold">{analysis.paragraphs}</div>
+                    <div className="text-sm">{t('Paragraphs')}</div>
+                  </div>
+                  <div className="text-center p-4 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg">
+                    <div className="text-3xl font-semibold">{analysis.uniqueWords}</div>
+                    <div className="text-sm">{t('Unique Words')}</div>
+                  </div>
+                  <div className="text-center p-4 bg-danger/10 text-danger rounded-lg">
+                    <div className="text-3xl font-semibold">{analysis.averageWordLength}</div>
+                    <div className="text-sm">{t('Avg Word Length')}</div>
+                  </div>
+                </div>
 
-                <Divider />
+                <Divider className="my-0" />
 
-                <Box sx={{ textAlign: 'center', p: 3, bgcolor: 'primary.light', color: 'primary.contrastText', borderRadius: 2 }}>
-                  <Typography variant="h3">{analysis.readingTime}</Typography>
-                  <Typography variant="h6">{t('Reading Time (minutes)')}</Typography>
-                  <Typography variant="body2" sx={{ mt: 1, opacity: 0.8 }}>
+                <div className="text-center p-6 bg-primary text-white rounded-xl">
+                  <div className="text-4xl font-semibold">{analysis.readingTime}</div>
+                  <div className="text-lg font-medium">{t('Reading Time (minutes)')}</div>
+                  <p className="text-sm mt-2 opacity-80">
                     {t('Based on 200 words per minute average reading speed')}
-                  </Typography>
-                </Box>
+                  </p>
+                </div>
 
                 {analysis.wordFrequency.length > 0 && (
                   <>
-                    <Divider />
-                    <Box>
-                      <Typography variant="h6" gutterBottom>{t('Most Frequent Words')}</Typography>
-                      <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                    <Divider className="my-0" />
+                    <div>
+                      <h2 className="text-lg font-semibold text-fg mb-2">{t('Most Frequent Words')}</h2>
+                      <div className="flex flex-row flex-wrap gap-2">
                         {analysis.wordFrequency.map(({ word, count }, index) => (
                           <Chip
                             key={word}
                             label={`${word} (${count})`}
-                            color={index === 0 ? 'primary' : index < 3 ? 'secondary' : 'default'}
-                            variant={index < 3 ? 'filled' : 'outlined'}
-                            sx={{ mb: 1 }}
+                            color={index === 0 ? 'primary' : index < 3 ? 'success' : undefined}
+                            className="mb-1"
                           />
                         ))}
-                      </Stack>
-                    </Box>
+                      </div>
+                    </div>
                   </>
                 )}
-              </Stack>
+              </div>
             ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
+              <div className="h-full min-h-[280px] flex items-center justify-center rounded-lg border border-line bg-muted">
+                <p className="text-fg-secondary text-center">
                   {t('Processing results will appear here. Enter text above and select an operation.')}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             )}
-          </CardContent>
-        </Card>
-      </Card>
+          </div>
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}

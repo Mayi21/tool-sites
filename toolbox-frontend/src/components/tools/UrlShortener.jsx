@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Typography, Button, Card, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent,
-  FormControl, InputLabel, Select, MenuItem, Grid, Chip, IconButton, Tooltip
-} from '@mui/material';
+  Button, Alert, Input, Textarea, Select,
+  Chip, IconButton, Tooltip, Spinner, ToggleButtonGroup
+} from '../ui';
 import {
-  Link, ContentCopy, QrCode2, Analytics, AccessTime, ExpandMore, ExpandLess,
-  Delete, Refresh
-} from '@mui/icons-material';
+  Link, Copy, QrCode, BarChart3, Clock, ChevronDown, ChevronUp, Trash2
+} from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 import UrlShortenerApiService from '../../services/urlShortenerService.js';
@@ -127,7 +126,7 @@ export default function UrlShortener() {
           setFeedback({ type: 'error', message: apiResult.error });
         }
       }
-    } catch (error) {
+    } catch {
       setFeedback({ type: 'error', message: t('Operation failed, please try again') });
     } finally {
       setLoading(false);
@@ -151,6 +150,10 @@ export default function UrlShortener() {
     setFeedback({ type: '', message: '' });
   };
 
+  const handleModeChange = (event, newMode) => {
+    if (newMode !== null) setMode(newMode);
+  };
+
   const detectMode = (input) => {
     if (!input.trim()) return;
 
@@ -167,273 +170,202 @@ export default function UrlShortener() {
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('URL Shortener')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-xl font-semibold text-fg">{t('URL Shortener')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('URL Shortener Tool')}
-        </Typography>
+        </p>
 
-        <form onSubmit={handleSubmit}>
-          <Card variant="outlined" sx={{ mb: 2 }}>
-            <CardHeader title={t('Input and Options')} />
-            <CardContent>
-              <Stack spacing={2}>
-                <FormControl fullWidth>
-                  <InputLabel id="mode-label">{t('Mode')}</InputLabel>
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <ToggleButtonGroup
+            value={mode}
+            onChange={handleModeChange}
+            aria-label="url shortener mode"
+            options={[
+              { value: 'shorten', label: t('Shorten URL') },
+              { value: 'expand', label: t('Expand URL') },
+            ]}
+          />
+          <Button
+            variant="contained"
+            size="small"
+            onClick={handleSubmit}
+            startIcon={loading ? <Spinner size={16} /> : <Link size={16} />}
+            disabled={loading}
+          >
+            {loading ? t('Processing...') : (mode === 'shorten' ? t('Shorten URLs') : t('Expand URLs'))}
+          </Button>
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={handleClear} disabled={!urlInput && results.length === 0} startIcon={<Trash2 size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopyAll} disabled={results.length === 0} startIcon={<Copy size={16} />}>
+              {t('Copy All')}
+            </Button>
+          </div>
+        </div>
+
+        {feedback.message && <Alert severity={feedback.type} className="mb-4">{feedback.message}</Alert>}
+
+        {/* 输入区 */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <Textarea
+            value={urlInput}
+            onChange={(e) => {
+              setUrlInput(e.target.value);
+              detectMode(e.target.value);
+            }}
+            label={mode === 'shorten' ? t('Enter URLs to shorten') : t('Enter short URLs to expand')}
+            rows={4}
+            placeholder={mode === 'shorten'
+              ? t('https://example.com/very/long/url\nhttps://another-example.com/path')
+              : t('https://bit.ly/3abc123\nhttps://t.co/xyz789')
+            }
+            helperText={t('Enter one URL per line for batch processing')}
+          />
+
+          {mode === 'shorten' && (
+            <>
+              <Button
+                variant="text"
+                size="small"
+                startIcon={showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                onClick={() => setShowAdvanced(!showAdvanced)}
+                className="self-start"
+              >
+                {t('Advanced Options')}
+              </Button>
+
+              {showAdvanced && (
+                <div className="flex flex-col gap-4 border-l-2 border-line pl-4">
+                  <Input
+                    value={customAlias}
+                    onChange={(e) => setCustomAlias(e.target.value)}
+                    label={t('Custom Alias (Optional)')}
+                    placeholder="my-custom-link"
+                    helperText={t('Leave empty for auto-generated short code')}
+                  />
+
                   <Select
-                    labelId="mode-label"
-                    value={mode}
-                    label={t('Mode')}
-                    onChange={(e) => setMode(e.target.value)}
+                    label={t('Expiration')}
+                    value={expireTime}
+                    onChange={(e) => setExpireTime(e.target.value)}
                   >
-                    <MenuItem value="shorten">{t('Shorten URL')}</MenuItem>
-                    <MenuItem value="expand">{t('Expand URL')}</MenuItem>
+                    <option value="never">{t('Never')}</option>
+                    <option value="1hour">{t('1 Hour')}</option>
+                    <option value="1day">{t('1 Day')}</option>
+                    <option value="1week">{t('1 Week')}</option>
+                    <option value="1month">{t('1 Month')}</option>
+                    <option value="1year">{t('1 Year')}</option>
                   </Select>
-                </FormControl>
 
-                <TextField
-                  value={urlInput}
-                  onChange={(e) => {
-                    setUrlInput(e.target.value);
-                    detectMode(e.target.value);
-                  }}
-                  label={mode === 'shorten' ? t('Enter URLs to shorten') : t('Enter short URLs to expand')}
-                  multiline
-                  rows={4}
-                  fullWidth
-                  variant="outlined"
-                  placeholder={mode === 'shorten'
-                    ? t('https://example.com/very/long/url\nhttps://another-example.com/path')
-                    : t('https://bit.ly/3abc123\nhttps://t.co/xyz789')
-                  }
-                  helperText={t('Enter one URL per line for batch processing')}
-                />
-
-                {mode === 'shorten' && (
-                  <>
-                    <Button
-                      variant="text"
-                      startIcon={showAdvanced ? <ExpandLess /> : <ExpandMore />}
-                      onClick={() => setShowAdvanced(!showAdvanced)}
-                      sx={{ alignSelf: 'flex-start' }}
-                    >
-                      {t('Advanced Options')}
-                    </Button>
-
-                    {showAdvanced && (
-                      <Stack spacing={2} sx={{ pl: 2, borderLeft: 2, borderColor: 'divider' }}>
-                        <TextField
-                          value={customAlias}
-                          onChange={(e) => setCustomAlias(e.target.value)}
-                          label={t('Custom Alias (Optional)')}
-                          fullWidth
-                          variant="outlined"
-                          placeholder="my-custom-link"
-                          helperText={t('Leave empty for auto-generated short code')}
-                        />
-
-                        <FormControl fullWidth>
-                          <InputLabel id="expire-label">{t('Expiration')}</InputLabel>
-                          <Select
-                            labelId="expire-label"
-                            value={expireTime}
-                            label={t('Expiration')}
-                            onChange={(e) => setExpireTime(e.target.value)}
-                          >
-                            <MenuItem value="never">{t('Never')}</MenuItem>
-                            <MenuItem value="1hour">{t('1 Hour')}</MenuItem>
-                            <MenuItem value="1day">{t('1 Day')}</MenuItem>
-                            <MenuItem value="1week">{t('1 Week')}</MenuItem>
-                            <MenuItem value="1month">{t('1 Month')}</MenuItem>
-                            <MenuItem value="1year">{t('1 Year')}</MenuItem>
-                          </Select>
-                        </FormControl>
-
-                        <TextField
-                          value={password}
-                          onChange={(e) => setPassword(e.target.value)}
-                          label={t('Password Protection (Optional)')}
-                          type="password"
-                          fullWidth
-                          variant="outlined"
-                          placeholder={t('Enter password to protect this URL')}
-                          helperText={t('Leave empty for no password protection')}
-                        />
-                      </Stack>
-                    )}
-                  </>
-                )}
-
-                <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Link />}
-                      disabled={loading}
-                      fullWidth
-                    >
-                      {loading ? t('Processing...') : (mode === 'shorten' ? t('Shorten URLs') : t('Expand URLs'))}
-                    </Button>
-                  </Grid>
-                  <Grid item xs={12} sm={6}>
-                    <Button
-                      variant="outlined"
-                      startIcon={<Delete />}
-                      onClick={handleClear}
-                      fullWidth
-                    >
-                      {t('Clear')}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Stack>
-            </CardContent>
-          </Card>
+                  <Input
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    label={t('Password Protection (Optional)')}
+                    type="password"
+                    placeholder={t('Enter password to protect this URL')}
+                    helperText={t('Leave empty for no password protection')}
+                  />
+                </div>
+              )}
+            </>
+          )}
         </form>
 
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
-
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Processing Results')}
-            action={
-              results.length > 0 && (
-                <Button size="small" onClick={handleCopyAll} startIcon={<ContentCopy />}>
-                  {t('Copy All')}
-                </Button>
-              )
-            }
-          />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Processing text, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : results.length > 0 ? (
-              <Stack spacing={2}>
-                {results.map((result, index) => (
-                  <Card key={index} variant="outlined" sx={{ p: 2 }}>
-                    {mode === 'shorten' ? (
-                      <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} md={6}>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {t('Original URL')}
-                          </Typography>
-                          <Typography
-                            variant="body2"
-                            sx={{
-                              wordBreak: 'break-all',
-                              fontSize: '0.8rem',
-                              backgroundColor: 'grey.50',
-                              p: 1,
-                              borderRadius: 1
-                            }}
-                          >
-                            {result.originalUrl}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {t('Short URL')}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                            <Typography
-                              variant="body1"
-                              sx={{
-                                fontFamily: 'monospace',
-                                backgroundColor: 'primary.light',
-                                color: 'primary.contrastText',
-                                p: 1,
-                                borderRadius: 1,
-                                flexGrow: 1
-                              }}
-                            >
-                              {result.shortUrl}
-                            </Typography>
-                            <Tooltip title={t('Copy')}>
-                              <IconButton size="small" onClick={() => handleCopy(result.shortUrl)}>
-                                <ContentCopy fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                            <Tooltip title={t('QR Code')}>
-                              <IconButton size="small" onClick={() => handleQrCode(result.shortUrl)}>
-                                <QrCode2 fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                          <Stack direction="row" spacing={1}>
-                            <Chip size="small" icon={<Analytics />} label={`${result.clicks} clicks`} />
-                            <Chip size="small" icon={<AccessTime />} label={result.created} />
-                          </Stack>
-                        </Grid>
-                      </Grid>
-                    ) : (
-                      <Grid container spacing={2} alignItems="center">
-                        <Grid item xs={12} md={6}>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {t('Short URL')}
-                          </Typography>
-                          <Typography
-                            variant="body1"
-                            sx={{
-                              fontFamily: 'monospace',
-                              backgroundColor: 'grey.50',
-                              p: 1,
-                              borderRadius: 1
-                            }}
-                          >
+        {/* 结果列表 */}
+        <div className="mt-4 border-t border-line pt-4">
+          {loading ? (
+            <div className="flex min-h-[280px] items-center justify-center">
+              <div className="flex flex-col items-center gap-2">
+                <Spinner />
+                <p className="text-fg">{t('Processing text, please wait...')}</p>
+              </div>
+            </div>
+          ) : results.length > 0 ? (
+            <div className="flex flex-col gap-4">
+              {results.map((result, index) => (
+                <div key={index} className="rounded-md border border-line p-4">
+                  {mode === 'shorten' ? (
+                    <div className="grid grid-cols-2 items-center gap-4">
+                      <div>
+                        <p className="mb-1 text-sm text-fg-secondary">
+                          {t('Original URL')}
+                        </p>
+                        <p className="break-all rounded bg-muted p-2 text-xs text-fg">
+                          {result.originalUrl}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-sm text-fg-secondary">
+                          {t('Short URL')}
+                        </p>
+                        <div className="mb-2 flex items-center gap-2">
+                          <p className="flex-grow rounded bg-primary p-2 font-mono text-white">
                             {result.shortUrl}
-                          </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                          <Typography variant="body2" color="text.secondary" gutterBottom>
-                            {t('Original URL')}
-                          </Typography>
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                            <Typography
-                              variant="body2"
-                              sx={{
-                                wordBreak: 'break-all',
-                                fontSize: '0.8rem',
-                                backgroundColor: 'success.light',
-                                color: 'success.contrastText',
-                                p: 1,
-                                borderRadius: 1,
-                                flexGrow: 1
-                              }}
-                            >
-                              {result.originalUrl}
-                            </Typography>
-                            <Tooltip title={t('Copy')}>
-                              <IconButton size="small" onClick={() => handleCopy(result.originalUrl)}>
-                                <ContentCopy fontSize="small" />
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                          <Stack direction="row" spacing={1}>
-                            <Chip size="small" icon={<Analytics />} label={`${result.clicks} clicks`} />
-                            <Chip size="small" icon={<AccessTime />} label={result.created} />
-                          </Stack>
-                        </Grid>
-                      </Grid>
-                    )}
-                  </Card>
-                ))}
-              </Stack>
-            ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  {t('Short URLs will appear here. Enter URLs above and click generate.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Card>
+                          </p>
+                          <Tooltip title={t('Copy')}>
+                            <IconButton onClick={() => handleCopy(result.shortUrl)}>
+                              <Copy size={16} />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={t('QR Code')}>
+                            <IconButton onClick={() => handleQrCode(result.shortUrl)}>
+                              <QrCode size={16} />
+                            </IconButton>
+                          </Tooltip>
+                        </div>
+                        <div className="flex gap-2">
+                          <Chip label={<span className="inline-flex items-center gap-1"><BarChart3 size={12} />{`${result.clicks} clicks`}</span>} />
+                          <Chip label={<span className="inline-flex items-center gap-1"><Clock size={12} />{result.created}</span>} />
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 items-center gap-4">
+                      <div>
+                        <p className="mb-1 text-sm text-fg-secondary">
+                          {t('Short URL')}
+                        </p>
+                        <p className="rounded bg-muted p-2 font-mono text-fg">
+                          {result.shortUrl}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="mb-1 text-sm text-fg-secondary">
+                          {t('Original URL')}
+                        </p>
+                        <div className="mb-2 flex items-center gap-2">
+                          <p className="flex-grow break-all rounded bg-success p-2 text-xs text-white">
+                            {result.originalUrl}
+                          </p>
+                          <Tooltip title={t('Copy')}>
+                            <IconButton onClick={() => handleCopy(result.originalUrl)}>
+                              <Copy size={16} />
+                            </IconButton>
+                          </Tooltip>
+                        </div>
+                        <div className="flex gap-2">
+                          <Chip label={<span className="inline-flex items-center gap-1"><BarChart3 size={12} />{`${result.clicks} clicks`}</span>} />
+                          <Chip label={<span className="inline-flex items-center gap-1"><Clock size={12} />{result.created}</span>} />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="flex min-h-[280px] items-center justify-center">
+              <p className="text-fg-secondary">
+                {t('Short URLs will appear here. Enter URLs above and click generate.')}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}

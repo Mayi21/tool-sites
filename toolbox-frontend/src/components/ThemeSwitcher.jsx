@@ -1,152 +1,80 @@
-import { useEffect, useState } from 'react';
-import { 
-  IconButton, 
-  Tooltip, 
-  Menu, 
-  MenuItem, 
-  Box,
-  ListItemIcon,
-  ListItemText,
-  CircularProgress
-} from '@mui/material';
-import { 
-  LightMode, 
-  DarkMode, 
-  Monitor
-} from '@mui/icons-material';
+import { useEffect, useState, useRef } from 'react';
+import { Sun, Moon, Monitor } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 export default function ThemeSwitcher({ theme, setTheme }) {
   const { t } = useTranslation();
-  const [isLoading, setIsLoading] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef(null);
+
   useEffect(() => {
     localStorage.setItem('theme', theme);
-    const htmlElement = document.documentElement;
-    if (theme === 'dark') {
-      htmlElement.style.colorScheme = 'dark';
-      htmlElement.classList.add('dark');
-      htmlElement.classList.remove('light');
-    } else if (theme === 'light') {
-      htmlElement.style.colorScheme = 'light';
-      htmlElement.classList.add('light');
-      htmlElement.classList.remove('dark');
-    } else if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-      htmlElement.style.colorScheme = systemTheme;
-      htmlElement.classList.add(systemTheme);
-      htmlElement.classList.remove(systemTheme === 'dark' ? 'light' : 'dark');
-    }
+    const html = document.documentElement;
+    const resolved = theme === 'system'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : theme;
+    html.style.colorScheme = resolved;
+    html.classList.toggle('dark', resolved === 'dark');
+    html.classList.toggle('light', resolved === 'light');
   }, [theme]);
 
   useEffect(() => {
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      const handleChange = (e) => {
-        const htmlElement = document.documentElement;
-        const newTheme = e.matches ? 'dark' : 'light';
-        htmlElement.style.colorScheme = newTheme;
-        htmlElement.classList.remove('dark', 'light');
-        htmlElement.classList.add(newTheme);
-      };
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
+    if (theme !== 'system') return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = (e) => {
+      const html = document.documentElement;
+      html.style.colorScheme = e.matches ? 'dark' : 'light';
+      html.classList.toggle('dark', e.matches);
+      html.classList.toggle('light', !e.matches);
+    };
+    mq.addEventListener('change', handleChange);
+    return () => mq.removeEventListener('change', handleChange);
   }, [theme]);
 
-  const handleThemeChange = (newTheme) => {
-    setIsLoading(true);
-    setTheme(newTheme);
-    handleClose();
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 300);
-  };
+  useEffect(() => {
+    if (!open) return;
+    const onClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) setOpen(false);
+    };
+    document.addEventListener('mousedown', onClickOutside);
+    return () => document.removeEventListener('mousedown', onClickOutside);
+  }, [open]);
 
-  const getCurrentThemeIcon = () => {
-    if (theme === 'dark') return <DarkMode sx={{ fontSize: 20 }} />;
-    if (theme === 'light') return <LightMode sx={{ fontSize: 20 }} />;
-    return <Monitor sx={{ fontSize: 20 }} />;
-  };
-
-  const themeOptions = [
-    {
-      key: 'light',
-      icon: <LightMode sx={{ fontSize: 18 }} />,
-      label: t('Light Mode')
-    },
-    {
-      key: 'dark', 
-      icon: <DarkMode sx={{ fontSize: 18 }} />,
-      label: t('Dark Mode')
-    },
-    {
-      key: 'system',
-      icon: <Monitor sx={{ fontSize: 18 }} />,
-      label: t('System')
-    }
+  const options = [
+    { key: 'light', icon: <Sun size={16} />, label: t('Light Mode') },
+    { key: 'dark', icon: <Moon size={16} />, label: t('Dark Mode') },
+    { key: 'system', icon: <Monitor size={16} />, label: t('System') },
   ];
-  
+
+  const currentIcon = theme === 'dark' ? <Moon size={18} /> : theme === 'light' ? <Sun size={18} /> : <Monitor size={18} />;
+
   return (
-    <Box>
-      <Tooltip title={t('Theme Settings')} placement="bottom">
-        <IconButton
-          onClick={handleClick}
-          sx={{
-            width: 40,
-            height: 40,
-            color: 'text.primary',
-            bgcolor: 'background.paper',
-            border: 1,
-            borderColor: 'divider',
-            boxShadow: 1,
-            '&:hover': {
-              bgcolor: 'action.hover'
-            }
-          }}
-          disabled={isLoading}
-        >
-          {isLoading ? (
-            <CircularProgress size={20} />
-          ) : (
-            getCurrentThemeIcon()
-          )}
-        </IconButton>
-      </Tooltip>
-      
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        MenuListProps={{
-          'aria-labelledby': 'theme-button',
-        }}
-        transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-        anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+    <div className="relative" ref={menuRef}>
+      <button
+        type="button"
+        title={t('Theme Settings')}
+        onClick={() => setOpen(o => !o)}
+        className="flex size-9 items-center justify-center rounded-full border border-line bg-paper text-fg shadow-sm hover:bg-muted transition-colors cursor-pointer"
       >
-        {themeOptions.map((option) => (
-          <MenuItem
-            key={option.key}
-            selected={theme === option.key}
-            onClick={() => handleThemeChange(option.key)}
-          >
-            <ListItemIcon>
-              {option.icon}
-            </ListItemIcon>
-            <ListItemText>{option.label}</ListItemText>
-          </MenuItem>
-        ))}
-      </Menu>
-    </Box>
+        {currentIcon}
+      </button>
+      {open && (
+        <div className="absolute bottom-full right-0 z-50 mb-1 min-w-36 rounded-lg border border-line bg-paper py-1 shadow-lg">
+          {options.map(opt => (
+            <button
+              key={opt.key}
+              type="button"
+              onClick={() => { setTheme(opt.key); setOpen(false); }}
+              className={`flex w-full items-center gap-2 px-3 py-2 text-sm cursor-pointer transition-colors ${
+                theme === opt.key ? 'bg-primary/10 text-primary' : 'text-fg hover:bg-muted'
+              }`}
+            >
+              {opt.icon}
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
-} 
+}

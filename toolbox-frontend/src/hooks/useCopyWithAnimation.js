@@ -20,7 +20,7 @@ export default function useCopyWithAnimation() {
       // Set a fallback timeout to ensure animation disappears
       timeoutRef.current = setTimeout(() => {
         setShowAnimation(false);
-      }, 2000);
+      }, 1400);
 
       return true;
     } catch (error) {

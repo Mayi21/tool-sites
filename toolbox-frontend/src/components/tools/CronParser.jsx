@@ -1,181 +1,134 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { CronExpressionParser } from 'cron-parser';
 import {
-  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
-} from '@mui/material';
-import { ContentCopy, Schedule } from '@mui/icons-material';
+  Button, Alert, Input,
+  Table, TableBody, TableCell, TableHead, TableRow
+} from '../ui';
+import { Copy, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
-import { buildApiUrl, getApiConfig } from '../../config/api';
+/**
+ * 与原 worker 端 cronNextTimes 相同的预处理：
+ * Spring 的 ? → *；Linux 5 段补秒位；校验 6-7 段
+ */
+function parseNextTimes(expr, count = 5) {
+  let processed = expr.trim().replace(/\?/g, '*');
+  if (processed.split(/\s+/).length === 5) {
+    processed = '0 ' + processed;
+  }
+  const fields = processed.split(/\s+/).length;
+  if (fields < 6 || fields > 7) {
+    throw new Error('Invalid expression format. Must be 5, 6, or 7 fields.');
+  }
+  const interval = CronExpressionParser.parse(processed, { currentDate: new Date() });
+  return Array.from({ length: count }, () => interval.next().toDate());
+}
 
 export default function CronParser() {
   const { t } = useTranslation();
   const [input, setInput] = useState('0 */20 * * * ?');
   const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
   const [nextExecutions, setNextExecutions] = useState([]);
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
 
-  const handleCopy = () => {
-    if (output) {
-      copyToClipboard(output);
-    }
+  const handleClear = () => {
+    setInput('');
   };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+  // 纯本地解析，输入变化实时计算（不再依赖后端）
+  useDebouncedEffect(() => {
     if (!input.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter a cron expression') });
-      return;
-    }
-
-    setLoading(true);
-    setOutput('');
-    setNextExecutions([]);
-    setFeedback({ type: '', message: '' });
-
-    try {
-      const apiConfig = getApiConfig();
-      // Get user's timezone
-      const userTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Asia/Shanghai';
-      const response = await fetch(buildApiUrl(apiConfig.ENDPOINTS.CRON_NEXT_TIMES), {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ expr: input, count: 5, timezone: userTimezone }),
-      });
-
-      if (!response.ok) {
-        const errData = await response.json().catch(() => ({}));
-        throw new Error(errData.error || `HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      if (data.success) {
-        const executions = data.times.map((time, index) => ({
-          id: index,
-          time: new Date(time).toLocaleString()
-        }));
-        setNextExecutions(executions);
-
-        // Create formatted output for copying
-        const formattedOutput = `${t('Cron Expression')}: ${input}\n\n${t('Next Executions')}:\n` +
-          executions.map((exec, index) => `${index + 1}. ${exec.time}`).join('\n');
-        setOutput(formattedOutput);
-
-        setFeedback({ type: 'success', message: t('Cron expression parsed successfully') });
-      } else {
-        throw new Error(data.error || t('Unknown error'));
-      }
-    } catch (e) {
-      setFeedback({ type: 'error', message: t('Invalid cron expression: {{error}}', { error: e.message }) });
       setOutput('');
       setNextExecutions([]);
-    } finally {
-      setLoading(false);
+      setError('');
+      return;
     }
-  };
+    try {
+      const times = parseNextTimes(input, 5);
+      const executions = times.map((d, index) => ({ id: index, time: d.toLocaleString() }));
+      setNextExecutions(executions);
+      setOutput(
+        `${t('Cron Expression')}: ${input}\n\n${t('Next Executions')}:\n` +
+        executions.map((exec, index) => `${index + 1}. ${exec.time}`).join('\n')
+      );
+      setError('');
+    } catch (e) {
+      setNextExecutions([]);
+      setOutput('');
+      setError(t('Invalid cron expression: {{error}}', { error: e.message }));
+    }
+  }, [input]);
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('Cron Expression Parser')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('Cron Expression Parser')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Parse cron expressions to preview next execution times and validate scheduling syntax.')}
-        </Typography>
+        </p>
 
-        <form onSubmit={handleSubmit}>
-          <Card variant="outlined" sx={{ mb: 2 }}>
-            <CardHeader title={t('Input Options')} />
-            <CardContent>
-              <Stack spacing={2}>
-                <TextField
-                  name="cronExpression"
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  label={t('Cron Expression')}
-                  placeholder="0 */20 * * * ?"
-                  variant="outlined"
-                  fullWidth
-                  required
-                  sx={{
-                    '& .MuiInputBase-root': {
-                      fontFamily: 'monospace',
-                      fontSize: 14
-                    }
-                  }}
-                />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Schedule />}
-                  disabled={loading}
-                  fullWidth
-                >
-                  {loading ? t('Parsing...') : t('Parse Expression')}
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </form>
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={handleClear} disabled={!input} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={() => output && copyToClipboard(output)} disabled={!output} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+        {error && <Alert severity="error" className="mb-4">{error}</Alert>}
 
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Parsed Result')}
-            action={
-              output && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
-          />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Parsing cron expression, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : nextExecutions.length > 0 ? (
-              <TableContainer component={Paper} variant="outlined">
-                <Table size="small" aria-label="next executions table">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>{t('Execution Time')}</TableCell>
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
+            <Input
+              name="cronExpression"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              label={t('Cron Expression')}
+              placeholder="0 */20 * * * ?"
+              className="font-mono"
+            />
+            <p className="text-sm text-fg-secondary">
+              {t('Parse cron expressions to preview next execution times and validate scheduling syntax.')}
+            </p>
+          </div>
+
+          <div>
+            {nextExecutions.length > 0 ? (
+              <Table aria-label="next executions table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell header>{t('Execution Time')}</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {nextExecutions.map((row) => (
+                    <TableRow key={row.id}>
+                      <TableCell className="font-mono text-sm">
+                        {row.time}
+                      </TableCell>
                     </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {nextExecutions.map((row) => (
-                      <TableRow key={row.id}>
-                        <TableCell
-                          component="th"
-                          scope="row"
-                          sx={{ fontFamily: 'monospace', fontSize: 14 }}
-                        >
-                          {row.time}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                  ))}
+                </TableBody>
+              </Table>
             ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
+              <div className="flex min-h-[280px] items-center justify-center rounded border border-line">
+                <p className="text-fg-secondary">
                   {t('Next execution times will appear here. Enter a cron expression and click parse.')}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             )}
-          </CardContent>
-        </Card>
-      </Card>
+          </div>
+        </div>
+      </div>
 
       <CopySuccessAnimation
         visible={showAnimation}

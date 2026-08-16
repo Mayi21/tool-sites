@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { 
-  Typography, Button, Card, Grid, TextField, CircularProgress, Box, Alert, Stack, CardHeader, CardContent 
-} from '@mui/material';
-import { ContentCopy, Refresh } from '@mui/icons-material';
+import { Button, Input, Textarea, Alert, Spinner } from '../ui';
+import { Copy, RefreshCw, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
@@ -22,8 +20,7 @@ export default function UUIDGenerator() {
     }
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
+  const handleGenerate = () => {
     setLoading(true);
     setGeneratedData('');
     setFeedback({ type: '', message: '' });
@@ -39,88 +36,82 @@ export default function UUIDGenerator() {
     }, 500);
   };
 
+  const handleClear = () => {
+    setGeneratedData('');
+    setFeedback({ type: '', message: '' });
+  };
+
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('UUID Generator')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('UUID Generator')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('Generate universally unique identifiers (UUIDs).')}
-        </Typography>
+        </p>
 
-        <form onSubmit={handleSubmit}>
-          <Card variant="outlined" sx={{ mb: 2 }}>
-            <CardHeader title={t('Generation Options')} />
-            <CardContent>
-              <Stack spacing={2}>
-                <TextField
-                  name="count"
-                  label={t('Count')}
-                  type="number"
-                  value={count}
-                  onChange={(e) => setCount(parseInt(e.target.value, 10) || 1)}
-                  inputProps={{ min: 1, max: 5000 }}
-                  required
-                  fullWidth
-                />
-                <Button 
-                  type="submit" 
-                  variant="contained" 
-                  startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <Refresh />}
-                  disabled={loading}
-                  fullWidth
-                >
-                  {loading ? t('Generating...') : t('Generate UUIDs')}
-                </Button>
-              </Stack>
-            </CardContent>
-          </Card>
-        </form>
-        
-        {feedback.message && <Alert severity={feedback.type} sx={{ mb: 2 }}>{feedback.message}</Alert>}
+        {/* 工具栏：选项 + 操作 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <div className="w-28">
+            <Input
+              name="count"
+              label={t('Count')}
+              type="number"
+              value={count}
+              onChange={(e) => setCount(parseInt(e.target.value, 10) || 1)}
+              min={1}
+              max={5000}
+              required
+            />
+          </div>
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button
+              size="small"
+              variant="text"
+              onClick={handleGenerate}
+              disabled={loading}
+              startIcon={loading ? <Spinner size={16} /> : <RefreshCw size={16} />}
+            >
+              {loading ? t('Generating...') : t('Generate UUIDs')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleClear} disabled={!generatedData} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!generatedData} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-        <Card variant="outlined">
-          <CardHeader 
-            title={t('Generated UUIDs')} 
-            action={
-              generatedData && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {feedback.message && <Alert severity={feedback.type} className="mb-4">{feedback.message}</Alert>}
+
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[280px]">
+            <div className="flex flex-col items-center gap-2">
+              <Spinner />
+              <p className="text-fg">{t('Generating UUIDs, please wait...')}</p>
+            </div>
+          </div>
+        ) : generatedData ? (
+          <Textarea
+            value={generatedData}
+            readOnly
+            rows={16}
+            label={t('Generated UUIDs')}
+            className="bg-muted text-xs"
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Generating UUIDs, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : generatedData ? (
-              <TextField 
-                value={generatedData} 
-                multiline
-                readOnly 
-                rows={12} 
-                fullWidth
-                variant="filled"
-                sx={{ '& .MuiInputBase-root': { fontFamily: 'monospace', fontSize: 12 } }}
-              />
-            ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary">
-                  {t('Generated UUIDs will appear here. Configure options and click generate.')}
-                </Typography>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      </Card>
+        ) : (
+          <div className="min-h-[280px] flex items-center justify-center rounded-lg border border-line">
+            <p className="text-fg-secondary">
+              {t('Generated UUIDs will appear here. Configure options and click generate.')}
+            </p>
+          </div>
+        )}
+      </div>
 
-      <CopySuccessAnimation 
-        visible={showAnimation} 
-        onAnimationEnd={handleAnimationEnd} 
+      <CopySuccessAnimation
+        visible={showAnimation}
+        onAnimationEnd={handleAnimationEnd}
       />
     </>
   );

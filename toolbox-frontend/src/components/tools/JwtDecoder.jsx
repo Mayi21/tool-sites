@@ -1,19 +1,16 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Typography, Button, Card, TextField, Alert, Box, Stack, CardHeader, CardContent, CircularProgress,
-  Tabs, Tab, Chip
-} from '@mui/material';
-import { ContentCopy, Lock, VpnKey, Fingerprint, PlayArrow } from '@mui/icons-material';
+import { Button, Input, Textarea, Alert, Tabs, Tab } from '../ui';
+import { Copy, Lock, KeyRound, Fingerprint, X } from 'lucide-react';
 import useCopyWithAnimation from '../../hooks/useCopyWithAnimation.js';
+import useDebouncedEffect from '../../hooks/useDebouncedEffect.js';
 import CopySuccessAnimation from '../CopySuccessAnimation.jsx';
 
 export default function JwtDecoder() {
   const { t } = useTranslation();
   const [input, setInput] = useState('');
   const [output, setOutput] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [feedback, setFeedback] = useState({ type: '', message: '' });
+  const [error, setError] = useState('');
   const [decoded, setDecoded] = useState(null);
   const [activeTab, setActiveTab] = useState(0);
   const { showAnimation, copyToClipboard, handleAnimationEnd } = useCopyWithAnimation();
@@ -30,48 +27,38 @@ export default function JwtDecoder() {
     }
   };
 
-  const handleDecode = () => {
+  // 输入变化时实时解码
+  useDebouncedEffect(() => {
     if (!input.trim()) {
-      setFeedback({ type: 'error', message: t('Please enter JWT token') });
+      setOutput('');
+      setDecoded(null);
+      setError('');
       return;
     }
-
-    setLoading(true);
-    setOutput('');
-    setDecoded(null);
-    setFeedback({ type: '', message: '' });
-
-    setTimeout(() => {
-      try {
-        const parts = input.trim().split('.');
-        if (parts.length !== 3) {
-          throw new Error('Invalid JWT format - must have 3 parts');
-        }
-
-        const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
-        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
-
-        const decodedData = {
-          header: JSON.stringify(header, null, 2),
-          payload: JSON.stringify(payload, null, 2),
-          signature: parts[2]
-        };
-
-        setDecoded(decodedData);
-
-        // Create formatted output
-        const formattedOutput = `=== JWT HEADER ===\n${decodedData.header}\n\n=== JWT PAYLOAD ===\n${decodedData.payload}\n\n=== JWT SIGNATURE ===\n${decodedData.signature}`;
-        setOutput(formattedOutput);
-
-        setFeedback({ type: 'success', message: t('JWT decoded successfully') });
-      } catch (e) {
-        setFeedback({ type: 'error', message: t('Invalid JWT format: {{error}}', { error: e.message }) });
-        setOutput('');
-        setDecoded(null);
+    try {
+      const parts = input.trim().split('.');
+      if (parts.length !== 3) {
+        throw new Error('Invalid JWT format - must have 3 parts');
       }
-      setLoading(false);
-    }, 300);
-  };
+
+      const header = JSON.parse(atob(parts[0].replace(/-/g, '+').replace(/_/g, '/')));
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+
+      const decodedData = {
+        header: JSON.stringify(header, null, 2),
+        payload: JSON.stringify(payload, null, 2),
+        signature: parts[2]
+      };
+
+      setDecoded(decodedData);
+      setOutput(`=== JWT HEADER ===\n${decodedData.header}\n\n=== JWT PAYLOAD ===\n${decodedData.payload}\n\n=== JWT SIGNATURE ===\n${decodedData.signature}`);
+      setError('');
+    } catch (e) {
+      setOutput('');
+      setDecoded(null);
+      setError(t('Invalid JWT format: {{error}}', { error: e.message }));
+    }
+  }, [input]);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
@@ -79,197 +66,135 @@ export default function JwtDecoder() {
 
   return (
     <>
-      <Card sx={{ maxWidth: 1000, margin: '0 auto', p: 2 }}>
-        <Typography variant="h5" component="h1">{t('JWT Decoder')}</Typography>
-        <Typography color="text.secondary" sx={{ mb: 2 }}>
+      <div className="w-full">
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t('JWT Decoder')}</h1>
+        <p className="text-fg-secondary mb-3">
           {t('JWT Token Decoder')}
-        </Typography>
-        
-        <Card variant="outlined" sx={{ mb: 2 }}>
-          <CardHeader title={t('Input and Options')} />
-          <CardContent>
-            <Stack spacing={2}>
-              <TextField
-                value={input}
-                onChange={e => setInput(e.target.value)}
-                label={t('Enter JWT token')}
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
-                variant="outlined"
-                multiline
-                rows={4}
-                fullWidth
-                sx={{
-                  '& .MuiInputBase-root': {
-                    fontFamily: 'monospace',
-                    fontSize: 12
-                  }
-                }}
-              />
+        </p>
 
-              <Button
-                variant="contained"
-                onClick={handleDecode}
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <VpnKey />}
-                disabled={loading || !input.trim()}
-                fullWidth
-              >
-                {loading ? t('Decoding...') : t('Decode JWT')}
-              </Button>
-            </Stack>
-          </CardContent>
-        </Card>
+        {/* 工具栏：所有操作集中 */}
+        <div className="mb-4 flex flex-wrap items-center gap-3 border-b border-line pb-3">
+          <span className="mx-1 h-5 w-px bg-line" aria-hidden="true" />
+          <div className="flex gap-1">
+            <Button size="small" variant="text" onClick={() => setInput('')} disabled={!input} startIcon={<X size={16} />}>
+              {t('Clear')}
+            </Button>
+            <Button size="small" variant="text" onClick={handleCopy} disabled={!output} startIcon={<Copy size={16} />}>
+              {t('Copy')}
+            </Button>
+          </div>
+        </div>
 
-        {feedback.message && (
-          <Alert severity={feedback.type} sx={{ mb: 2 }}>
-            {feedback.message}
+        {error && (
+          <Alert severity="error" className="mb-3">
+            {error}
           </Alert>
         )}
 
-        <Card variant="outlined">
-          <CardHeader
-            title={t('Decoded Result')}
-            action={
-              output && (
-                <Button size="small" onClick={handleCopy} startIcon={<ContentCopy />}>
-                  {t('Copy')}
-                </Button>
-              )
-            }
+        {/* 左输入 / 右结果 */}
+        <div className="grid grid-cols-2 gap-4">
+          <Textarea
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            label={t('Enter JWT token')}
+            placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+            rows={18}
+            className="h-[calc(100vh-250px)] min-h-[320px] text-xs"
           />
-          <CardContent>
-            {loading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 280 }}>
-                <Stack alignItems="center" spacing={1}>
-                  <CircularProgress />
-                  <Typography>{t('Decoding JWT token, please wait...')}</Typography>
-                </Stack>
-              </Box>
-            ) : decoded ? (
-              <Box>
-                <Tabs value={activeTab} onChange={handleTabChange} sx={{ mb: 2 }}>
+          <div>
+            {decoded ? (
+              <div>
+                <Tabs value={activeTab} onChange={handleTabChange} className="mb-4">
                   <Tab
+                    value={0}
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Lock fontSize="small" />
+                      <span className="inline-flex items-center gap-2">
+                        <Lock size={16} />
                         {t('Header')}
-                      </Box>
+                      </span>
                     }
                   />
                   <Tab
+                    value={1}
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Fingerprint fontSize="small" />
+                      <span className="inline-flex items-center gap-2">
+                        <Fingerprint size={16} />
                         {t('Payload')}
-                      </Box>
+                      </span>
                     }
                   />
                   <Tab
+                    value={2}
                     label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <VpnKey fontSize="small" />
+                      <span className="inline-flex items-center gap-2">
+                        <KeyRound size={16} />
                         {t('Signature')}
-                      </Box>
+                      </span>
                     }
                   />
                 </Tabs>
 
                 {activeTab === 0 && (
-                  <Card variant="outlined">
-                    <CardHeader
-                      title={t('JWT Header')}
-                      action={
-                        <Button size="small" onClick={() => handleCopyPart('header')} startIcon={<ContentCopy />}>
-                          {t('Copy')}
-                        </Button>
-                      }
+                  <div className="flex flex-col gap-2">
+                    <Textarea
+                      value={decoded.header}
+                      readOnly
+                      rows={12}
+                      label={t('JWT Header')}
+                      className="bg-muted text-xs"
                     />
-                    <CardContent>
-                      <TextField
-                        value={decoded.header}
-                        multiline
-                        readOnly
-                        rows={8}
-                        fullWidth
-                        variant="filled"
-                        sx={{
-                          '& .MuiInputBase-root': {
-                            fontFamily: 'monospace',
-                            fontSize: 12
-                          }
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
+                    <div className="flex justify-end">
+                      <Button variant="text" size="small" onClick={() => handleCopyPart('header')} startIcon={<Copy size={16} />}>
+                        {t('Copy')}
+                      </Button>
+                    </div>
+                  </div>
                 )}
 
                 {activeTab === 1 && (
-                  <Card variant="outlined">
-                    <CardHeader
-                      title={t('JWT Payload')}
-                      action={
-                        <Button size="small" onClick={() => handleCopyPart('payload')} startIcon={<ContentCopy />}>
-                          {t('Copy')}
-                        </Button>
-                      }
+                  <div className="flex flex-col gap-2">
+                    <Textarea
+                      value={decoded.payload}
+                      readOnly
+                      rows={12}
+                      label={t('JWT Payload')}
+                      className="bg-muted text-xs"
                     />
-                    <CardContent>
-                      <TextField
-                        value={decoded.payload}
-                        multiline
-                        readOnly
-                        rows={8}
-                        fullWidth
-                        variant="filled"
-                        sx={{
-                          '& .MuiInputBase-root': {
-                            fontFamily: 'monospace',
-                            fontSize: 12
-                          }
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
+                    <div className="flex justify-end">
+                      <Button variant="text" size="small" onClick={() => handleCopyPart('payload')} startIcon={<Copy size={16} />}>
+                        {t('Copy')}
+                      </Button>
+                    </div>
+                  </div>
                 )}
 
                 {activeTab === 2 && (
-                  <Card variant="outlined">
-                    <CardHeader
-                      title={t('JWT Signature')}
-                      action={
-                        <Button size="small" onClick={() => handleCopyPart('signature')} startIcon={<ContentCopy />}>
-                          {t('Copy')}
-                        </Button>
-                      }
+                  <div className="flex flex-col gap-2">
+                    <Input
+                      value={decoded.signature}
+                      readOnly
+                      label={t('JWT Signature')}
+                      className="bg-muted font-mono text-center"
                     />
-                    <CardContent>
-                      <TextField
-                        value={decoded.signature}
-                        readOnly
-                        fullWidth
-                        variant="filled"
-                        sx={{
-                          '& .MuiInputBase-root': {
-                            fontFamily: 'monospace',
-                            fontSize: 14,
-                            textAlign: 'center'
-                          }
-                        }}
-                      />
-                    </CardContent>
-                  </Card>
+                    <div className="flex justify-end">
+                      <Button variant="text" size="small" onClick={() => handleCopyPart('signature')} startIcon={<Copy size={16} />}>
+                        {t('Copy')}
+                      </Button>
+                    </div>
+                  </div>
                 )}
-              </Box>
+              </div>
             ) : (
-              <Box sx={{ minHeight: 280, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography color="text.secondary" sx={{ textAlign: 'center' }}>
+              <div className="h-full min-h-[280px] flex items-center justify-center rounded-lg border border-line bg-muted">
+                <p className="text-fg-secondary text-center">
                   {t('JWT token parts will appear here. Enter a valid JWT token and click Decode JWT.')}
-                </Typography>
-              </Box>
+                </p>
+              </div>
             )}
-          </CardContent>
-        </Card>
-      </Card>
+          </div>
+        </div>
+      </div>
       <CopySuccessAnimation visible={showAnimation} onAnimationEnd={handleAnimationEnd} />
     </>
   );
-} 
+}

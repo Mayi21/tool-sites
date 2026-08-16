@@ -17,7 +17,7 @@ const toolCategories = [
   {
     nameKey: 'Development Tools',
     key: 'dev',
-    tools: ['base64', 'json-formatter', 'yaml-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser', 'url-shortener']
+    tools: ['base64', 'json-formatter', 'yaml-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser']
   },
   {
     nameKey: 'Text Processing',

@@ -1,14 +1,11 @@
-import { defineConfig, loadEnv } from 'vite';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
 import { constants } from 'zlib';
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
-  // Load all env vars (without VITE_ prefix restriction)
-  const env = loadEnv(mode, process.cwd(), '');
-
+export default defineConfig(() => {
   return {
     plugins: [
       react(),
@@ -36,10 +33,6 @@ export default defineConfig(({ mode }) => {
         }
       })
     ],
-    // Expose API_URL to client code via import.meta.env.API_URL
-    define: {
-      'import.meta.env.API_URL': JSON.stringify(env.API_URL || ''),
-    },
     build: {
       rollupOptions: {
         output: {
@@ -52,15 +45,6 @@ export default defineConfig(({ mode }) => {
       minify: 'esbuild',
       target: 'es2020',
       assetsInlineLimit: 4096,
-    },
-    server: {
-      proxy: {
-        '/api': {
-          target: 'http://127.0.0.1:8787',
-          changeOrigin: true,
-          rewrite: (path) => path.replace(/^\/api/, ''),
-        },
-      },
     },
   };
 });

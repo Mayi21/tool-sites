@@ -10,19 +10,64 @@ const pad = (n) => String(n).padStart(2, '0');
 const formatDate = (d) =>
   `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
 
-function UnitSelect({ value, onChange }) {
+// 时长换算统一按纳秒做 BigInt 运算，超出 Number 安全范围也不丢精度
+const SEC = 10n ** 9n;
+const NS_PER_MINUTE = 60n * SEC;
+const NANO_DIGITS = { ms: 6, ns: 0 }; // 1 毫秒 = 10^6 纳秒
+
+// 毫秒/纳秒字符串（可带小数）→ 整数纳秒，超出纳秒精度的部分截断
+const toNanos = (value, unit) => {
+  const [int, frac = ''] = value.split('.');
+  const digits = NANO_DIGITS[unit];
+  return BigInt(int + frac.padEnd(digits, '0').slice(0, digits));
+};
+
+// 纳秒 → 分钟：保留 6 位小数并去掉末尾 0；不足 1 分钟时保留 6 位有效数字，避免显示成 0
+const formatMinutes = (nanos) => {
+  const digits = nanos && nanos < NS_PER_MINUTE ? 5 + String(NS_PER_MINUTE / nanos).length : 6;
+  const scale = 10n ** BigInt(digits);
+  const scaled = (nanos * scale + NS_PER_MINUTE / 2n) / NS_PER_MINUTE; // 四舍五入
+  const frac = String(scaled % scale).padStart(digits, '0').replace(/0+$/, '');
+  return frac ? `${scaled / scale}.${frac}` : String(scaled / scale);
+};
+
+// 可读时长的拆分单位（从大到小）
+const DURATION_UNITS = [
+  ['timestamp.unitDay', 86400n * SEC],
+  ['timestamp.unitHour', 3600n * SEC],
+  ['timestamp.unitMinute', NS_PER_MINUTE],
+  ['timestamp.unitSecond', SEC],
+  ['timestamp.unitMilli', 10n ** 6n],
+  ['timestamp.unitMicro', 1000n],
+  ['timestamp.unitNano', 1n],
+];
+
+// 纳秒 → 「1 小时 30 分钟 5 秒」，省略为 0 的单位
+const formatDuration = (nanos, t) => {
+  const parts = [];
+  let rest = nanos;
+  for (const [key, size] of DURATION_UNITS) {
+    const n = rest / size;
+    rest %= size;
+    if (n) parts.push(`${n} ${t(key)}`);
+  }
+  return parts.join(' ') || `0 ${t('timestamp.unitSecond')}`;
+};
+
+const UNIT_LABELS = { s: 'timestamp.unitSecond', ms: 'timestamp.unitMilli', ns: 'timestamp.unitNano' };
+
+function UnitSelect({ value, onChange, units = ['s', 'ms'] }) {
   const { t } = useTranslation();
   return (
     <div className="w-24 shrink-0">
       <Select value={value} onChange={e => onChange(e.target.value)} aria-label="unit">
-        <option value="s">{t('timestamp.unitSecond')}</option>
-        <option value="ms">{t('timestamp.unitMilli')}</option>
+        {units.map(u => <option key={u} value={u}>{t(UNIT_LABELS[u])}</option>)}
       </Select>
     </div>
   );
 }
 
-function ResultBox({ value, onCopy, wide }) {
+function ResultBox({ value, onCopy, wide, suffix }) {
   const { t } = useTranslation();
   return (
     <>
@@ -32,6 +77,7 @@ function ResultBox({ value, onCopy, wide }) {
         placeholder={t('Converted result will appear here')}
         className={`${wide ? 'w-64' : 'w-52'} shrink-0 rounded-lg border border-line bg-muted px-3 py-2 font-mono text-sm text-fg outline-none`}
       />
+      {suffix && <span className="text-sm text-fg-secondary">{suffix}</span>}
       <Button size="small" variant="text" onClick={onCopy} disabled={!value} startIcon={<Copy size={15} />}>
         {t('Copy')}
       </Button>
@@ -117,6 +163,21 @@ export default function TimestampConverter() {
     { key: 's', label: t('timestamp.second'), width: 'w-14' },
   ];
 
+  /* 5. 时长（毫秒/纳秒）→ 分钟 */
+  const [durInput, setDurInput] = useState('');
+  const [durUnit, setDurUnit] = useState('ms');
+  const [durNanos, setDurNanos] = useState(null);
+  const [durError, setDurError] = useState('');
+  useDebouncedEffect(() => {
+    const v = durInput.trim();
+    if (!v) { setDurNanos(null); setDurError(''); return; }
+    if (!/^\d+(\.\d*)?$/.test(v)) { setDurNanos(null); setDurError(t('timestamp.invalidDuration')); return; }
+    setDurNanos(toNanos(v, durUnit));
+    setDurError('');
+  }, [durInput, durUnit]);
+  // 分钟数与可读时长在渲染时推导，切换语言后单位文字即时更新
+  const durResult = durNanos == null ? '' : formatMinutes(durNanos);
+
   return (
     <>
       <div className="w-full">
@@ -201,6 +262,31 @@ export default function TimestampConverter() {
             <UnitSelect value={fieldsUnit} onChange={setFieldsUnit} />
           </div>
           {fieldsError && <p className="mt-1 pl-32 text-xs text-danger">{fieldsError}</p>}
+        </div>
+
+        {/* 5. 时长（毫秒/纳秒）→ 分钟 */}
+        <div className="mt-4 border-t border-line pt-4">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="w-28 shrink-0 text-sm text-fg-secondary">{t('timestamp.durationLabel')}</span>
+            <div className="w-56 shrink-0">
+              <Input
+                value={durInput}
+                onChange={e => setDurInput(e.target.value)}
+                placeholder="90000"
+                inputMode="decimal"
+                className="font-mono"
+              />
+            </div>
+            <UnitSelect value={durUnit} onChange={setDurUnit} units={['ms', 'ns']} />
+            <span className="text-fg-tertiary">→</span>
+            <ResultBox
+              value={durResult}
+              suffix={t('timestamp.unitMinute')}
+              onCopy={() => durResult && copyToClipboard(durResult)}
+            />
+          </div>
+          {durNanos != null && <p className="mt-1 pl-32 text-sm text-fg-secondary">= {formatDuration(durNanos, t)}</p>}
+          {durError && <p className="mt-1 pl-32 text-xs text-danger">{durError}</p>}
         </div>
       </div>
 

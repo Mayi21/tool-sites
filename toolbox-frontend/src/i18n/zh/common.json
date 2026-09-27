@@ -470,7 +470,7 @@
   "url-encoder.pageTitle": "URL 编码/解码 — 安全处理查询参数 | 多功能工具箱",
   "url-encoder.pageDescription": "对 URL 与查询字符串进行编码与解码，正确处理特殊字符与空格，方便表单和 API 调试。",
   "timestamp.pageTitle": "时间戳转换器 — Unix 时间戳与日期互转 | 多功能工具箱",
-  "timestamp.pageDescription": "在 Unix 时间戳（秒/毫秒）与可读日期格式间互转，便于调试、日志分析与时间数据核对。",
+  "timestamp.pageDescription": "在 Unix 时间戳（秒/毫秒）与可读日期格式间互转，并支持毫秒/纳秒时长换算为分钟，便于调试、日志分析与时间数据核对。",
   "regex-tester.pageTitle": "正则测试 — 实时匹配与捕获组查看 | 多功能工具箱",
   "regex-tester.pageDescription": "在线测试正则表达式并实时高亮匹配与捕获组，加速正则调试与验证。",
   "text-analyzer.pageTitle": "文本分析 — 字数统计与阅读时长 | 多功能工具箱",

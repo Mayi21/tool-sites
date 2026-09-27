@@ -391,7 +391,7 @@
   "url-encoder.pageTitle": "URL Encoder/Decoder — Encode & Decode URLs | Multi-function Toolbox",
   "url-encoder.pageDescription": "Encode or decode URLs and query strings safely for web forms and API testing. Handles special characters and spaces correctly.",
   "timestamp.pageTitle": "Timestamp Converter — Unix Timestamp & Date Tool | Multi-function Toolbox",
-  "timestamp.pageDescription": "Convert between Unix timestamps and human-readable dates. Supports seconds/milliseconds and helps debug time-related data.",
+  "timestamp.pageDescription": "Convert between Unix timestamps (seconds/milliseconds) and human-readable dates, and convert millisecond/nanosecond durations to minutes. Helps debug time-related data.",
   "regex-tester.pageTitle": "Regex Tester — Test & Debug Regular Expressions | Multi-function Toolbox",
   "regex-tester.pageDescription": "Test regular expression patterns against sample text with live match highlighting and capture groups to speed up regex debugging.",
   "text-analyzer.pageTitle": "Text Analyzer — Word Count & Statistics | ToolifyHub",

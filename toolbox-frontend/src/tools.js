@@ -64,7 +64,7 @@ export default [
     nameKey: 'timestamp.name',
     descKey: 'Unix Timestamp Converter',
     cardDescription: 'Unix时间戳与日期格式双向转换，支持毫秒级精度和时区处理',
-    keywords: 'timestamp,unix,converter,datetime,时间戳,转换器,unix时间,日期转换',
+    keywords: 'timestamp,unix,converter,datetime,时间戳,转换器,unix时间,日期转换,duration,ms to minutes,ns to minutes,时长换算,毫秒转分钟,纳秒转分钟',
     pageTitleKey: 'timestamp.pageTitle',
     pageDescriptionKey: 'timestamp.pageDescription',
     ...toolPage('timestamp', () => import('./components/tools/TimestampConverter')),

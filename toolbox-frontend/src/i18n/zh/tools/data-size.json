@@ -1,0 +1,12 @@
+{
+  "data-size.pageHeading": "文件大小换算",
+  "data-size.pageSubheading": "在 Bit、Bytes、KB、MB、GB、TB 之间实时互转，任一框输入即刻换算其余单位。",
+  "data-size.unitBit": "Bit",
+  "data-size.unitByte": "Bytes",
+  "data-size.unitKB": "KB",
+  "data-size.unitMB": "MB",
+  "data-size.unitGB": "GB",
+  "data-size.unitTB": "TB",
+  "data-size.binaryNote": "按 1 KB = 1024 Bytes 计算",
+  "data-size.invalidNumber": "请输入有效的非负数字（支持 1e3 等科学计数法）"
+}

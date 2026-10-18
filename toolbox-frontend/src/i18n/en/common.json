@@ -517,5 +517,8 @@
   "commandPalette.empty": "No matching tools",
   "commandPalette.hint": "Search tools",
   "Image is already optimized, compression would increase size": "Image is already optimized, compression would increase size",
-  "Parse service is unavailable, please try again later": "Parse service is unavailable, please try again later"
+  "Parse service is unavailable, please try again later": "Parse service is unavailable, please try again later",
+  "data-size.name": "File Size Converter",
+  "data-size.pageTitle": "File Size Converter - Bit/Bytes/KB/MB/GB/TB Online Conversion Tool",
+  "data-size.pageDescription": "Convert file size and data storage units online: Bit, Bytes, KB, MB, GB, TB. Type in any field to convert the rest in real time."
 }

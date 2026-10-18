@@ -27,7 +27,7 @@ const toolCategories = [
   {
     nameKey: 'Data Conversion',
     key: 'data',
-    tools: ['csv-converter', 'uuid-generator']
+    tools: ['csv-converter', 'uuid-generator', 'data-size']
   },
   {
     nameKey: 'Security & Encryption',

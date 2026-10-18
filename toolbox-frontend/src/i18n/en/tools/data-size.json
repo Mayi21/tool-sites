@@ -1,0 +1,12 @@
+{
+  "data-size.pageHeading": "File Size Converter",
+  "data-size.pageSubheading": "Convert between Bit, Bytes, KB, MB, GB, TB in real time. Type in any box to update the rest.",
+  "data-size.unitBit": "Bit",
+  "data-size.unitByte": "Bytes",
+  "data-size.unitKB": "KB",
+  "data-size.unitMB": "MB",
+  "data-size.unitGB": "GB",
+  "data-size.unitTB": "TB",
+  "data-size.binaryNote": "Calculated as 1 KB = 1024 Bytes",
+  "data-size.invalidNumber": "Please enter a valid non-negative number (scientific notation like 1e3 is allowed)"
+}

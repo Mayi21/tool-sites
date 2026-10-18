@@ -18,6 +18,7 @@ const getToolCategory = (path) => {
     '/unicode-converter': 'Text Processing',
     '/csv-converter': 'Data Conversion',
     '/uuid-generator': 'Data Conversion',
+    '/data-size': 'Data Conversion',
     '/hash-generator': 'Security & Encryption',
     '/password-generator': 'Security & Encryption',
     '/image-compressor': 'Design Tools',

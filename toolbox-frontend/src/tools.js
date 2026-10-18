@@ -199,4 +199,14 @@ export default [
     pageDescriptionKey: 'password-generator.pageDescription',
     ...toolPage('password-generator', () => import('./components/tools/PasswordGenerator')),
   },
+  {
+    path: '/data-size',
+    nameKey: 'data-size.name',
+    descKey: 'File Size / Data Storage Unit Converter',
+    cardDescription: '在线文件大小与数据存储单位换算，Bit/Bytes/KB/MB/GB/TB 实时联动互转',
+    keywords: 'file size,data size,storage unit,converter,bytes,kb,mb,gb,tb,文件大小,存储单位,字节,换算,大小转换',
+    pageTitleKey: 'data-size.pageTitle',
+    pageDescriptionKey: 'data-size.pageDescription',
+    ...toolPage('data-size', () => import('./components/tools/DataSizeConverter')),
+  },
 ];

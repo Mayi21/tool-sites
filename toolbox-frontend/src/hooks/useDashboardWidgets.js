@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import tools from '../tools';
 import { widgetRegistry } from '../components/dashboard/widgetRegistry';
 
@@ -46,6 +46,9 @@ const loadLayout = () => {
  */
 export default function useDashboardWidgets() {
   const [widgets, setWidgets] = useState(loadLayout);
+  // 供 commit() 读取最新布局（拖拽结束才落盘，避免拖动过程中每次换位都同步写 localStorage）
+  const widgetsRef = useRef(widgets);
+  widgetsRef.current = widgets;
 
   const persist = useCallback((next) => {
     setWidgets(next);
@@ -91,19 +94,23 @@ export default function useDashboardWidgets() {
     });
   }, []);
 
-  // 拖拽重排：把 from 位置的项移动到 to 位置
+  // 拖拽重排：把 from 位置的项移动到 to 位置（只更新内存，拖拽结束由 commit() 一次性落盘）
   const reorder = useCallback((from, to) => {
     setWidgets(current => {
       if (from === to || from < 0 || to < 0 || from >= current.length || to >= current.length) return current;
       const next = [...current];
       const [moved] = next.splice(from, 1);
       next.splice(to, 0, moved);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, widgets: next }));
       return next;
     });
   }, []);
 
+  // 持久化当前布局（拖拽 onDragEnd 时调用）
+  const commit = useCallback(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, widgets: widgetsRef.current }));
+  }, []);
+
   const reset = useCallback(() => persist(DEFAULT_LAYOUT), [persist]);
 
-  return { widgets, addWidget, removeWidget, cycleSize, setSize, reorder, reset };
+  return { widgets, addWidget, removeWidget, cycleSize, setSize, reorder, commit, reset };
 }

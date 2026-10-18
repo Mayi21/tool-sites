@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { memo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { X, Expand } from 'lucide-react';
@@ -35,8 +35,9 @@ const snapSize = (cols, rows, sizes) =>
 /**
  * 小组件外壳：头部（icon + 名称）+ 迷你组件或启动卡片
  * 编辑态：整卡可拖拽重排、右下角手柄拖拽伸缩（吸附三档）、内容禁止交互
+ * memo 化：props 均为稳定引用（回调传 path/index），拖拽换位时只有相关卡片重渲染
  */
-export default function WidgetCard({ widget, editing, onRemove, onCycleSize, onResize, ...dragProps }) {
+function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, onDragStart, onDragEnter, onDragOver, onDragEnd }) {
   const { t } = useTranslation();
   const [resizing, setResizing] = useState(false);
   const [previewSize, setPreviewSize] = useState(null);
@@ -92,7 +93,10 @@ export default function WidgetCard({ widget, editing, onRemove, onCycleSize, onR
         editing ? 'cursor-grab select-none ring-2 ring-primary/40 active:cursor-grabbing' : ''
       }`}
       draggable={editing && !resizing}
-      {...dragProps}
+      onDragStart={editing ? e => onDragStart(e, index) : undefined}
+      onDragEnter={editing ? () => onDragEnter(index) : undefined}
+      onDragOver={editing ? onDragOver : undefined}
+      onDragEnd={editing ? onDragEnd : undefined}
     >
       <div className="flex shrink-0 items-center gap-2 px-3 pt-2.5 pb-1">
         <Icon size={15} className="shrink-0 text-primary" />
@@ -110,11 +114,11 @@ export default function WidgetCard({ widget, editing, onRemove, onCycleSize, onR
         {editing && (
           <span className="ml-auto flex shrink-0 items-center gap-0.5">
             <Tooltip title={nextSize}>
-              <IconButton onClick={onCycleSize} className="p-1.5" aria-label={t('Small') + '/' + t('Medium') + '/' + t('Large')}>
+              <IconButton onClick={() => onCycleSize(widget.path)} className="p-1.5" aria-label={t('Small') + '/' + t('Medium') + '/' + t('Large')}>
                 <Expand size={14} />
               </IconButton>
             </Tooltip>
-            <IconButton onClick={onRemove} className="p-1.5 hover:text-danger" aria-label={t('Remove Widget')}>
+            <IconButton onClick={() => onRemove(widget.path)} className="p-1.5 hover:text-danger" aria-label={t('Remove Widget')}>
               <X size={14} />
             </IconButton>
           </span>
@@ -145,3 +149,5 @@ export default function WidgetCard({ widget, editing, onRemove, onCycleSize, onR
     </Card>
   );
 }
+
+export default memo(WidgetCard);

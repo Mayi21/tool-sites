@@ -11,7 +11,7 @@ import WidgetPicker from './WidgetPicker';
  */
 export default function Dashboard() {
   const { t } = useTranslation();
-  const { widgets, addWidget, removeWidget, cycleSize, setSize, reorder, reset } = useDashboardWidgets();
+  const { widgets, addWidget, removeWidget, cycleSize, setSize, reorder, commit, reset } = useDashboardWidgets();
   const [editing, setEditing] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -63,6 +63,7 @@ export default function Dashboard() {
           onRemove={removeWidget}
           onCycleSize={cycleSize}
           onResize={setSize}
+          onCommit={commit}
         />
       )}
 

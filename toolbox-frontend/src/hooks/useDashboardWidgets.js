@@ -81,6 +81,16 @@ export default function useDashboardWidgets() {
     });
   }, []);
 
+  // 直接设定尺寸（拖拽伸缩提交用）：仅接受该工具的可用尺寸
+  const setSize = useCallback((path, size) => {
+    setWidgets(current => {
+      if (!availableSizes(path).includes(size)) return current;
+      const next = current.map(w => (w.path === path ? { ...w, size } : w));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, widgets: next }));
+      return next;
+    });
+  }, []);
+
   // 拖拽重排：把 from 位置的项移动到 to 位置
   const reorder = useCallback((from, to) => {
     setWidgets(current => {
@@ -95,5 +105,5 @@ export default function useDashboardWidgets() {
 
   const reset = useCallback(() => persist(DEFAULT_LAYOUT), [persist]);
 
-  return { widgets, addWidget, removeWidget, cycleSize, reorder, reset };
+  return { widgets, addWidget, removeWidget, cycleSize, setSize, reorder, reset };
 }

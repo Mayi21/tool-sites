@@ -11,7 +11,7 @@ import WidgetPicker from './WidgetPicker';
  */
 export default function Dashboard() {
   const { t } = useTranslation();
-  const { widgets, addWidget, removeWidget, cycleSize, reorder, reset } = useDashboardWidgets();
+  const { widgets, addWidget, removeWidget, cycleSize, setSize, reorder, reset } = useDashboardWidgets();
   const [editing, setEditing] = useState(false);
   const [pickerOpen, setPickerOpen] = useState(false);
 
@@ -41,7 +41,9 @@ export default function Dashboard() {
           </Button>
         </div>
       </div>
-      {editing && <p className="mb-2 text-xs text-fg-tertiary">{t('Drag to reorder')}</p>}
+      {editing && (
+        <p className="mb-2 text-xs text-fg-tertiary">{t('Drag to reorder')} · {t('Drag corner to resize')}</p>
+      )}
 
       {/* 空状态 / 组件网格 */}
       {widgets.length === 0 ? (
@@ -60,6 +62,7 @@ export default function Dashboard() {
           onReorder={reorder}
           onRemove={removeWidget}
           onCycleSize={cycleSize}
+          onResize={setSize}
         />
       )}
 

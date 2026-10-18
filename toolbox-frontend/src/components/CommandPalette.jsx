@@ -42,9 +42,12 @@ export default function CommandPalette() {
   }, [open]);
 
   const q = query.trim().toLowerCase();
+  // 工作台固定排在结果列表最前
+  const dashboardEntry = { path: '/', nameKey: 'Dashboard', keywords: 'dashboard,home,工作台,主页' };
+  const candidates = [dashboardEntry, ...tools];
   // 名称命中 > 路径命中 > 关键词命中
   const results = q
-    ? tools
+    ? candidates
         .map(tool => {
           const name = t(tool.nameKey).toLowerCase();
           const score = name.includes(q) ? 3 : tool.path.includes(q) ? 2 : (tool.keywords || '').toLowerCase().includes(q) ? 1 : 0;
@@ -53,7 +56,7 @@ export default function CommandPalette() {
         .filter(r => r.score > 0)
         .sort((a, b) => b.score - a.score)
         .map(r => r.tool)
-    : tools;
+    : candidates;
 
   const go = useCallback((tool) => {
     setOpen(false);

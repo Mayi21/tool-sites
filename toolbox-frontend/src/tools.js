@@ -1,4 +1,9 @@
 import { lazy } from 'react';
+import {
+  Binary, GitCompare, FileCode, Braces, Link, Clock, Regex, BarChart3,
+  Hash, Type, Fingerprint, FileText, Table, FileKey, Image, Languages,
+  Timer, Stamp, KeyRound, Database
+} from 'lucide-react';
 
 import { loadToolLocale } from './i18n';
 
@@ -11,6 +16,7 @@ const toolPage = (key, load) => {
 export default [
   {
     path: '/base64',
+    icon: Binary,
     nameKey: 'base64.name',
     descKey: 'Base64 Encode/Decode Tool',
     cardDescription: '支持文本和文件的Base64编码解码，广泛用于数据传输、API接口和邮件附件处理',
@@ -21,6 +27,7 @@ export default [
   },
   {
     path: '/diff',
+    icon: GitCompare,
     nameKey: 'diff.name',
     descKey: 'diff.cardDescription',
     cardDescription: '强大的文本对比工具，逐行高亮显示差异，支持代码审查和版本管理',
@@ -31,6 +38,7 @@ export default [
   },
   {
     path: '/yaml-formatter',
+    icon: FileCode,
     nameKey: 'yaml-formatter.name',
     descKey: 'yaml-formatter.pageDescription',
     cardDescription: 'YAML格式化校验工具，支持美化、多文档和YAML与JSON互转',
@@ -41,6 +49,7 @@ export default [
   },
   {
     path: '/json-formatter',
+    icon: Braces,
     nameKey: 'json-formatter.name',
     descKey: 'JSON Format/Minify Tool',
     cardDescription: '智能JSON格式化和压缩工具，支持语法高亮、错误检测和大文件处理',
@@ -51,6 +60,7 @@ export default [
   },
   {
     path: '/url-encoder',
+    icon: Link,
     nameKey: 'url-encoder.name',
     descKey: 'URL Encode/Decode Tool',
     cardDescription: '处理URL特殊字符编码，支持中文和查询参数，确保URL传输安全',
@@ -61,6 +71,7 @@ export default [
   },
   {
     path: '/timestamp',
+    icon: Clock,
     nameKey: 'timestamp.name',
     descKey: 'Unix Timestamp Converter',
     cardDescription: 'Unix时间戳与日期格式双向转换，支持毫秒级精度和时区处理',
@@ -71,6 +82,7 @@ export default [
   },
   {
     path: '/regex-tester',
+    icon: Regex,
     nameKey: 'regex-tester.name',
     descKey: 'Regex Testing Tool',
     cardDescription: '实时正则表达式测试工具，高亮匹配结果，支持捕获组和替换功能',
@@ -81,6 +93,7 @@ export default [
   },
   {
     path: '/text-analyzer',
+    icon: BarChart3,
     nameKey: 'text-analyzer.name',
     descKey: 'Text Statistics Tool',
     cardDescription: '全面的文本分析工具，提供字词统计、阅读时间估算和词频分析',
@@ -91,6 +104,7 @@ export default [
   },
   {
     path: '/hash-generator',
+    icon: Hash,
     nameKey: 'hash-generator.name',
     descKey: 'MD5/SHA Hash Generator',
     cardDescription: '安全哈希生成工具，支持MD5、SHA-256等算法，用于数据完整性验证',
@@ -101,6 +115,7 @@ export default [
   },
   {
     path: '/text-processor',
+    icon: Type,
     nameKey: 'text-processor.name',
     descKey: 'Text Processing Tool',
     cardDescription: '批量文本处理工具，支持大小写转换、去重排序和空格清理',
@@ -111,6 +126,7 @@ export default [
   },
   {
     path: '/uuid-generator',
+    icon: Fingerprint,
     nameKey: 'uuid-generator.name',
     descKey: 'UUID Generator Tool',
     cardDescription: '标准UUID生成器，支持批量生成和多种格式，适用于数据库和API',
@@ -121,6 +137,7 @@ export default [
   },
   {
     path: '/markdown-preview',
+    icon: FileText,
     nameKey: 'markdown-preview.name',
     descKey: 'Markdown Preview Tool',
     cardDescription: '实时Markdown预览工具，支持语法高亮和多种主题样式',
@@ -131,6 +148,7 @@ export default [
   },
   {
     path: '/csv-converter',
+    icon: Table,
     nameKey: 'csv-converter.name',
     descKey: 'CSV to JSON Converter',
     cardDescription: 'CSV与JSON双向转换工具，智能识别分隔符，支持大数据文件处理',
@@ -141,6 +159,7 @@ export default [
   },
   {
     path: '/jwt-decoder',
+    icon: FileKey,
     nameKey: 'jwt-decoder.name',
     descKey: 'JWT Token Decoder',
     cardDescription: 'JWT令牌解码工具，解析Header、Payload和Signature，调试身份认证',
@@ -151,6 +170,7 @@ export default [
   },
   {
     path: '/image-compressor',
+    icon: Image,
     nameKey: 'image-compressor.name',
     descKey: 'Online Image Compressor',
     cardDescription: '智能图片压缩工具，保持视觉质量同时减小文件大小，支持批量处理',
@@ -161,6 +181,7 @@ export default [
   },
   {
     path: '/unicode-converter',
+    icon: Languages,
     nameKey: 'unicode-converter.name',
     descKey: 'Chinese Unicode Converter',
     cardDescription: '中文Unicode编码转换器，解决字符编码问题，支持多种Unicode格式',
@@ -171,6 +192,7 @@ export default [
   },
   {
     path: '/cron-parser',
+    icon: Timer,
     nameKey: 'cron-parser.name',
     descKey: 'Cron Expression Linux/Spring Converter Tool',
     cardDescription: 'Cron表达式解析器，支持Linux和Spring格式，预测执行时间和规则说明',
@@ -181,6 +203,7 @@ export default [
   },
   {
     path: '/image-watermark',
+    icon: Stamp,
     nameKey: 'image-watermark.name',
     descKey: 'Add watermark to image',
     cardDescription: '图片水印工具，支持文字和图像水印，保护版权和品牌标识',
@@ -191,6 +214,7 @@ export default [
   },
   {
     path: '/password-generator',
+    icon: KeyRound,
     nameKey: 'password-generator.name',
     descKey: 'Secure Password Generator',
     cardDescription: '安全密码生成器，可自定义长度和字符集，提供强度评估和安全建议',
@@ -201,6 +225,7 @@ export default [
   },
   {
     path: '/data-size',
+    icon: Database,
     nameKey: 'data-size.name',
     descKey: 'File Size / Data Storage Unit Converter',
     cardDescription: '在线文件大小与数据存储单位换算，Bit/Bytes/KB/MB/GB/TB 实时联动互转',

@@ -520,5 +520,22 @@
   "Parse service is unavailable, please try again later": "Parse service is unavailable, please try again later",
   "data-size.name": "File Size Converter",
   "data-size.pageTitle": "File Size Converter - Bit/Bytes/KB/MB/GB/TB Online Conversion Tool",
-  "data-size.pageDescription": "Convert file size and data storage units online: Bit, Bytes, KB, MB, GB, TB. Type in any field to convert the rest in real time."
+  "data-size.pageDescription": "Convert file size and data storage units online: Bit, Bytes, KB, MB, GB, TB. Type in any field to convert the rest in real time.",
+  "Dashboard": "Dashboard",
+  "dashboard.pageTitle": "Custom Dashboard — Quick Access to Your Tools | Multi-function Toolbox",
+  "dashboard.pageDescription": "Pin your frequently used tools as widgets on the homepage dashboard. Multiple sizes and drag-to-reorder for a personal productivity workspace.",
+  "Edit Dashboard": "Edit Dashboard",
+  "Done": "Done",
+  "Add Widget": "Add Widget",
+  "Remove Widget": "Remove",
+  "Reset Dashboard": "Reset to Default Layout",
+  "Drag to reorder": "Drag cards to reorder",
+  "Dashboard is empty": "Your dashboard is empty",
+  "Add tools to get started": "Add your favorite tools to build your productivity workspace",
+  "Small": "Small",
+  "Large": "Large",
+  "Already added": "Added",
+  "Click to copy": "Click to copy",
+  "Regenerate": "Regenerate",
+  "Open full tool": "Open full tool"
 }

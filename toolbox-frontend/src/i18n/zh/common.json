@@ -553,5 +553,22 @@
   "Parse service is unavailable, please try again later": "解析服务暂不可用，请稍后再试",
   "data-size.name": "文件大小换算",
   "data-size.pageTitle": "文件大小换算 — Bit/Bytes/KB/MB/GB/TB 在线互转 | 多功能工具箱",
-  "data-size.pageDescription": "在线文件大小与数据存储单位换算工具，支持 Bit、Bytes、KB、MB、GB、TB 实时互转，任一单位输入即刻换算其余单位。"
+  "data-size.pageDescription": "在线文件大小与数据存储单位换算工具，支持 Bit、Bytes、KB、MB、GB、TB 实时互转，任一单位输入即刻换算其余单位。",
+  "Dashboard": "工作台",
+  "dashboard.pageTitle": "自定义工作台 — 常用工具一键直达 | 多功能工具箱",
+  "dashboard.pageDescription": "将常用工具以小组件形式固定在主页工作台，支持多种尺寸与拖拽排序，打造个人效率工作台。",
+  "Edit Dashboard": "编辑工作台",
+  "Done": "完成",
+  "Add Widget": "添加工具",
+  "Remove Widget": "移除",
+  "Reset Dashboard": "恢复默认布局",
+  "Drag to reorder": "拖动卡片调整顺序",
+  "Dashboard is empty": "工作台还是空的",
+  "Add tools to get started": "添加常用工具，打造你的效率工作台",
+  "Small": "小",
+  "Large": "大",
+  "Already added": "已添加",
+  "Click to copy": "点击复制",
+  "Regenerate": "重新生成",
+  "Open full tool": "打开完整工具"
 }

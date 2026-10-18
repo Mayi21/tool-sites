@@ -1,47 +1,16 @@
 import { useState, useEffect, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, LayoutGrid } from 'lucide-react';
 import tools from './tools';
+import { categorizedTools } from './categories';
 import LanguageSwitcher from './components/LanguageSwitcher';
 import ThemeSwitcher from './components/ThemeSwitcher';
 import NotFound from './components/NotFound';
 import Seo from './components/Seo';
 import CommandPalette from './components/CommandPalette';
+import Dashboard from './components/dashboard/Dashboard';
 import { Spinner } from './components/ui';
-
-const DEFAULT_TOOL = '/base64';
-
-// 工具分类（一级菜单）
-const toolCategories = [
-  {
-    nameKey: 'Development Tools',
-    key: 'dev',
-    tools: ['base64', 'json-formatter', 'yaml-formatter', 'url-encoder', 'timestamp', 'regex-tester', 'jwt-decoder', 'cron-parser']
-  },
-  {
-    nameKey: 'Text Processing',
-    key: 'text',
-    tools: ['diff', 'text-analyzer', 'text-processor', 'markdown-preview', 'unicode-converter']
-  },
-  {
-    nameKey: 'Data Conversion',
-    key: 'data',
-    tools: ['csv-converter', 'uuid-generator', 'data-size']
-  },
-  {
-    nameKey: 'Security & Encryption',
-    key: 'security',
-    tools: ['hash-generator', 'password-generator']
-  },
-  { nameKey: 'Design Tools', key: 'design', tools: ['image-compressor', 'image-watermark'] }
-];
-
-// 按分类组织工具（保持 tools.js 中定义的顺序）
-const categorizedTools = toolCategories.map(category => ({
-  ...category,
-  items: tools.filter(tool => category.tools.some(key => tool.path.includes(key)))
-}));
 
 function SidebarCategory({ category, currentPath, open, onToggle }) {
   const { t } = useTranslation();
@@ -100,7 +69,7 @@ function Sidebar({ theme, setTheme }) {
 
   return (
     <aside className="sticky top-0 flex h-screen w-60 shrink-0 flex-col border-r border-line bg-paper">
-      <Link to={DEFAULT_TOOL} className="flex items-center gap-2 px-4 py-4 no-underline hover:opacity-80">
+      <Link to="/" className="flex items-center gap-2 px-4 py-4 no-underline hover:opacity-80">
         <img src="/toolbox-icon.svg" alt="Toolbox Icon" width="22" height="22" />
         <span className="text-base font-bold text-fg">{t('Multi-function Toolbox')}</span>
       </Link>
@@ -114,6 +83,18 @@ function Sidebar({ theme, setTheme }) {
           {t('commandPalette.hint')}
           <kbd className="rounded border border-line bg-muted px-1.5 py-0.5 text-[10px]">⌘K</kbd>
         </button>
+        {/* 工作台固定入口 */}
+        <Link
+          to="/"
+          className={`mb-1 flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm no-underline transition-colors ${
+            pathname === '/'
+              ? 'bg-primary/10 font-medium text-primary'
+              : 'text-fg-secondary hover:bg-muted hover:text-fg'
+          }`}
+        >
+          <LayoutGrid size={15} className="shrink-0" />
+          {t('Dashboard')}
+        </Link>
         {categorizedTools.map(category => (
           <SidebarCategory
             key={category.key}
@@ -158,7 +139,17 @@ function App() {
             </div>
           }>
             <Routes>
-              <Route path="/" element={<Navigate to={DEFAULT_TOOL} replace />} />
+              <Route path="/" element={
+                <>
+                  <Seo
+                    title={t('dashboard.pageTitle')}
+                    description={t('dashboard.pageDescription')}
+                    canonical="https://toolifyhub.top/"
+                    lang={currentLang}
+                  />
+                  <Dashboard />
+                </>
+              } />
               {tools.map(tool => (
                 <Route
                   key={tool.path}

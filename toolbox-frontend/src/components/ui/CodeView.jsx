@@ -26,11 +26,11 @@ function highlightLine(line) {
   return html;
 }
 
-export default function CodeView({ code, className = '' }) {
+export default function CodeView({ code, className = '', wrap = true }) {
   const html = (code || '').split('\n').map(highlightLine).join('\n');
   return (
     <pre
-      className={`m-0 overflow-auto whitespace-pre rounded-lg border border-line bg-muted px-3 py-2 font-mono text-xs leading-relaxed text-fg ${className}`}
+      className={`m-0 overflow-auto ${wrap ? 'whitespace-pre-wrap break-words' : 'whitespace-pre'} rounded-lg border border-line bg-muted px-3 py-2 font-mono text-xs leading-relaxed text-fg ${className}`}
       // 输出经过 esc() 转义后再着色，无 XSS 风险
       dangerouslySetInnerHTML={{ __html: html }}
     />

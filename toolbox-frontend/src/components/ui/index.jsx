@@ -336,17 +336,21 @@ export function Tab({ value: tabValue, label, className }) {
 
 /* ---------- ToggleButtonGroup ---------- */
 
-export function ToggleButtonGroup({ value, onChange, className, children, options, size = 'medium' }) {
+export function ToggleButtonGroup({ value, onChange, className, children, options, size = 'medium', vertical = false }) {
   const items = options ?? [];
   return (
-    <div className={cx('inline-flex rounded-lg border border-line overflow-hidden', className)}>
+    // 竖排时必须显式 items-start：inline-flex 在 flex-col 下仍会拉伸交叉轴，
+    // 按钮被拉到最宽那条的宽度，两个按钮看起来就不一样长了
+    <div className={cx('inline-flex rounded-lg border border-line overflow-hidden', vertical && 'flex-col items-stretch', className)}>
       {items.map(opt => (
         <button
           key={opt.value}
           type="button"
           onClick={e => onChange?.(e, opt.value)}
           className={cx(
-            'cursor-pointer transition-colors border-r border-line last:border-r-0 whitespace-nowrap',
+            'cursor-pointer transition-colors whitespace-nowrap',
+            // 竖排时分隔线在下方而非右侧
+            vertical ? 'border-b border-line last:border-b-0' : 'border-r border-line last:border-r-0',
             size === 'small' ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm',
             value === opt.value ? 'bg-primary text-primary-fg' : 'bg-paper text-fg-secondary hover:bg-muted'
           )}

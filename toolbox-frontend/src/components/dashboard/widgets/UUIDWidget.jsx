@@ -21,26 +21,29 @@ export default function UUIDWidget({ size }) {
 
   return (
     <div className="flex h-full flex-col gap-2">
-      <div className="flex items-center gap-1.5">
-        <span className="min-w-0 flex-1 truncate rounded-md bg-muted px-2 py-1.5 font-mono text-xs text-fg" title={shown[0]}>
+      <div className={`flex gap-1.5 ${size === 's' ? 'flex-col' : 'items-center'}`}>
+        {/* UUID 固定 36 字符（约 276px），S 档只有 142px 可用：断行完整显示，不截断 */}
+        <span className="min-w-0 flex-1 select-text break-all rounded-md bg-muted px-2 py-1.5 font-mono text-xs leading-relaxed text-fg">
           {shown[0]}
         </span>
-        <button
-          type="button"
-          onClick={() => setUuids(makeUuids(size === 'l' ? count : size === 'm' ? 3 : 1))}
-          title={t('Regenerate')}
-          className="shrink-0 cursor-pointer rounded-md p-1.5 text-fg-tertiary transition-colors hover:bg-muted hover:text-fg"
-        >
-          <RefreshCw size={14} />
-        </button>
-        <button
-          type="button"
-          onClick={() => copyToClipboard(shown[0])}
-          title={t('Copy')}
-          className="shrink-0 cursor-pointer rounded-md p-1.5 text-fg-tertiary transition-colors hover:bg-muted hover:text-fg"
-        >
-          <Copy size={14} />
-        </button>
+        <div className="flex shrink-0 items-center gap-1.5 self-end">
+          <button
+            type="button"
+            onClick={() => setUuids(makeUuids(size === 'l' ? count : size === 'm' ? 3 : 1))}
+            title={t('Regenerate')}
+            className="shrink-0 cursor-pointer rounded-md p-1.5 text-fg-tertiary transition-colors hover:bg-muted hover:text-fg"
+          >
+            <RefreshCw size={14} />
+          </button>
+          <button
+            type="button"
+            onClick={() => copyToClipboard(shown[0])}
+            title={t('Copy')}
+            className="shrink-0 cursor-pointer rounded-md p-1.5 text-fg-tertiary transition-colors hover:bg-muted hover:text-fg"
+          >
+            <Copy size={14} />
+          </button>
+        </div>
       </div>
 
       {size !== 's' && (

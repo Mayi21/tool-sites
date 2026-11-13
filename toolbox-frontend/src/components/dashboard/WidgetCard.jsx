@@ -8,7 +8,7 @@ import { widgetRegistry } from './widgetRegistry';
 import LauncherWidget from './LauncherWidget';
 import {
   ALL_SIZES, GRID_COLS, GAP, SIZE_CELLS, SPAN,
-  canCycle, nextSize, resizeHint, snapSize, spansFromDelta,
+  canCycle, nextSize, resizeHint, sizeLabel, snapSize, spansFromDelta,
 } from './widgetSizing';
 
 /**
@@ -30,11 +30,11 @@ function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, o
   const Widget = entry?.component;
   const Icon = tool.icon;
 
-  const sizeLabels = { s: t('Small'), m: t('Medium'), l: t('Large') };
   const sizes = entry?.availableSizes ?? ALL_SIZES;
   // 尺寸循环按钮的提示：下一档尺寸的名称
   const cycleTarget = nextSize(sizes, widget.size);
   const cycleDisabled = !canCycle(sizes);
+  const cycleLabel = `${sizeLabel(widget.size, t)} → ${sizeLabel(cycleTarget, t)}`;
 
   // 拖拽伸缩：Pointer Events（HTML5 DnD 做不了 resize），指针增量 → 期望跨度 → 吸附可用尺寸
   const onHandlePointerDown = (e) => {
@@ -92,13 +92,13 @@ function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, o
         )}
         {editing && (
           <span className="ml-auto flex shrink-0 items-center gap-0.5">
-            <Tooltip title={`${sizeLabels[widget.size]} → ${sizeLabels[cycleTarget]}`}>
+            <Tooltip title={cycleLabel}>
               <IconButton
                 onClick={() => onCycleSize(widget.path)}
                 className="p-1.5"
                 // 可用尺寸只有一档的工具，循环按钮无意义，直接禁用
                 disabled={cycleDisabled}
-                aria-label={`${sizeLabels[widget.size]} → ${sizeLabels[cycleTarget]}`}
+                aria-label={cycleLabel}
               >
                 <span className="flex items-center gap-0.5">
                   <span className="text-[10px] font-semibold uppercase leading-none">{widget.size}</span>

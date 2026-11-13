@@ -60,9 +60,10 @@ describe('WidgetCard', () => {
         ['s', 'col-span-1 row-span-1'],
         ['m', 'col-span-2 row-span-1'],
         ['l', 'col-span-2 row-span-2'],
+        ['xl', 'col-span-4 row-span-1'],
       ];
       for (const [size, span] of cases) {
-        const { container } = renderCard({ widget: { path: '/timestamp', size } });
+        const { container } = renderCard({ widget: { path: '/base64', size } });
         expect(container.querySelector('[data-widget-card]').className).toContain(span);
         cleanup();
       }
@@ -116,9 +117,9 @@ describe('WidgetCard', () => {
       expect(screen.getByRole('button', { name: '调整大小' }).title).toBe('拖动右下角手柄调整大小（小 – 大）');
     });
 
-    it('开放 s/m/l 后的 Base64 也显示小 – 大', () => {
+    it('开放超宽档的 Base64 显示小 – 超宽', () => {
       renderCard({ editing: true, widget: { path: '/base64', size: 'm' } });
-      expect(screen.getByRole('button', { name: '调整大小' }).title).toBe('拖动右下角手柄调整大小（小 – 大）');
+      expect(screen.getByRole('button', { name: '调整大小' }).title).toBe('拖动右下角手柄调整大小（小 – 超宽）');
     });
   });
 
@@ -199,16 +200,42 @@ describe('WidgetCard', () => {
 
       expect(onResize).toHaveBeenCalledWith('/password-generator', 's');
     });
+
+    it('开放超宽档的 Base64 向右拖够远可拉到 xl', () => {
+      stubGridWidth();
+      const onResize = vi.fn();
+      renderCard({ editing: true, widget: { path: '/base64', size: 'm' }, onResize });
+
+      // m(2 列) → 4 列需要约 2×86.4 ≈ 173px，给 200px 留余量
+      resizeBy(screen.getByRole('button', { name: '调整大小' }), 200, 0);
+
+      expect(onResize).toHaveBeenCalledWith('/base64', 'xl');
+    });
+
+    it('不开放超宽档的工具拖到 4 列也吸附回 m', () => {
+      stubGridWidth();
+      const onResize = vi.fn();
+      renderCard({ editing: true, widget: { path: '/timestamp', size: 'm' }, onResize });
+
+      resizeBy(screen.getByRole('button', { name: '调整大小' }), 200, 0);
+
+      expect(onResize).not.toHaveBeenCalled();
+    });
   });
 
   describe('回调', () => {
-    it('点击循环按钮回传 path', () => {
+    it('点击循环按钮回传 path（大 → 超宽）', () => {
       const onCycleSize = vi.fn();
       renderCard({ editing: true, widget: { path: '/json-formatter', size: 'l' }, onCycleSize });
 
-      fireEvent.click(screen.getByRole('button', { name: '大 → 小' }));
+      fireEvent.click(screen.getByRole('button', { name: '大 → 超宽' }));
 
       expect(onCycleSize).toHaveBeenCalledWith('/json-formatter');
+    });
+
+    it('超宽档下一步循环回最小档', () => {
+      renderCard({ editing: true, widget: { path: '/base64', size: 'xl' } });
+      expect(screen.getByRole('button', { name: '超宽 → 小' })).toBeInTheDocument();
     });
 
     it('点击移除回传 path', () => {

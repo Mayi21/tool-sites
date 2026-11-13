@@ -53,14 +53,34 @@ describe('useDashboardWidgets', () => {
     });
 
     it('存档里的非法尺寸修正为该工具的默认尺寸', () => {
-      // json-formatter 默认 l，存档写 m 是合法的，这里用不存在的档位
+      // json-formatter 默认 l，存档写个不存在的档位
       localStorage.setItem(STORAGE_KEY, JSON.stringify({
         version: 1,
-        widgets: [{ path: '/json-formatter', size: 'xl' }],
+        widgets: [{ path: '/json-formatter', size: 'huge' }],
       }));
       const { result } = renderHook(() => useDashboardWidgets());
 
       expect(result.current.widgets[0].size).toBe(widgetRegistry['/json-formatter'].defaultSize);
+    });
+
+    it('开放超宽档的工具保留存档里的 xl', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        version: 1,
+        widgets: [{ path: '/hash-generator', size: 'xl' }],
+      }));
+      const { result } = renderHook(() => useDashboardWidgets());
+
+      expect(result.current.widgets[0].size).toBe('xl');
+    });
+
+    it('未开放超宽档的工具即使存了 xl 也修正回默认尺寸', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        version: 1,
+        widgets: [{ path: '/uuid-generator', size: 'xl' }],
+      }));
+      const { result } = renderHook(() => useDashboardWidgets());
+
+      expect(result.current.widgets[0].size).toBe(widgetRegistry['/uuid-generator'].defaultSize);
     });
   });
 
@@ -81,14 +101,36 @@ describe('useDashboardWidgets', () => {
       expect(storedSizes()).toEqual(['/base64:s']);
     });
 
+    it('接受开放给该工具的超宽档', () => {
+      const { result } = renderHook(() => useDashboardWidgets());
+
+      act(() => result.current.setSize('/base64', 'xl'));
+
+      expect(result.current.widgets[0].size).toBe('xl');
+      expect(storedSizes()).toEqual(['/base64:xl']);
+    });
+
     it('拒绝白名单外的尺寸，状态与存档都不变', () => {
       const { result } = renderHook(() => useDashboardWidgets());
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 1, widgets: [{ path: '/base64', size: 'm' }] }));
 
-      act(() => result.current.setSize('/base64', 'xl'));
+      act(() => result.current.setSize('/base64', 'huge'));
 
       expect(result.current.widgets[0].size).toBe('m');
       expect(storedSizes()).toEqual(['/base64:m']);
+    });
+
+    it('未开放超宽档的工具拒绝 xl', () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        version: 1,
+        widgets: [{ path: '/uuid-generator', size: 'm' }],
+      }));
+      const { result } = renderHook(() => useDashboardWidgets());
+
+      act(() => result.current.setSize('/uuid-generator', 'xl'));
+
+      expect(result.current.widgets[0].size).toBe('m');
+      expect(storedSizes()).toEqual(['/uuid-generator:m']);
     });
 
     it('未注册迷你组件的工具按 s/m/l 三档接受', () => {
@@ -112,9 +154,9 @@ describe('useDashboardWidgets', () => {
 
       act(() => result.current.cycleSize('/json-formatter'));
 
-      // l → s（放开三档后循环回到最小档）
-      expect(result.current.widgets[0].size).toBe('s');
-      expect(storedSizes()).toEqual(['/json-formatter:s']);
+      // l → xl（开放超宽档后大档之后是超宽）
+      expect(result.current.widgets[0].size).toBe('xl');
+      expect(storedSizes()).toEqual(['/json-formatter:xl']);
     });
 
     it('只影响目标工具', () => {

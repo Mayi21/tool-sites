@@ -58,6 +58,28 @@ describe('ToggleButtonGroup', () => {
 
       expect(screen.queryAllByRole('button')).toHaveLength(0);
     });
+
+    it('默认横向：容器不带 flex-col，分隔线在右侧', () => {
+      const { container } = render(<ToggleButtonGroup value="encode" onChange={() => {}} options={OPTIONS} />);
+
+      expect(container.firstChild.className).not.toContain('flex-col');
+      const btn = screen.getByRole('button', { name: '编码' });
+      expect(btn.className).toContain('border-r');
+      expect(btn.className).not.toContain('border-b');
+    });
+
+    it('vertical：容器竖排，分隔线改到下方（XL 左侧竖栏用）', () => {
+      const { container } = render(
+        <ToggleButtonGroup value="encode" onChange={() => {}} options={OPTIONS} vertical />
+      );
+
+      expect(container.firstChild.className).toContain('flex-col');
+      const btn = screen.getByRole('button', { name: '编码' });
+      expect(btn.className).toContain('border-b');
+      expect(btn.className).not.toContain('border-r');
+      // 最后一个按钮不留多余分隔线
+      expect(btn.className).toContain('last:border-b-0');
+    });
   });
 
   describe('交互', () => {

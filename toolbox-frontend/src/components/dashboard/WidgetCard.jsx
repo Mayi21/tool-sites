@@ -1,40 +1,19 @@
 import { memo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { X, Expand } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import tools from '../../tools';
 import { Card, IconButton, Tooltip } from '../ui';
 import { widgetRegistry } from './widgetRegistry';
 import LauncherWidget from './LauncherWidget';
-
-// 尺寸 → 网格跨度（4 列网格：小 1×1 / 中 2×1 / 大 2×2）
-const SPAN = {
-  s: 'col-span-1 row-span-1',
-  m: 'col-span-2 row-span-1',
-  l: 'col-span-2 row-span-2',
-};
-
-// 与 WidgetGrid 的网格类对应：grid-cols-4 gap-4 auto-rows-[180px]
-const GRID_COLS = 4;
-const GAP = 16;
-const ROW_H = 180;
-// 尺寸 → 占用的 [列数, 行数]
-const SIZE_CELLS = { s: [1, 1], m: [2, 1], l: [2, 2] };
-
-const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
-
-// 期望的列数/行数 → 该工具可用尺寸中最近的一档（如 Base64 仅 m/l，拖向 1×1 吸附回 m）
-const snapSize = (cols, rows, sizes) =>
-  sizes.reduce((best, size) => {
-    const [c, r] = SIZE_CELLS[size];
-    const dist = Math.abs(c - cols) + Math.abs(r - rows);
-    const [bc, br] = SIZE_CELLS[best];
-    return dist < Math.abs(bc - cols) + Math.abs(br - rows) ? size : best;
-  }, sizes[0]);
+import {
+  ALL_SIZES, GRID_COLS, GAP, SIZE_CELLS, SPAN,
+  canCycle, nextSize, resizeHint, snapSize, spansFromDelta,
+} from './widgetSizing';
 
 /**
  * 小组件外壳：头部（icon + 名称）+ 迷你组件或启动卡片
- * 编辑态：整卡可拖拽重排、右下角手柄拖拽伸缩（吸附三档）、内容禁止交互
+ * 编辑态：整卡可拖拽重排、右下角手柄拖拽伸缩（吸附可用尺寸档位）、内容禁止交互
  * memo 化：props 均为稳定引用（回调传 path/index），拖拽换位时只有相关卡片重渲染
  */
 function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, onDragStart, onDragEnter, onDragOver, onDragEnd }) {
@@ -51,10 +30,11 @@ function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, o
   const Widget = entry?.component;
   const Icon = tool.icon;
 
-  // 尺寸循环按钮的提示：下一档尺寸的名称
   const sizeLabels = { s: t('Small'), m: t('Medium'), l: t('Large') };
-  const sizes = entry?.availableSizes ?? ['s', 'm', 'l'];
-  const nextSize = sizeLabels[sizes[(sizes.indexOf(widget.size) + 1) % sizes.length]];
+  const sizes = entry?.availableSizes ?? ALL_SIZES;
+  // 尺寸循环按钮的提示：下一档尺寸的名称
+  const cycleTarget = nextSize(sizes, widget.size);
+  const cycleDisabled = !canCycle(sizes);
 
   // 拖拽伸缩：Pointer Events（HTML5 DnD 做不了 resize），指针增量 → 期望跨度 → 吸附可用尺寸
   const onHandlePointerDown = (e) => {
@@ -66,16 +46,15 @@ function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, o
       rows: SIZE_CELLS[widget.size][1],
       cellW: (gridRect.width - (GRID_COLS - 1) * GAP) / GRID_COLS,
     };
-    e.currentTarget.setPointerCapture(e.pointerId);
+    e.currentTarget.setPointerCapture?.(e.pointerId);
     setResizing(true);
   };
 
   const onHandlePointerMove = (e) => {
     if (!resizeRef.current) return;
     const { x, y, cols, rows, cellW } = resizeRef.current;
-    const nextCols = clamp(cols + Math.round((e.clientX - x) / (cellW + GAP)), 1, 2);
-    const nextRows = clamp(rows + Math.round((e.clientY - y) / (ROW_H + GAP)), 1, 2);
-    setPreviewSize(snapSize(nextCols, nextRows, sizes));
+    const next = spansFromDelta(cols, rows, e.clientX - x, e.clientY - y, cellW);
+    setPreviewSize(snapSize(next.cols, next.rows, sizes));
   };
 
   const endResize = (commit) => {
@@ -113,9 +92,19 @@ function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, o
         )}
         {editing && (
           <span className="ml-auto flex shrink-0 items-center gap-0.5">
-            <Tooltip title={nextSize}>
-              <IconButton onClick={() => onCycleSize(widget.path)} className="p-1.5" aria-label={t('Small') + '/' + t('Medium') + '/' + t('Large')}>
-                <Expand size={14} />
+            <Tooltip title={`${sizeLabels[widget.size]} → ${sizeLabels[cycleTarget]}`}>
+              <IconButton
+                onClick={() => onCycleSize(widget.path)}
+                className="p-1.5"
+                // 可用尺寸只有一档的工具，循环按钮无意义，直接禁用
+                disabled={cycleDisabled}
+                aria-label={`${sizeLabels[widget.size]} → ${sizeLabels[cycleTarget]}`}
+              >
+                <span className="flex items-center gap-0.5">
+                  <span className="text-[10px] font-semibold uppercase leading-none">{widget.size}</span>
+                  <ArrowRight size={11} className="opacity-60" />
+                  <span className="text-[10px] font-semibold uppercase leading-none">{cycleTarget}</span>
+                </span>
               </IconButton>
             </Tooltip>
             <IconButton onClick={() => onRemove(widget.path)} className="p-1.5 hover:text-danger" aria-label={t('Remove Widget')}>
@@ -124,25 +113,27 @@ function WidgetCard({ widget, index, editing, onRemove, onCycleSize, onResize, o
           </span>
         )}
       </div>
-      <div className={`min-h-0 flex-1 px-3 pb-3 ${editing ? 'pointer-events-none' : ''}`}>
+      <div className={`min-h-0 flex-1 px-3 pb-3 ${editing ? 'pointer-events-none' : ''} [&_textarea]:resize-none`}>
         {Widget ? <Widget size={previewSize ?? widget.size} /> : <LauncherWidget tool={tool} />}
       </div>
       {editing && (
         <button
           type="button"
           aria-label={t('Resize Widget')}
-          title={t('Resize Widget')}
+          title={resizeHint(sizes, t)}
           onPointerDown={onHandlePointerDown}
           onPointerMove={onHandlePointerMove}
           onPointerUp={() => endResize(true)}
           onPointerCancel={() => endResize(false)}
           onDragStart={e => e.preventDefault()}
-          className="absolute bottom-0 right-0 cursor-nwse-resize touch-none rounded-tl-md p-1.5 transition-colors hover:bg-muted"
+          // 热区 40×40 抵住卡片右下角（视觉图案仍是 12px 斜纹），避免"点了没反应"；
+          // 不加 hover 背景块，否则会压住内容区右下角（如复制按钮）
+          className="group/handle absolute bottom-0 right-0 flex h-10 w-10 cursor-nwse-resize touch-none items-end justify-end"
         >
           <span
             aria-hidden="true"
-            className="block h-2.5 w-2.5 opacity-50"
-            style={{ backgroundImage: 'repeating-linear-gradient(135deg, currentColor 0, currentColor 1.5px, transparent 1.5px, transparent 4px)' }}
+            className="m-1.5 block h-3 w-3 text-fg-secondary opacity-45 transition-all group-hover/handle:text-primary group-hover/handle:opacity-100"
+            style={{ backgroundImage: 'repeating-linear-gradient(135deg, currentColor 0, currentColor 2px, transparent 2px, transparent 5px)' }}
           />
         </button>
       )}

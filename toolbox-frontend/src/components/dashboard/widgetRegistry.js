@@ -13,7 +13,7 @@ export const widgetRegistry = {
   '/timestamp': { component: TimestampWidget, defaultSize: 'm', availableSizes: ['s', 'm', 'l'] },
   '/password-generator': { component: PasswordWidget, defaultSize: 'm', availableSizes: ['s', 'm', 'l'] },
   '/uuid-generator': { component: UUIDWidget, defaultSize: 's', availableSizes: ['s', 'm', 'l'] },
-  '/base64': { component: Base64Widget, defaultSize: 'm', availableSizes: ['m', 'l'] },
-  '/json-formatter': { component: JsonWidget, defaultSize: 'l', availableSizes: ['m', 'l'] },
-  '/hash-generator': { component: HashWidget, defaultSize: 'm', availableSizes: ['m', 'l'] },
+  '/base64': { component: Base64Widget, defaultSize: 'm', availableSizes: ['s', 'm', 'l'] },
+  '/json-formatter': { component: JsonWidget, defaultSize: 'l', availableSizes: ['s', 'm', 'l'] },
+  '/hash-generator': { component: HashWidget, defaultSize: 'm', availableSizes: ['s', 'm', 'l'] },
 };

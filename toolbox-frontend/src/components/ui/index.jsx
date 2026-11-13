@@ -106,6 +106,7 @@ export function IconButton({ className, children, ...rest }) {
       className={cx(
         'inline-flex items-center justify-center rounded-full p-2 text-fg-secondary',
         'hover:bg-muted hover:text-fg transition-colors cursor-pointer',
+        'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-secondary',
         className
       )}
       {...rest}
@@ -335,7 +336,7 @@ export function Tab({ value: tabValue, label, className }) {
 
 /* ---------- ToggleButtonGroup ---------- */
 
-export function ToggleButtonGroup({ value, onChange, className, children, options }) {
+export function ToggleButtonGroup({ value, onChange, className, children, options, size = 'medium' }) {
   const items = options ?? [];
   return (
     <div className={cx('inline-flex rounded-lg border border-line overflow-hidden', className)}>
@@ -345,7 +346,8 @@ export function ToggleButtonGroup({ value, onChange, className, children, option
           type="button"
           onClick={e => onChange?.(e, opt.value)}
           className={cx(
-            'px-3 py-1.5 text-sm cursor-pointer transition-colors border-r border-line last:border-r-0',
+            'cursor-pointer transition-colors border-r border-line last:border-r-0 whitespace-nowrap',
+            size === 'small' ? 'px-2 py-1 text-xs' : 'px-3 py-1.5 text-sm',
             value === opt.value ? 'bg-primary text-primary-fg' : 'bg-paper text-fg-secondary hover:bg-muted'
           )}
         >

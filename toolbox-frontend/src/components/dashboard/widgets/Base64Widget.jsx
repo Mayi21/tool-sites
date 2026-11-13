@@ -7,7 +7,7 @@ import useDebouncedEffect from '../../../hooks/useDebouncedEffect';
 import CopySuccessAnimation from '../../CopySuccessAnimation';
 
 /**
- * Base64 小组件：M 单行实时转换；L 上下双文本域
+ * Base64 小组件：S 紧凑（切换 + 输入 + 单行结果）；M 单行实时转换；L 上下双文本域
  */
 export default function Base64Widget({ size }) {
   const { t } = useTranslation();
@@ -57,25 +57,13 @@ export default function Base64Widget({ size }) {
           { value: 'encode', label: t('Encode') },
           { value: 'decode', label: t('Decode') },
         ]}
-        className="w-fit text-xs"
+        // S 档宽度只有 142px，按钮换成紧凑尺寸才不至于折行
+        size={size === 's' ? 'small' : 'medium'}
+        className="w-fit shrink-0"
       />
 
-      {size === 'm' ? (
-        <>
-          <Input
-            value={input}
-            onChange={e => setInput(e.target.value)}
-            placeholder={t('Enter text to encode or decode')}
-            className="h-8 px-2 py-1 text-xs"
-          />
-          <div className="flex min-h-0 flex-1 items-center gap-1.5">
-            <span className="min-w-0 flex-1 truncate rounded-md bg-muted px-2 py-1.5 font-mono text-xs text-fg" title={output}>
-              {output || '—'}
-            </span>
-            {copyButton}
-          </div>
-        </>
-      ) : (
+      {size === 'l' ? (
+        // 大：上下双文本域，可容长输入与长结果
         <>
           <Textarea
             value={input}
@@ -95,6 +83,22 @@ export default function Base64Widget({ size }) {
             {copyButton}
           </div>
         </>
+      ) : (
+        // 小 / 中：单行输入 + 单行结果，高度一致，S 档挤在一格内
+        <div className="flex min-h-0 flex-1 flex-col gap-2">
+          <Input
+            value={input}
+            onChange={e => setInput(e.target.value)}
+            placeholder={t('Enter text to encode or decode')}
+            className="h-8 px-2 py-1 text-xs"
+          />
+          <div className="flex min-h-0 flex-1 items-start gap-1.5">
+            <span className="min-w-0 flex-1 truncate rounded-md bg-muted px-2 py-1.5 font-mono text-xs text-fg" title={output}>
+              {output || '—'}
+            </span>
+            {copyButton}
+          </div>
+        </div>
       )}
 
       {error && <p className="text-xs text-danger">{error}</p>}

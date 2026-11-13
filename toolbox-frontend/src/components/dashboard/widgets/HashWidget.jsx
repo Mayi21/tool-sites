@@ -77,7 +77,20 @@ export default function HashWidget({ size }) {
         className="h-8 px-2 py-1 text-xs"
       />
 
-      {size === 'm' ? (
+      {size === 's' ? (
+        // 小：单行输入 + 结果 + 算法选择各占一行，避免 1×1 里横向挤碎
+        <div className="flex min-h-0 flex-1 flex-col gap-1.5">
+          <div className="flex min-h-0 items-start gap-1.5">
+            <span className="min-w-0 flex-1 truncate rounded-md bg-muted px-2 py-1.5 font-mono text-xs text-fg" title={results[hashType]}>
+              {results[hashType] || '—'}
+            </span>
+            {copyButton(results[hashType])}
+          </div>
+          <Select value={hashType} onChange={e => setHashType(e.target.value)} className="h-7 w-fit px-2 py-0.5 text-xs">
+            {ALGORITHMS.map(a => <option key={a.value} value={a.value}>{a.label}</option>)}
+          </Select>
+        </div>
+      ) : size === 'm' ? (
         <div className="flex min-h-0 flex-1 items-center gap-1.5">
           <div className="w-28 shrink-0">
             <Select value={hashType} onChange={e => setHashType(e.target.value)} className="h-8 px-2 py-1 text-xs">
